@@ -154,7 +154,7 @@ class BuiltSiteTests(unittest.TestCase):
         home = (SITE / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
         self.assertIn('class="grid cards topic-cards"', home)
-        self.assertIn("@media screen and (min-width: 60em)", css)
+        self.assertIn("@media screen and (min-width: 45em)", css)
         self.assertIn("grid-template-columns: repeat(3, minmax(0, 1fr));", css)
 
 

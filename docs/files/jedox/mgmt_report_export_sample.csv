@@ -1,0 +1,21 @@
+version,fiscal_year,fiscal_period,entity_code,entity_name,account_code,account_name,cost_center_code,currency_code,amount
+Actual,2026,9,E100,Rhine Distribution,4000,Net revenue,CC10,EUR,1250000
+Actual,2026,9,E100,Rhine Distribution,5000,Cost of goods,CC10,EUR,480000
+Actual,2026,9,E100,Rhine Distribution,6100,Personnel expenses,CC10,EUR,180000
+Actual,2026,9,E100,Rhine Distribution,6100,Personnel expenses,CC20,EUR,40000
+Actual,2026,9,E100,Rhine Distribution,6100,Personnel expenses,CC30,EUR,90000
+Actual,2026,9,E100,Rhine Distribution,6200,Marketing,CC20,EUR,95000
+Budget,2026,9,E100,Rhine Distribution,4000,Net revenue,CC10,EUR,1300000
+Budget,2026,9,E100,Rhine Distribution,5000,Cost of goods,CC10,EUR,500000
+Budget,2026,9,E100,Rhine Distribution,6100,Personnel expenses,CC10,EUR,175000
+Budget,2026,9,E100,Rhine Distribution,6100,Personnel expenses,CC20,EUR,40000
+Budget,2026,9,E100,Rhine Distribution,6100,Personnel expenses,CC30,EUR,90000
+Budget,2026,9,E100,Rhine Distribution,6200,Marketing,CC20,EUR,110000
+Actual,2026,9,E210,Lakeside Retail,4000,Net revenue,CC10,USD,640000
+Actual,2026,9,E210,Lakeside Retail,5000,Cost of goods,CC10,USD,260000
+Actual,2026,9,E210,Lakeside Retail,6100,Personnel expenses,CC10,USD,120000
+Actual,2026,9,E210,Lakeside Retail,6200,Marketing,CC20,USD,45000
+Budget,2026,9,E210,Lakeside Retail,4000,Net revenue,CC10,USD,600000
+Budget,2026,9,E210,Lakeside Retail,5000,Cost of goods,CC10,USD,240000
+Budget,2026,9,E210,Lakeside Retail,6100,Personnel expenses,CC10,USD,115000
+Budget,2026,9,E210,Lakeside Retail,6200,Marketing,CC20,USD,50000

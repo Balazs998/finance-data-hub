@@ -1,0 +1,300 @@
+/* Data Night
+   Space Grotesk for headings, Inter for body, JetBrains Mono for code.
+   Links, buttons, and h1 are #38BDF8.
+   #8B7CF6 is for charts only. Small violet text, when used, is #A78BFA. */
+
+:root {
+  --dn-bg: #0f1720;
+  --dn-surface: #18222e;
+  --dn-surface-2: #1e2c3a;
+  --dn-code-bg: #121a26;
+  --dn-border: #2a3847;
+  --dn-text: #e6edf3;
+  --dn-text-muted: #b7c5d3;
+  --dn-text-faint: #96a8ba;
+  --dn-link: #38bdf8;
+  --dn-violet: #8b7cf6;
+  --dn-violet-text: #a78bfa;
+  --chart-1: #38bdf8;
+  --chart-2: #8b7cf6;
+  --chart-3: #a3e635;
+  --chart-negative: #f87171;
+  --reveal-distance: 8px;
+  --reveal-duration: 0.55s;
+  --md-text-font: "Inter", "Segoe UI", sans-serif;
+  --md-code-font: "JetBrains Mono", ui-monospace, monospace;
+}
+
+[data-md-color-scheme="slate"][data-md-color-primary="black"] {
+  --md-hue: 215deg;
+  --md-primary-fg-color: var(--dn-bg);
+  --md-primary-fg-color--light: var(--dn-surface-2);
+  --md-primary-fg-color--dark: var(--dn-bg);
+  --md-primary-bg-color: var(--dn-text);
+  --md-primary-bg-color--light: var(--dn-text-muted);
+  --md-accent-fg-color: var(--dn-link);
+  --md-accent-fg-color--transparent: rgba(56, 189, 248, 0.15);
+  --md-accent-bg-color: var(--dn-bg);
+  --md-default-bg-color: var(--dn-bg);
+  --md-default-bg-color--light: rgba(15, 23, 32, 0.62);
+  --md-default-bg-color--lighter: rgba(15, 23, 32, 0.34);
+  --md-default-bg-color--lightest: rgba(230, 237, 243, 0.06);
+  --md-default-fg-color: var(--dn-text);
+  --md-default-fg-color--light: var(--dn-text-muted);
+  --md-default-fg-color--lighter: var(--dn-text-faint);
+  --md-default-fg-color--lightest: rgba(230, 237, 243, 0.12);
+  --md-typeset-color: var(--dn-text);
+  --md-typeset-a-color: var(--dn-link);
+  --md-code-bg-color: var(--dn-code-bg);
+  --md-code-bg-color--light: var(--dn-surface-2);
+  --md-code-bg-color--lighter: rgba(18, 26, 38, 0.72);
+  --md-code-fg-color: var(--dn-text);
+  --md-code-hl-color: var(--dn-link);
+  --md-code-hl-color--light: rgba(56, 189, 248, 0.15);
+  --md-code-hl-keyword-color: var(--dn-link);
+  --md-code-hl-function-color: var(--dn-violet-text);
+  --md-code-hl-constant-color: var(--dn-violet-text);
+  --md-code-hl-string-color: var(--chart-3);
+  --md-code-hl-number-color: var(--dn-text);
+  --md-code-hl-special-color: var(--chart-negative);
+  --md-code-hl-comment-color: var(--dn-text-faint);
+  --md-code-hl-name-color: var(--dn-text);
+  --md-code-hl-operator-color: var(--dn-text-muted);
+  --md-code-hl-punctuation-color: var(--dn-text-muted);
+  --md-code-hl-generic-color: var(--dn-text-muted);
+  --md-code-hl-variable-color: var(--dn-text);
+  --md-typeset-mark-color: rgba(56, 189, 248, 0.25);
+  --md-typeset-table-color: rgba(42, 56, 71, 0.95);
+  --md-typeset-table-color--light: rgba(230, 237, 243, 0.04);
+  --md-typeset-kbd-color: var(--dn-surface-2);
+  --md-typeset-kbd-accent-color: var(--dn-border);
+  --md-typeset-kbd-border-color: var(--dn-bg);
+  --md-admonition-bg-color: var(--dn-surface);
+  --md-admonition-fg-color: var(--dn-text);
+  --md-footer-bg-color: var(--dn-bg);
+  --md-footer-bg-color--dark: var(--dn-bg);
+  --md-footer-fg-color: var(--dn-text-muted);
+  --md-footer-fg-color--light: var(--dn-text-faint);
+  --md-footer-fg-color--lighter: var(--dn-text-faint);
+  --md-shadow-z1: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.28);
+  --md-shadow-z2: 0 0.25rem 0.8rem rgba(0, 0, 0, 0.4);
+  --md-shadow-z3: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.5);
+}
+
+.md-header,
+.md-tabs {
+  background-color: var(--dn-bg);
+  border-bottom: 1px solid var(--dn-border);
+  box-shadow: none;
+}
+
+.md-header__title,
+.md-tabs__link {
+  color: var(--dn-text);
+}
+
+.md-header__title {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-weight: 600;
+}
+
+.md-nav__link--active,
+.md-nav__item--active > .md-nav__link,
+.md-tabs__link--active,
+.md-typeset .tabbed-labels > label:hover,
+.md-typeset .tabbed-set > input:nth-child(1):checked ~ .tabbed-labels > :nth-child(1),
+.md-typeset .tabbed-set > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2),
+.md-typeset .tabbed-set > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3) {
+  color: var(--dn-link);
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--dn-text);
+}
+
+.md-typeset h1 {
+  color: var(--dn-link);
+  font-weight: 600;
+}
+
+.md-typeset a {
+  color: var(--dn-link);
+}
+
+.md-search__form {
+  border: 1px solid transparent;
+}
+
+.md-search__input,
+.md-search__input::placeholder {
+  color: var(--dn-text);
+}
+
+.md-search__input::placeholder {
+  color: var(--dn-text-muted);
+}
+
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form,
+.md-search__output {
+  background-color: var(--dn-bg);
+  border-color: var(--dn-border);
+}
+
+.md-search-result__meta {
+  background-color: var(--dn-surface);
+  color: var(--dn-text-muted);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.55rem;
+  box-shadow: none;
+  border: 1px solid var(--dn-border);
+  border-left-width: 0.2rem;
+  background-color: var(--dn-surface);
+  color: var(--dn-text);
+}
+
+.md-typeset table:not([class]) {
+  border: 1px solid var(--dn-border);
+  border-radius: 0.5rem;
+  background-color: var(--dn-code-bg);
+}
+
+.md-typeset table:not([class]) th {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-weight: 600;
+  color: var(--dn-text);
+  background-color: var(--dn-surface-2);
+}
+
+.md-typeset table:not([class]) td {
+  color: var(--dn-text);
+  border-top: 1px solid var(--dn-border);
+}
+
+.md-typeset .highlight,
+.md-typeset .highlighttable,
+.md-typeset pre > code {
+  border: 1px solid var(--dn-border);
+  border-radius: 0.5rem;
+}
+
+.md-typeset code {
+  border-radius: 0.25rem;
+  color: var(--dn-text);
+}
+
+.md-typeset .md-button {
+  color: var(--dn-link);
+  border-color: rgba(56, 189, 248, 0.55);
+  border-radius: 0.45rem;
+  font-weight: 600;
+}
+
+.md-typeset .md-button:hover,
+.md-typeset .md-button:focus {
+  color: var(--dn-link);
+  background-color: rgba(56, 189, 248, 0.14);
+  border-color: var(--dn-link);
+}
+
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  background-color: var(--dn-surface);
+  border: 1px solid var(--dn-border);
+  border-radius: 0.7rem;
+  color: var(--dn-text);
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  border-color: var(--dn-link);
+  box-shadow: none;
+}
+
+.md-typeset .grid.cards a.md-button.download {
+  display: inline-block;
+  margin-top: 0.75rem;
+}
+
+.md-typeset .hero {
+  background:
+    radial-gradient(90% 80% at 100% 0%, rgba(56, 189, 248, 0.16), transparent 58%),
+    linear-gradient(180deg, var(--dn-surface) 0%, var(--dn-bg) 100%);
+  border: 1px solid var(--dn-border);
+  border-radius: 0.8rem;
+  padding: 1.5rem 1.5rem 1.3rem;
+  margin: 0 0 1.5rem;
+}
+
+.md-typeset .hero h1 {
+  margin: 0 0 0.45rem;
+  font-size: 2rem;
+  line-height: 1.15;
+  color: var(--dn-link);
+}
+
+.md-typeset .hero p {
+  color: var(--dn-text-muted);
+  margin: 0;
+  font-size: 1.05rem;
+  max-width: 40rem;
+}
+
+.md-typeset .chart-bar {
+  height: 4px;
+  width: 7.5rem;
+  margin: 1rem 0 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--chart-1) 0 25%,
+    var(--chart-2) 25% 50%,
+    var(--chart-3) 50% 75%,
+    var(--chart-negative) 75% 100%
+  );
+}
+
+/* Visible unless JavaScript has actually started. */
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--reveal-duration) ease,
+    transform var(--reveal-duration) ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .md-typeset .hero {
+    padding: 1.1rem 1rem;
+  }
+
+  .md-typeset .hero h1 {
+    font-size: 1.55rem;
+  }
+}

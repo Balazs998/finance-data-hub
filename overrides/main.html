@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+  {{ super() }}
+  {% if config.extra.goatcounter_code %}
+  <script data-goatcounter="https://{{ config.extra.goatcounter_code }}.goatcounter.com/count"
+          async src="https://gc.zgo.at/count.js"></script>
+  {% endif %}
+{% endblock %}

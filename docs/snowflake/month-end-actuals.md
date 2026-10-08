@@ -39,7 +39,8 @@ The [Jedox export](../jedox/management-report-export.md) uses the same presentat
 Pick one entity and one closed period.
 
 - Tie `amount_gl` to the trial balance. `amount_pnl` will not tie on revenue accounts, because the sign is flipped.
+- The inner join to `DIM_ACCOUNT` drops postings on accounts that are not in that dimension, so the tie can come up short even when the sign is right.
 - Check a revenue account is positive in `amount_pnl` and negative in `amount_gl`.
-- Decide whether elimination entities belong in this extract. The commented filter is `entity_code not in ('E900')`. Use your own code.
+- Decide whether elimination entities belong in this extract. The commented filter is `coalesce(l.entity_code, '(none)') not in ('E900')`. Use your own code.
 
-A blank cost center becomes `(none)` so those rows survive the trip into Excel. A blank currency stays blank. Do not coalesce it into a fake currency code and then sum it.
+A null or blank entity or cost center, including an empty string, becomes `(none)` so those rows survive the trip into Excel. A blank currency stays blank. Do not coalesce it into a fake currency code and then sum it.

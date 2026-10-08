@@ -8,7 +8,7 @@ A Jedox view can look right on screen and still arrive in Excel already double-c
 | --- | --- |
 | One amount column | A new month is a new row. Power Query does not break when September appears. |
 | Base elements only | A consolidated parent plus its children will be summed twice. |
-| Code and name | `A_4000` is what you join on. `Net revenue` is what a reader needs. Export both. |
+| Code and name | `4000` is what you join on. `Net revenue` is what a reader needs. Export both. |
 | Version as a column | Actual and Budget live in one file. |
 | Plain numbers | UTF-8, a header row, a dot as the decimal mark, no thousands separator. |
 
@@ -30,16 +30,16 @@ E210 is in US dollars: net revenue 640,000, cost of goods 260,000. Do not add E2
 
 ## Setting the view
 
-Build a stored view with this layout:
+Use a stored view to check the layout on screen:
 
 - Rows: version, year, period, entity, account, cost center.
 - The cell value is the amount. Nothing sits across the columns.
-- Account, entity, and cost center use a base-level subset.
-- The account alias is the name column. The element name stays the code.
+- Account, entity, and cost center use a stored subset.
+- The account name is the alias. The element name stays the code. In the sample, that code is `4000` and the name is `Net revenue`.
 
-Save the view, then run that same subset from Integrator as a cube extract on a schedule. A manual paste from the Excel add-in drifts the first time someone inserts a column.
+The scheduled file is an Integrator Cube extract. A Cube extract cannot run a saved report view. What carries over are the stored subsets: choose them in the extract's subset filter, and turn on Base elements only. That is what keeps the consolidated parent out of the file. A manual paste from the Excel add-in drifts the first time someone inserts a column.
 
-If the element is called `A_4000` and the alias is `Net revenue`, export `A_4000` as `account_code` and the alias as `account_name`. The [Snowflake actuals extract](../snowflake/month-end-actuals.md) uses the same idea: a stable code, a readable name, and a positive revenue amount.
+The sample exports `4000` as `account_code` and `Net revenue` as `account_name`. The [Snowflake actuals extract](../snowflake/month-end-actuals.md) uses the same split: a stable code, a readable name, and revenue as a positive amount.
 
 ## Number format
 

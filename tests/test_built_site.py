@@ -86,14 +86,19 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("\n.reveal {\n  opacity: 0;", css)
         self.assertIn("@media (prefers-reduced-motion: reduce)", css)
 
-    def test_large_violet_is_not_the_small_text_color(self):
+    def test_links_and_headings_are_sky_not_violet(self):
         css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
+        html = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertIn("--dn-link: #38bdf8;", css)
         self.assertIn("--dn-violet: #8b7cf6;", css)
         self.assertIn("--dn-violet-text: #a78bfa;", css)
-        self.assertIn("--md-typeset-a-color: var(--dn-violet-text);", css)
-        self.assertIn("color: var(--dn-violet);", css)
-        self.assertNotIn("--md-typeset-a-color: var(--dn-violet);", css)
-        self.assertNotIn("--md-typeset-a-color: #8b7cf6;", css)
+        self.assertIn("--md-typeset-a-color: var(--dn-link);", css)
+        self.assertIn("--md-accent-fg-color: var(--dn-link);", css)
+        self.assertIn("color: var(--dn-link);", css)
+        self.assertNotIn("color: var(--dn-violet);", css)
+        self.assertNotIn("--md-typeset-a-color: var(--dn-violet", css)
+        self.assertNotIn("deep-purple", html)
+        self.assertIn('data-md-color-accent="light-blue"', html)
 
     def test_download_events_are_named_per_file_and_the_files_exist(self):
         page = SITE / "downloads" / "index.html"
@@ -130,7 +135,11 @@ class BuiltSiteTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(">qualify<", article)
+        self.assertIn("nullif(trim(l.entity_code), '')", sql)
+        self.assertIn("nullif(trim(l.cost_center_code), '')", sql)
+        self.assertIn("coalesce(l.entity_code, '(none)') not in ('E900')", sql)
         self.assertIn("download-gl_actuals_pnl.sql", article)
+        self.assertIn("DIM_ACCOUNT", article)
         self.assertNotIn("lorem ipsum", article.lower())
 
 

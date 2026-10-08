@@ -37,8 +37,8 @@ with latest_line as (
 ),
 signed as (
     select
-        coalesce(l.entity_code, '(none)') as entity_code,
-        coalesce(l.cost_center_code, '(none)') as cost_center_code,
+        coalesce(nullif(trim(l.entity_code), ''), '(none)') as entity_code,
+        coalesce(nullif(trim(l.cost_center_code), ''), '(none)') as cost_center_code,
         l.account_code,
         a.account_name,
         a.account_type,
@@ -53,13 +53,14 @@ signed as (
             else l.amount_gl
         end as amount_pnl
     from latest_line as l
+    -- Unmapped account codes never reach the result, so this total can sit below the trial balance.
     inner join FINANCE.DIM_ACCOUNT as a
         on a.account_code = l.account_code
     inner join FINANCE.DIM_FISCAL_CALENDAR as c
         on c.calendar_date = cast(l.accounting_date as date)
     where a.statement = 'PL'
       and c.period_status = 'CLOSED'
-      -- and l.entity_code not in ('E900')  -- drop elimination entities
+      -- and coalesce(l.entity_code, '(none)') not in ('E900')  -- drop elimination entities
       -- and c.fiscal_year = 2026
       -- and c.fiscal_period = 9
 )

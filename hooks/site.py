@@ -32,6 +32,14 @@ def on_config(config):
     return config
 
 
+def on_page_context(context, page, config, nav):
+    # ``hide_actions: true`` in front matter drops the edit / view-source
+    # icons for that page only (Material renders them only when edit_url is set).
+    if page.meta.get("hide_actions"):
+        page.edit_url = None
+    return context
+
+
 def on_page_markdown(markdown, page, config, files):
     docs_dir = Path(config["docs_dir"])
     return render_shortcodes(markdown, page.file.src_uri, docs_dir)

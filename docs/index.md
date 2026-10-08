@@ -1,3 +1,8 @@
+---
+# The edit/view-source icons overlap the hero banner corner on the home page.
+hide_actions: true
+---
+
 <div class="hero reveal" markdown>
 
 # Finance Data Hub
@@ -12,7 +17,7 @@ Practical notes on Snowflake, Jedox, and Excel VBA for people who build the FP&A
 
 ## Where to start
 
-<div class="grid cards" markdown>
+<div class="grid cards topic-cards" markdown>
 
 -   :material-snowflake:{ .lg .middle } __Snowflake__
 

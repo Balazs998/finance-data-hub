@@ -1,0 +1,83 @@
+site_name: Finance Data Hub
+site_description: Practical notes on Snowflake, Jedox, and Excel VBA for finance and FP&A.
+site_url: https://balazs998.github.io/finance-data-hub/
+repo_url: https://github.com/Balazs998/finance-data-hub
+repo_name: Balazs998/finance-data-hub
+edit_uri: edit/main/docs/
+copyright: Balazs · Finance Data Hub
+
+# The only analytics setting. Site code for https://financedatahub.goatcounter.com
+# Clear the value to turn analytics off. The site still builds.
+extra:
+  goatcounter_code: financedatahub
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Balazs998
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/reveal.js
+
+theme:
+  name: material
+  custom_dir: overrides
+  favicon: images/favicon.svg
+  logo: images/logo.svg
+  font: false
+  palette:
+    scheme: slate
+    primary: black
+    accent: deep purple
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+    - content.action.edit
+
+hooks:
+  - hooks/site.py
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: [docs]
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Snowflake:
+      - snowflake/index.md
+      - Month-end actuals: snowflake/month-end-actuals.md
+  - Jedox:
+      - jedox/index.md
+      - Management report export: jedox/management-report-export.md
+  - VBA and Excel:
+      - vba/index.md
+      - Month-close checks: vba/month-close-checks.md
+  - Downloads: downloads.md
+  - About: about.md

@@ -1,0 +1,269 @@
+/* Data Night
+   Space Grotesk for headings, Inter for body, JetBrains Mono for code.
+   #8B7CF6 is for charts and large text. Small violet text uses #A78BFA. */
+
+:root {
+  --dn-bg: #0b1020;
+  --dn-bg-raised: #10162a;
+  --dn-surface: #171f38;
+  --dn-surface-2: #1e2744;
+  --dn-code-bg: #141a30;
+  --dn-border: #2c3658;
+  --dn-text: #e7eaf4;
+  --dn-text-muted: #a3aec7;
+  --dn-text-faint: #7c879f;
+  --dn-violet: #8b7cf6;
+  --dn-violet-text: #a78bfa;
+  --chart-1: #8b7cf6;
+  --chart-2: #34d399;
+  --chart-3: #38bdf8;
+  --chart-4: #fbbf24;
+  --chart-5: #fb7185;
+  --reveal-distance: 8px;
+  --reveal-duration: 0.55s;
+  --md-text-font: "Inter", "Segoe UI", sans-serif;
+  --md-code-font: "JetBrains Mono", ui-monospace, monospace;
+}
+
+[data-md-color-scheme="slate"][data-md-color-primary="black"] {
+  --md-hue: 250deg;
+  --md-primary-fg-color: var(--dn-bg-raised);
+  --md-primary-fg-color--light: var(--dn-surface-2);
+  --md-primary-fg-color--dark: var(--dn-bg);
+  --md-primary-bg-color: var(--dn-text);
+  --md-primary-bg-color--light: var(--dn-text-muted);
+  --md-accent-fg-color: var(--dn-violet-text);
+  --md-accent-fg-color--transparent: rgba(167, 139, 250, 0.15);
+  --md-accent-bg-color: var(--dn-bg);
+  --md-default-bg-color: var(--dn-bg);
+  --md-default-bg-color--light: rgba(11, 16, 32, 0.6);
+  --md-default-bg-color--lighter: rgba(11, 16, 32, 0.32);
+  --md-default-bg-color--lightest: rgba(231, 234, 244, 0.06);
+  --md-default-fg-color: var(--dn-text);
+  --md-default-fg-color--light: var(--dn-text-muted);
+  --md-default-fg-color--lighter: var(--dn-text-faint);
+  --md-default-fg-color--lightest: rgba(231, 234, 244, 0.12);
+  --md-typeset-color: var(--dn-text);
+  --md-typeset-a-color: var(--dn-violet-text);
+  --md-code-bg-color: var(--dn-code-bg);
+  --md-code-bg-color--light: var(--dn-surface-2);
+  --md-code-bg-color--lighter: rgba(20, 26, 48, 0.6);
+  --md-code-fg-color: var(--dn-text);
+  --md-code-hl-color: var(--dn-violet-text);
+  --md-code-hl-color--light: rgba(167, 139, 250, 0.15);
+  --md-code-hl-keyword-color: var(--dn-violet-text);
+  --md-code-hl-constant-color: var(--dn-violet-text);
+  --md-code-hl-function-color: var(--chart-3);
+  --md-code-hl-string-color: var(--chart-2);
+  --md-code-hl-number-color: var(--chart-4);
+  --md-code-hl-special-color: var(--chart-5);
+  --md-code-hl-comment-color: var(--dn-text-faint);
+  --md-code-hl-name-color: var(--dn-text);
+  --md-code-hl-operator-color: var(--dn-text-muted);
+  --md-code-hl-punctuation-color: var(--dn-text-muted);
+  --md-code-hl-generic-color: var(--dn-text-muted);
+  --md-code-hl-variable-color: var(--dn-text);
+  --md-typeset-mark-color: rgba(167, 139, 250, 0.35);
+  --md-typeset-table-color: rgba(44, 54, 88, 0.9);
+  --md-typeset-table-color--light: rgba(231, 234, 244, 0.04);
+  --md-typeset-kbd-color: var(--dn-surface-2);
+  --md-typeset-kbd-accent-color: var(--dn-border);
+  --md-typeset-kbd-border-color: var(--dn-bg);
+  --md-admonition-bg-color: var(--dn-surface);
+  --md-admonition-fg-color: var(--dn-text);
+  --md-footer-bg-color: var(--dn-bg-raised);
+  --md-footer-bg-color--dark: var(--dn-bg);
+  --md-footer-fg-color: var(--dn-text-muted);
+  --md-footer-fg-color--light: var(--dn-text-faint);
+  --md-footer-fg-color--lighter: var(--dn-text-faint);
+  --md-shadow-z1: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.28);
+  --md-shadow-z2: 0 0.25rem 0.8rem rgba(0, 0, 0, 0.4);
+  --md-shadow-z3: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.5);
+}
+
+.md-header {
+  border-bottom: 1px solid var(--dn-border);
+  box-shadow: none;
+}
+
+.md-header__title {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-weight: 600;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--dn-text);
+}
+
+.md-typeset h1 {
+  color: var(--dn-violet);
+  font-weight: 600;
+}
+
+.md-search__form {
+  border: 1px solid transparent;
+}
+
+.md-search__input {
+  color: var(--dn-text);
+}
+
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form,
+.md-search__output {
+  background-color: var(--dn-bg-raised);
+  border-color: var(--dn-border);
+}
+
+.md-search-result__meta {
+  background-color: var(--dn-surface);
+  color: var(--dn-text-muted);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.55rem;
+  box-shadow: none;
+  border: 1px solid var(--dn-border);
+  border-left-width: 0.2rem;
+}
+
+.md-typeset table:not([class]) {
+  border: 1px solid var(--dn-border);
+  border-radius: 0.5rem;
+  background-color: var(--dn-bg-raised);
+}
+
+.md-typeset table:not([class]) th {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-weight: 600;
+  color: var(--dn-text);
+  background-color: var(--dn-surface-2);
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--dn-border);
+}
+
+.md-typeset .highlight,
+.md-typeset .highlighttable,
+.md-typeset pre > code {
+  border: 1px solid var(--dn-border);
+  border-radius: 0.5rem;
+}
+
+.md-typeset code {
+  border-radius: 0.25rem;
+}
+
+.md-typeset .md-button {
+  color: var(--dn-violet-text);
+  border-color: rgba(167, 139, 250, 0.55);
+  border-radius: 0.45rem;
+  font-weight: 600;
+}
+
+.md-typeset .md-button:hover,
+.md-typeset .md-button:focus {
+  color: var(--dn-violet-text);
+  background-color: rgba(139, 124, 246, 0.14);
+  border-color: var(--dn-violet-text);
+}
+
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  background-color: var(--dn-surface);
+  border: 1px solid var(--dn-border);
+  border-radius: 0.7rem;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  border-color: var(--dn-violet-text);
+  box-shadow: none;
+}
+
+.md-typeset .grid.cards a.md-button.download {
+  display: inline-block;
+  margin-top: 0.75rem;
+}
+
+.md-typeset .hero {
+  background:
+    radial-gradient(90% 80% at 100% 0%, rgba(139, 124, 246, 0.2), transparent 58%),
+    linear-gradient(180deg, var(--dn-surface) 0%, var(--dn-bg-raised) 100%);
+  border: 1px solid var(--dn-border);
+  border-radius: 0.8rem;
+  padding: 1.5rem 1.5rem 1.3rem;
+  margin: 0 0 1.5rem;
+}
+
+.md-typeset .hero h1 {
+  margin: 0 0 0.45rem;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.md-typeset .hero p {
+  color: var(--dn-text-muted);
+  margin: 0;
+  font-size: 1.05rem;
+  max-width: 40rem;
+}
+
+.md-typeset .chart-bar {
+  height: 4px;
+  width: 7.5rem;
+  margin: 1rem 0 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--chart-1) 0 20%,
+    var(--chart-2) 20% 40%,
+    var(--chart-3) 40% 60%,
+    var(--chart-4) 60% 80%,
+    var(--chart-5) 80% 100%
+  );
+}
+
+/* Visible unless JavaScript has actually started. */
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--reveal-duration) ease,
+    transform var(--reveal-duration) ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .md-typeset .hero {
+    padding: 1.1rem 1rem;
+  }
+
+  .md-typeset .hero h1 {
+    font-size: 1.55rem;
+  }
+}

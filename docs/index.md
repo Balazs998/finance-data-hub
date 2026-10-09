@@ -35,6 +35,10 @@ Practical notes on Snowflake, Jedox, and Excel VBA for people who build the FP&A
 
     [:octicons-arrow-right-24: Export layout](jedox/management-report-export.md)
 
+    Send each cost center owner a Budget vs. Actual email from one Integrator job.
+
+    [:octicons-arrow-right-24: Value emails](jedox/automated-value-emails.md)
+
 -   :material-microsoft-excel:{ .lg .middle } __VBA and Excel__
 
     ---

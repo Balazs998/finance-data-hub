@@ -500,7 +500,7 @@ body:has(.home) .md-grid {
   padding: 0;
 }
 
-.md-typeset .home-who {
+.md-typeset ul.home-who {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
@@ -540,7 +540,8 @@ body:has(.home) .md-grid {
   color: var(--dn-text);
 }
 
-.md-typeset .home-path {
+/* Beat Material's `.md-typeset ol:not([hidden]) { display: flow-root }`. */
+.md-typeset ol.home-path {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
@@ -785,7 +786,7 @@ html.js .reveal.is-visible {
     text-align: center;
   }
 
-  .md-typeset .home-path {
+  .md-typeset ol.home-path {
     display: flex;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -800,7 +801,7 @@ html.js .reveal.is-visible {
     scroll-snap-align: start;
   }
 
-  .md-typeset .home-who,
+  .md-typeset ul.home-who,
   .md-typeset .home-bottom {
     grid-template-columns: 1fr;
   }

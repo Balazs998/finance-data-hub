@@ -32,6 +32,23 @@
       return copy.labels[severity];
     }
 
+    function labelGutterMarkers(editorView) {
+      editorView.dom.querySelectorAll(".cm-lint-marker").forEach(function (el) {
+        var kind = "Check";
+        var mark = "?";
+        if (el.classList.contains("cm-lint-marker-error")) {
+          kind = "Error";
+          mark = "✕";
+        } else if (el.classList.contains("cm-lint-marker-warning")) {
+          kind = "Warning";
+          mark = "!";
+        }
+        if (el.textContent !== mark) el.textContent = mark;
+        if (el.getAttribute("role") !== "img") el.setAttribute("role", "img");
+        if (el.getAttribute("aria-label") !== kind) el.setAttribute("aria-label", kind);
+      });
+    }
+
     function countText(count, one, many) {
       return count + " " + (count === 1 ? one : many);
     }
@@ -316,6 +333,7 @@
           }),
           cm.EditorView.updateListener.of(function (update) {
             if (update.docChanged) sawEdit = true;
+            labelGutterMarkers(update.view);
           })
         ]
       })

@@ -457,6 +457,16 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.match(page, /It checks as you type\. As you type, it also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
   assert.match(css, /@media screen and \(max-width: 1100px\)/);
   assert.match(css, /underline dotted #9aa7b4/);
+  assert.match(css, /#email-checker \.cm-content:focus-visible \{\s*outline: none;/);
+  assert.match(css, /@media screen and \(min-width: 1100px\) \{\s*#email-checker \.email-editor-column \{\s*position: sticky;\s*top: 72px;/);
+  assert.match(css, /#email-checker \.cm-lint-marker-error \{\s*color: #f87171;/);
+  assert.match(css, /#email-checker \.cm-lint-marker-warning \{\s*color: #fbbf24;/);
+  assert.match(ui, /mark = "✕"/);
+  assert.match(ui, /mark = "!"/);
+  assert.match(ui, /setAttribute\("aria-label", kind\)/);
+  assert.match(css, /#email-checker \.cm-content,\s*#email-checker \.cm-line,\s*#email-checker \.cm-gutters \{\s*font-size: 13px;/);
+  assert.match(css, /\.email-issue pre > code \{[^}]*white-space: pre-wrap;/);
+  assert.match(css, /\.email-issue pre > code \{[^}]*overflow-wrap: anywhere;/);
   const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
   assert.equal(bundle.indexOf("jsdelivr"), -1);
   assert.equal(bundle.indexOf("unpkg.com"), -1);

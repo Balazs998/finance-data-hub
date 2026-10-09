@@ -57,6 +57,10 @@
     "}"
   ].join("\n");
 
+  function stripMso(line) {
+    return line.replace(/<!--\[if mso\][\s\S]*?<!\[endif\]-->/g, "");
+  }
+
   function withoutComments(line) {
     var out = "";
     var quote = null;
@@ -430,7 +434,7 @@
     if (!text.trim()) {
       return { empty: true, notGroovy: false, truncated: false, lineLimit: MAX_LINES, scriptType: scriptType, issues: [] };
     }
-    var lines = text.split("\n");
+    var lines = text.split("\n").map(stripMso);
     var truncated = lines.length > MAX_LINES;
     if (truncated) lines = lines.slice(0, MAX_LINES);
     if (!/API\s*\./.test(lines.join("\n"))) {

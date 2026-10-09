@@ -106,10 +106,16 @@ test("the email template fits a phone without a fixed width", function () {
   const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-generate.js"), "utf8");
   const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
   const builder = fs.readFileSync(path.join(root, "docs/javascripts/email-builder-ui.js"), "utf8");
-  assert.equal(template.includes('width="600"'), false);
-  assert.equal(template.replace(/max-width:600px/g, "").includes("width:600px"), false);
-  assert.equal((template.match(/<table\b[^>]*>/g) || []).length, 3);
-  const tables = template.match(/<table\b[^>]*>/g);
+  const msoOpen = '<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->';
+  const msoClose = '<!--[if mso]></td></tr></table><![endif]-->';
+  const visible = template.replace(/<!--\[if mso\][\s\S]*?<!\[endif\]-->/g, "");
+  assert.equal(template.split(msoOpen).length - 1, 1);
+  assert.equal(template.split(msoClose).length - 1, 1);
+  assert.ok(template.indexOf(msoOpen) < template.indexOf(msoClose));
+  assert.equal(visible.includes('width="600"'), false);
+  assert.equal(visible.replace(/max-width:600px/g, "").includes("width:600px"), false);
+  assert.equal((visible.match(/<table\b[^>]*>/g) || []).length, 3);
+  const tables = visible.match(/<table\b[^>]*>/g);
   assert.match(tables[1], /width="100%"/);
   assert.match(tables[1], /max-width:600px/);
   assert.match(tables[2], /width="100%"/);
@@ -124,12 +130,45 @@ test("the email template fits a phone without a fixed width", function () {
   assert.match(result.preview.html, /193\.06/);
   assert.match(result.preview.html, /6,866\.96/);
   assert.match(result.preview.html, /5,700\.21/);
-  assert.equal(result.preview.html.includes('width="600"'), false);
+  assert.equal(result.preview.html.split(msoOpen).length - 1, 1);
+  assert.equal(result.preview.html.split(msoClose).length - 1, 1);
+  assert.ok(result.preview.html.indexOf(msoOpen) < result.preview.html.indexOf("193.06"));
+  assert.ok(result.preview.html.indexOf("5,700.21") < result.preview.html.indexOf(msoClose));
+  const zip = Buffer.from(result.zip()).toString("latin1");
+  assert.equal(zip.split(msoOpen).length - 1, 1);
+  assert.equal(zip.split(msoClose).length - 1, 1);
+  assert.equal(result.preview.html.replace(/<!--\[if mso\][\s\S]*?<!\[endif\]-->/g, "").includes('width="600"'), false);
   assert.match(result.preview.html, /Sent automatically by a Jedox Integrator job\./);
   assert.match(result.preview.html, /Test mode: on\. Intended recipient:/);
   assert.doesNotMatch(css, /\.email-frame-wrap \{[^}]*overflow:\s*hidden/);
   assert.doesNotMatch(css, /\.email-frame-wrap \{[^}]*width:\s*\d+px/);
   assert.equal(builder.includes('frame.style.width = width + "px"'), false);
+});
+
+test("outlook conditional comments are not checker issues", function () {
+  const open = '<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->';
+  const close = '<!--[if mso]></td></tr></table><![endif]-->';
+  const script = [
+    "def mailer = API.getMailer()",
+    open,
+    "boolean testMode = true",
+    "mailer.reset()",
+    "mailer.addRecipient(to)",
+    "mailer.setHtmlMessage(email.html)",
+    "mailer.send()",
+    close
+  ].join("\n");
+  assert.deepEqual(checker.checkScript(script, { scriptType: "job" }).issues, []);
+  const hidden = [
+    "def mailer = API.getMailer()",
+    "<!--[if mso]>API.getNope()<![endif]-->",
+    "boolean testMode = true",
+    "mailer.reset()",
+    "mailer.addRecipient(to)",
+    "mailer.setHtmlMessage(email.html)",
+    "mailer.send()"
+  ].join("\n");
+  assert.deepEqual(checker.checkScript(hidden, { scriptType: "job" }).issues, []);
 });
 
 test("period must be a zero-padded YYYY-MM", function () {

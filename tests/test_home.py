@@ -8,8 +8,12 @@ MASCOTS = ROOT / "docs" / "assets" / "mascots"
 CSS = ROOT / "docs" / "stylesheets" / "extra.css"
 
 EXPECTED_FILES = (
-    "jedox/head.png",
-    "jedox/head.webp",
+    "jedox/head-laptop.png",
+    "jedox/head-laptop.webp",
+    "jedox/head-presenting.png",
+    "jedox/head-presenting.webp",
+    "jedox/head-thumbsup.png",
+    "jedox/head-thumbsup.webp",
     "jedox/presenting.png",
     "jedox/presenting.webp",
     "snowflake/head.png",
@@ -138,14 +142,29 @@ class HomePageTests(unittest.TestCase):
             ">701<",
             "inner join",
             "left join",
-            "full join ✓",
+            "full join",
+            "✓ no rows lost",
+            "Rows kept by each join. Only the full join keeps all 701.",
+            "Oct 9, 2026",
         ):
             self.assertIn(text, self.html)
-        self.assertEqual(self.html.count('class="home-new"'), 3)
+        self.assertNotIn('class="home-new"', self.html)
+        self.assertEqual(self.html.count('class="home-date"'), 4)
+        self.assertEqual(self.html.count(">Oct 9, 2026<"), 4)
         self.assertEqual(self.html.count('class="home-step"'), 3)
+        self.assertIn(
+            'class="home-card home-why" href="snowflake/plan-vs-actuals/"',
+            self.html,
+        )
         latest = self.html.split('id="latest-posts"', 1)[1].split('id="why-it-matters"', 1)[0]
         plan_post = latest.split('href="snowflake/plan-vs-actuals/"', 1)[1].split("</li>", 1)[0]
-        self.assertNotIn("home-new", plan_post)
+        self.assertIn('class="home-date"', plan_post)
+        jedox_srcs = re.findall(
+            r'href="jedox/[^"]+"[\s\S]*?src="(assets/mascots/jedox/[^"]+)"',
+            latest,
+        )
+        self.assertEqual(len(jedox_srcs), 3)
+        self.assertEqual(len(set(jedox_srcs)), 3)
 
     def test_newsletter_box_is_absent(self):
         for banned in (
@@ -224,6 +243,8 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("order: -1;", block)
         self.assertIn("flex-direction: column;", block)
         self.assertIn("width: 100%;", block)
+        self.assertIn("gap: 12px;", self.css)
+        self.assertIn("flex-wrap: nowrap;", self.css)
         self.assertIn("overflow-x: auto;", block)
         self.assertIn("-webkit-overflow-scrolling: touch;", block)
         self.assertIn("min-width: 240px;", block)

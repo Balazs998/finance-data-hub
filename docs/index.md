@@ -97,31 +97,31 @@ hide:
 <li>
 <a class="home-post" href="jedox/email-builder/">
 <picture>
-<source srcset="assets/mascots/jedox/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="" loading="lazy">
+<source srcset="assets/mascots/jedox/head-presenting.webp" type="image/webp">
+<img class="home-avatar" src="assets/mascots/jedox/head-presenting.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Create your own email</strong><span>Jedox · Builder</span></span>
-<span class="home-new">New</span>
+<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
 </a>
 </li>
 <li>
 <a class="home-post" href="jedox/automated-value-emails/">
 <picture>
-<source srcset="assets/mascots/jedox/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="" loading="lazy">
+<source srcset="assets/mascots/jedox/head-thumbsup.webp" type="image/webp">
+<img class="home-avatar" src="assets/mascots/jedox/head-thumbsup.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Automated value emails</strong><span>Jedox · Groovy</span></span>
-<span class="home-new">New</span>
+<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
 </a>
 </li>
 <li>
 <a class="home-post" href="jedox/snowflake-to-jedox/">
 <picture>
-<source srcset="assets/mascots/jedox/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="" loading="lazy">
+<source srcset="assets/mascots/jedox/head-laptop.webp" type="image/webp">
+<img class="home-avatar" src="assets/mascots/jedox/head-laptop.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Snowflake to Jedox load</strong><span>Jedox · Integrator</span></span>
-<span class="home-new">New</span>
+<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
 </a>
 </li>
 <li>
@@ -131,20 +131,22 @@ hide:
 <img class="home-avatar" src="assets/mascots/snowflake/head.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Plan vs actuals</strong><span>Snowflake · SQL</span></span>
+<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
 </a>
 </li>
 </ul>
 </div>
 <div>
 <h2 id="why-it-matters">Why it matters</h2>
-<div class="home-card home-why">
+<a class="home-card home-why" href="snowflake/plan-vs-actuals/">
 <p>Same sample data, three joins:</p>
 <div class="home-joins">
 <p><strong class="home-join--inner">605</strong><span>inner join</span></p>
 <p><strong class="home-join--left">696</strong><span>left join</span></p>
-<p><strong class="home-join--full">701</strong><span>full join ✓</span></p>
+<p><strong class="home-join--full">701</strong><span>full join</span><span class="home-join__kept">✓ no rows lost</span></p>
 </div>
-</div>
+<p class="home-why__note">Rows kept by each join. Only the full join keeps all 701.</p>
+</a>
 </div>
 </div>
 </div>

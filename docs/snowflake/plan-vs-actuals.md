@@ -1,6 +1,7 @@
 ---
 title: "Plan vs. actuals in Snowflake SQL, without losing rows"
 description: "Build a month-end budget vs. actual variance in Snowflake with a FULL OUTER JOIN, so budget-only and unbudgeted rows both show up."
+social_image: plan-vs-actuals.png
 ---
 
 # Plan vs. actuals in Snowflake SQL, without losing rows
@@ -35,7 +36,7 @@ actuals AS (
     FROM FACT_ACTUALS
     GROUP BY cost_center, account, period
 )
-SELECT COUNT(*) FROM budget;   -- 696 cells
+SELECT COUNT(*) FROM budget; -- 696 cells
 ```
 
 ## 3. The full outer join
@@ -58,10 +59,10 @@ actuals AS (
 )
 SELECT
     COALESCE(a.cost_center, b.cost_center) AS cost_center,
-    COALESCE(a.account,     b.account)     AS account,
-    COALESCE(a.period,      b.period)      AS period,
-    COALESCE(b.budget, 0)                  AS budget,
-    COALESCE(a.actual, 0)                  AS actual,
+    COALESCE(a.account, b.account) AS account,
+    COALESCE(a.period, b.period) AS period,
+    COALESCE(b.budget, 0) AS budget,
+    COALESCE(a.actual, 0) AS actual,
     COALESCE(a.actual, 0) - COALESCE(b.budget, 0) AS variance,
     CASE
         WHEN a.cost_center IS NULL THEN 'Budget only'
@@ -70,9 +71,9 @@ SELECT
     END AS match_status
 FROM actuals AS a
 FULL OUTER JOIN budget AS b
-    ON  a.cost_center = b.cost_center
-    AND a.account     = b.account
-    AND a.period      = b.period;
+    ON a.cost_center = b.cost_center
+    AND a.account = b.account
+    AND a.period = b.period;
 ```
 
 Three details carry the whole thing:
@@ -87,7 +88,7 @@ If a key column in your source can be NULL, replace it with something like `'(no
 
 ```sql
 SELECT match_status,
-       COUNT(*)    AS cells,
+       COUNT(*) AS cells,
        SUM(budget) AS budget,
        SUM(actual) AS actual
 FROM V_PLAN_VS_ACTUAL
@@ -144,8 +145,8 @@ For March 2026:
 
 ```sql
 SELECT d.account_type,
-       SUM(v.budget)   AS budget,
-       SUM(v.actual)   AS actual,
+       SUM(v.budget) AS budget,
+       SUM(v.actual) AS actual,
        SUM(v.variance) AS variance
 FROM V_PLAN_VS_ACTUAL AS v
 JOIN DIM_ACCOUNT AS d ON d.account = v.account

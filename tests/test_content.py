@@ -1,3 +1,4 @@
+import re
 import unittest
 from pathlib import Path
 
@@ -24,6 +25,20 @@ class ContentTests(unittest.TestCase):
         self.assertIn("coalesce(l.entity_code, '(none)') not in ('E900')", article)
         self.assertIn("inner join to `DIM_ACCOUNT`", article)
         self.assertIn("empty string", article)
+
+    def test_value_email_code_blocks_match_the_groovy_download(self):
+        article = (ROOT / "docs/jedox/automated-value-emails.md").read_text(encoding="utf-8")
+        script = (ROOT / "docs/files/email/send_value_emails.groovy").read_text(encoding="utf-8")
+        blocks = re.findall(r"```groovy\n(.*?)```", article, re.S)
+        excerpts = [block for block in blocks if block in script]
+        self.assertEqual(len(blocks), 5)
+        self.assertEqual(len(excerpts), 4)
+        for block in excerpts:
+            self.assertIn(block, script)
+        self.assertNotIn("testMode    =", article)
+        self.assertNotIn("testMode    =", script)
+        self.assertNotIn("account   :", article)
+        self.assertNotIn("account   :", script)
 
 
 if __name__ == "__main__":

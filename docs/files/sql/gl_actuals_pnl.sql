@@ -5,17 +5,17 @@
 -- currency. Revenue is a positive number. Balance-sheet accounts are excluded.
 --
 -- FINANCE.GL_JOURNAL_LINE
---   journal_line_id, entity_code, cost_center_code, account_code,
---   accounting_date, currency_code, amount_gl, loaded_at
---   amount_gl uses general-ledger sign: debits positive, credits negative.
+-- journal_line_id, entity_code, cost_center_code, account_code,
+-- accounting_date, currency_code, amount_gl, loaded_at
+-- amount_gl uses general-ledger sign: debits positive, credits negative.
 --
 -- FINANCE.DIM_ACCOUNT
---   account_code, account_name, statement ('PL' or 'BS'),
---   account_type ('REVENUE', 'COGS', 'OPEX', 'OTHER')
+-- account_code, account_name, statement ('PL' or 'BS'),
+-- account_type ('REVENUE', 'COGS', 'OPEX', 'OTHER')
 --
 -- FINANCE.DIM_FISCAL_CALENDAR
---   calendar_date, fiscal_year, fiscal_period (1-12), period_status
---   period_status is 'OPEN' or 'CLOSED'.
+-- calendar_date, fiscal_year, fiscal_period (1-12), period_status
+-- period_status is 'OPEN' or 'CLOSED'.
 
 with latest_line as (
     -- A restatement is a new load of the same journal line.
@@ -60,7 +60,7 @@ signed as (
         on c.calendar_date = cast(l.accounting_date as date)
     where a.statement = 'PL'
       and c.period_status = 'CLOSED'
-      -- and coalesce(l.entity_code, '(none)') not in ('E900')  -- drop elimination entities
+      -- and coalesce(l.entity_code, '(none)') not in ('E900') -- drop elimination entities
       -- and c.fiscal_year = 2026
       -- and c.fiscal_period = 9
 )

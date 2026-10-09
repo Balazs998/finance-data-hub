@@ -1,6 +1,7 @@
 ---
 title: "From Snowflake to Jedox: a rerun-safe actuals load with Integrator"
 description: "Load monthly actuals from Snowflake into a Jedox planning cube, with a key-pair service user and a slice clear that keeps reruns clean."
+social_image: snowflake-to-jedox.png
 ---
 
 # From Snowflake to Jedox: a rerun-safe actuals load with Integrator

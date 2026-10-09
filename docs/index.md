@@ -1,6 +1,7 @@
 ---
 # The edit/view-source icons overlap the hero banner corner on the home page.
 hide_actions: true
+social_image: home.png
 ---
 
 <div class="hero reveal" markdown>
@@ -34,6 +35,10 @@ Practical notes on Snowflake, Jedox, and Excel VBA for people who build the FP&A
     Export a management report that Excel can sum without double-counting consolidated elements.
 
     [:octicons-arrow-right-24: Export layout](jedox/management-report-export.md)
+
+    Send each cost center owner a Budget vs. Actual email from one Integrator job.
+
+    [:octicons-arrow-right-24: Value emails](jedox/automated-value-emails.md)
 
 -   :material-microsoft-excel:{ .lg .middle } __VBA and Excel__
 

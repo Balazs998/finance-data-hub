@@ -1,0 +1,11 @@
+cost_center,owner_email,owner_name
+CC1000,owner.cc1000@example.com,Alex Example
+CC1010,owner.cc1010@example.com,Blake Example
+CC2000,owner.cc2000@example.com,Casey Example
+CC3000,owner.cc3000@example.com,Dana Example
+CC3010,owner.cc3010@example.com,Eli Example
+CC4000,owner.cc4000@example.com,Frankie Example
+CC4010,owner.cc4010@example.com,Gray Example
+CC5000,owner.cc5000@example.com,Harper Example
+CC5010,owner.cc5010@example.com,Indy Example
+CC6000,owner.cc6000@example.com,Jordan Example

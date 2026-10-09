@@ -204,6 +204,43 @@
   border-color: var(--dn-link);
 }
 
+/* Download clusters. One full-width column below 45em; an even 2-column
+   grid from 45em up, with 0.75rem between buttons both ways. */
+.md-typeset .downloads {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media screen and (min-width: 45em) {
+  .md-typeset .downloads {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+}
+
+.md-typeset .downloads .md-button {
+  margin: 0;
+  width: 100%;
+  text-align: left;
+  border: 1px solid #2a3847;
+}
+
+.md-typeset .downloads .md-button:hover,
+.md-typeset .downloads .md-button:focus,
+.md-typeset .downloads .md-button.focus-visible {
+  border-color: #38bdf8;
+}
+
+.md-typeset .downloads .md-button:focus-visible,
+.md-typeset .downloads .md-button.focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
 .md-typeset .grid.cards > ul > li,
 .md-typeset .grid.cards > ol > li {
   background-color: var(--dn-surface);
@@ -333,6 +370,23 @@ html.js .reveal.is-visible {
   width: auto;
   max-width: none;
   min-width: var(--diagram-min-width);
+  height: auto;
+}
+
+/* Cropped email preview. Centered, never wider than 420px. */
+.md-typeset figure.email-preview {
+  width: 100%;
+  max-width: 420px;
+  margin: 1.2em auto;
+}
+
+.md-typeset figure.email-preview a {
+  display: block;
+}
+
+.md-typeset figure.email-preview img {
+  display: block;
+  width: 100%;
   height: auto;
 }
 

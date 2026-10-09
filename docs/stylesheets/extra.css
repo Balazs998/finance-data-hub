@@ -299,8 +299,11 @@ html.js .reveal.is-visible {
   }
 }
 
-/* Wide diagrams swipe sideways. Border #2A3847, surface #18222E. */
+/* Wide diagrams. Below 60em they swipe; from 60em they fit the column.
+   Override --diagram-min-width on a figure when another diagram needs a
+   different swipe floor. Border #2A3847, surface #18222E. */
 .md-typeset .diagram-scroll {
+  --diagram-min-width: 600px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid #2a3847;
@@ -320,8 +323,21 @@ html.js .reveal.is-visible {
 
 .md-typeset .diagram-scroll img {
   display: block;
-  width: 1200px;
-  min-width: 1000px;
+  width: auto;
   max-width: none;
+  min-width: var(--diagram-min-width);
   height: auto;
+}
+
+@media screen and (min-width: 60em) {
+  .md-typeset .diagram-scroll {
+    overflow: visible;
+  }
+
+  .md-typeset .diagram-scroll img {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+  }
 }

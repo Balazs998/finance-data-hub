@@ -98,16 +98,30 @@ class PlanVsActualsPageTests(unittest.TestCase):
         ]
         self.assertTrue(css_hits, ".diagram-scroll is missing from the built CSS")
         source_css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
+        built_css = "\n".join(path.read_text(encoding="utf-8") for path in css_hits)
         self.assertIn(".diagram-scroll", source_css)
         self.assertIn("overflow-x: auto;", source_css)
         self.assertIn("-webkit-overflow-scrolling: touch;", source_css)
-        self.assertIn("min-width: 1000px;", source_css)
+        self.assertIn("--diagram-min-width: 600px;", source_css)
+        self.assertIn("min-width: var(--diagram-min-width);", source_css)
+        self.assertNotIn("min-width: 1000px;", source_css)
+        self.assertNotIn("width: 1200px;", source_css)
+        desktop_css = source_css.split("@media screen and (min-width: 60em)", 1)[1]
+        self.assertIn("overflow: visible;", desktop_css)
+        self.assertIn("width: 100%;", desktop_css)
+        self.assertIn("min-width: 0;", desktop_css)
+        self.assertIn("height: auto;", desktop_css)
+        self.assertIn("--diagram-min-width: 600px;", built_css)
+        self.assertIn("min-width: 60em", built_css)
+        self.assertIn('width="720"', html)
+        self.assertIn('height="400"', html)
 
         srcs = re.findall(r'<img\b[^>]*\bsrc="([^"]*02-join-coverage\.svg)"', html)
         self.assertEqual(len(srcs), 1, html)
         image = local_target(page, srcs[0])
         self.assertIsNotNone(image, srcs[0])
         self.assertTrue(image.is_file(), f"diagram image missing: {srcs[0]}")
+        self.assertIn('viewBox="0 0 720 400"', image.read_text(encoding="utf-8"))
 
         parser = parse(page)
         resolved = []

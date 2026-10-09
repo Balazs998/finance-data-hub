@@ -349,6 +349,44 @@ test("autocomplete offers Jedox calls and job variables, not deprecated setServe
   assert.equal(completions.MAX_ROWS, 8);
 });
 
+test("autocomplete excludes calls the checker flags as deprecated or wrong", function () {
+  assert.deepEqual(completions.wrongCallRules(), ["EM04", "EM06", "EM07"]);
+  assert.equal(completions.blockedByChecker("API.getSource()"), "EM07");
+  assert.equal(completions.blockedByChecker("setServer('smtp.example.com', 'user', 'secret')"), "EM04");
+  assert.equal(completions.blockedByChecker("mailer.setServer('smtp.example.com', 'user', 'secret')"), "EM04");
+  assert.equal(completions.blockedByChecker("setSMTPServer('smtp.example.com')"), "EM04");
+  assert.equal(completions.blockedByChecker("setSender('reports@example.com')"), "EM04");
+  assert.equal(completions.blockedByChecker("setMessage(html)"), "EM06");
+  assert.equal(completions.blockedByChecker("API.initSource()"), "");
+  assert.equal(completions.blockedByChecker("setHtmlMessage()"), "");
+  assert.equal(completions.blockedByChecker("setMessage()"), "");
+  assert.equal(completions.blockedByChecker("API.getMailer()"), "");
+  assert.equal(completions.blockedByChecker("readFile()"), "");
+  assert.equal(completions.blockedByChecker("setting()"), "");
+  const labels = completions.suggestions().map(function (item) { return item.label; });
+  assert.equal(labels.indexOf("API.getSource()"), -1);
+  assert.equal(labels.indexOf("setMessage(html)"), -1);
+  assert.ok(labels.indexOf("API.initSource()") >= 0);
+  assert.ok(labels.indexOf("API.getMailer()") >= 0);
+  assert.ok(labels.indexOf("setMessage()") >= 0);
+  completions.CANDIDATES.forEach(function (label) {
+    const blocked = completions.blockedByChecker(label);
+    assert.equal(labels.indexOf(label) >= 0, !blocked, label + " " + blocked);
+  });
+  labels.forEach(function (label) {
+    assert.equal(completions.blockedByChecker(label), "", label);
+  });
+  assert.ok(completions.CANDIDATES.indexOf("API.getSource()") >= 0);
+  assert.ok(completions.CANDIDATES.some(function (label) {
+    return label.indexOf("setServer(") >= 0 && label.indexOf("secret") >= 0;
+  }));
+  assert.deepEqual(completions.matching("getSource").map(function (item) { return item.label; }), []);
+  assert.ok(completions.matching("getS").every(function (item) { return item.label.indexOf("getSource") < 0; }));
+  assert.deepEqual(completions.JEDOX_CALLS, labels.filter(function (label) {
+    return completions.JOB_VARIABLES.indexOf(label) < 0;
+  }));
+});
+
 test("live lint waits 400ms after typing stops", function () {
   const { mock } = require("node:test");
   mock.timers.enable({ apis: ["setTimeout"] });

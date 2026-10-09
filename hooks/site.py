@@ -42,6 +42,40 @@ def on_page_context(context, page, config, nav):
     # icons for that page only (Material renders them only when edit_url is set).
     if page.meta.get("hide_actions"):
         page.edit_url = None
+    social_name = str(page.meta.get("social_image") or "home.png").strip()
+    if (
+        not social_name
+        or "/" in social_name
+        or "\\" in social_name
+        or social_name in {".", ".."}
+    ):
+        raise PluginError(
+            f"{page.file.src_uri}: social_image must be a file name in "
+            f"docs/assets/social/, for example home.png. Got: {social_name!r}"
+        )
+    image = Path(config["docs_dir"]) / "assets" / "social" / social_name
+    if not image.is_file():
+        raise PluginError(
+            f"{page.file.src_uri}: social image docs/assets/social/{social_name} does not exist."
+        )
+    site_url = str(config.get("site_url") or "").strip().rstrip("/")
+    if not site_url:
+        raise PluginError(
+            "site_url is required so og:image and twitter:image are absolute URLs."
+        )
+    # Match the document <title>: front matter title, then the page title,
+    # except the home page which is just the site name. The nav label can be
+    # shorter than the article title, so it is not used here.
+    meta_title = str(page.meta.get("title") or "").strip() if page.meta else ""
+    if meta_title:
+        title = f"{meta_title} - {config.site_name}"
+    elif page.title and not getattr(page, "is_homepage", False):
+        title = f"{page.title} - {config.site_name}"
+    else:
+        title = config.site_name
+    context["social_title"] = title
+    context["social_description"] = page.meta.get("description") or config.site_description
+    context["social_image_url"] = f"{site_url}/assets/social/{social_name}"
     return context
 
 

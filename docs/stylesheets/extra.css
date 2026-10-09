@@ -373,6 +373,23 @@ html.js .reveal.is-visible {
   height: auto;
 }
 
+/* Cropped email preview. Centered, never wider than 420px. */
+.md-typeset figure.email-preview {
+  width: 100%;
+  max-width: 420px;
+  margin: 1.2em auto;
+}
+
+.md-typeset figure.email-preview a {
+  display: block;
+}
+
+.md-typeset figure.email-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 @media screen and (min-width: 60em) {
   .md-typeset .diagram-scroll {
     overflow: visible;

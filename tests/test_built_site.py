@@ -161,6 +161,111 @@ class PlanVsActualsPageTests(unittest.TestCase):
         self.assertEqual(len(actuals.splitlines()) - 1, 610)
 
 
+VALUE_EMAIL_DOWNLOADS = (
+    "email/send_value_emails.groovy",
+    "email/email-template.html",
+    "email/recipients.csv",
+    "samples/dim_account.csv",
+    "samples/dim_cost_center.csv",
+)
+
+PREVIEW_ALT = (
+    "Sample email for cost center CC4010 for 2026-03, comparing Budget and "
+    "Actual by account, with unfavorable variances highlighted."
+)
+
+
+class ValueEmailsPageTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if not (SITE / "index.html").is_file():
+            raise AssertionError("site/index.html is missing. Run mkdocs build first.")
+
+    def test_value_emails_page_builds_with_preview_and_downloads(self):
+        page = SITE / "jedox" / "automated-value-emails" / "index.html"
+        self.assertTrue(page.is_file(), "value emails page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "Automated value emails from Jedox Integrator with a generic Groovy template",
+            html,
+        )
+        self.assertNotIn("headerlink", html)
+        self.assertNotIn("J-dox signed off", html)
+        self.assertNotIn("Build note", html)
+        self.assertNotIn("test_builder", html)
+        self.assertNotIn("test-output", html)
+        self.assertIn(f'alt="{PREVIEW_ALT}"', html)
+        self.assertIn('width="680"', html)
+        self.assertIn('height="680"', html)
+
+        srcs = re.findall(r'<img\b[^>]*\bsrc="([^"]*03-email-preview\.png)"', html)
+        self.assertEqual(srcs, ["../03-email-preview.png"])
+        image = local_target(page, srcs[0])
+        self.assertIsNotNone(image, srcs[0])
+        self.assertTrue(image.is_file(), f"preview image missing: {srcs[0]}")
+        png = image.read_bytes()
+        self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(int.from_bytes(png[16:20], "big"), 680)
+        self.assertEqual(int.from_bytes(png[20:24], "big"), 680)
+
+        parser = parse(page)
+        preview_links = [href for href in parser.hrefs if href.endswith("03-email-preview.png")]
+        self.assertEqual(preview_links, ["../03-email-preview.png"])
+        preview = local_target(page, preview_links[0])
+        self.assertIsNotNone(preview)
+        self.assertTrue(preview.is_file())
+
+        resolved = []
+        for relative in VALUE_EMAIL_DOWNLOADS:
+            matches = [href for href in parser.hrefs if href.endswith(relative)]
+            self.assertEqual(len(matches), 1, relative)
+            target = local_target(page, matches[0])
+            self.assertIsNotNone(target, matches[0])
+            self.assertTrue(target.is_file(), f"missing download {relative} ({matches[0]})")
+            resolved.append(relative)
+        self.assertEqual(resolved, list(VALUE_EMAIL_DOWNLOADS))
+
+        groovy = (SITE / "files" / "email" / "send_value_emails.groovy").read_text(encoding="utf-8")
+        self.assertIn("PART 1", groovy)
+        self.assertNotIn("${", groovy)
+        recipients = (SITE / "files" / "email" / "recipients.csv").read_text(encoding="utf-8")
+        self.assertEqual(len([line for line in recipients.splitlines() if line.strip()]) - 1, 10)
+        self.assertIn("owner.cc4010@example.com", recipients)
+        template = (SITE / "files" / "email" / "email-template.html").read_text(encoding="utf-8")
+        for marker in (
+            "{{SUBJECT}}",
+            "{{HEADER_LABEL}}",
+            "{{TITLE}}",
+            "{{PERIOD}}",
+            "{{VERSION}}",
+            "{{GREETING}}",
+            "{{INTRO}}",
+            "{{HEADER_CELLS}}",
+            "{{TABLE_ROWS}}",
+            "{{TOTAL_CELLS}}",
+            "{{NOTE}}",
+            "{{FOOTER}}",
+        ):
+            self.assertIn(marker, template)
+
+        published = [path.relative_to(SITE).as_posix() for path in SITE.rglob("*")]
+        self.assertFalse(any(name == "test_builder.groovy" for name in (Path(p).name for p in published)))
+        self.assertFalse(any("test-output" in path for path in published))
+
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        section = (SITE / "jedox" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("automated-value-emails", home)
+        self.assertIn("automated-value-emails", section)
+        for href in parse(SITE / "index.html").hrefs:
+            if "automated-value-emails" in href:
+                target = local_target(SITE / "index.html", href)
+                self.assertIsNotNone(target, href)
+                self.assertTrue(target.is_file(), href)
+                break
+        else:
+            self.fail("home page does not link to the value emails article")
+
+
 class BuiltSiteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

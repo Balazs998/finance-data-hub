@@ -7,3 +7,7 @@ The first note is a month-end actuals query: fiscal periods, a single restatemen
 Scripts in this section are Snowflake SQL and live under `docs/files/sql/` in the repository.
 
 [Month-end actuals](month-end-actuals.md){ .md-button }
+
+Those actuals can be loaded into Jedox from the same kind of sample files. The job uses a key-pair service user, clears the Actual slice, then loads the month again.
+
+[Snowflake to Jedox load](../jedox/snowflake-to-jedox.md){ .md-button }

@@ -142,11 +142,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                 "Jedox": [
                     "jedox/index.md",
                     {"Management report export": "jedox/management-report-export.md"},
-                    {
-                        "From Snowflake to Jedox: a rerun-safe actuals load with Integrator": (
-                            "jedox/snowflake-to-jedox.md"
-                        )
-                    },
+                    {"Snowflake to Jedox load": "jedox/snowflake-to-jedox.md"},
                     {"Automated value emails": "jedox/automated-value-emails.md"},
                 ]
             },

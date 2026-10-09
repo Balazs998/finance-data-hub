@@ -277,6 +277,26 @@ class SnowflakeToJedoxPageTests(unittest.TestCase):
         self.assertTrue(plan.is_file(), "plan vs actuals link does not resolve")
         self.assertEqual(plan, SITE / "snowflake" / "plan-vs-actuals" / "index.html")
 
+        jedox = (SITE / "jedox" / "index.html").read_text(encoding="utf-8")
+        snowflake = (SITE / "snowflake" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Snowflake to Jedox load", jedox)
+        self.assertIn('href="snowflake-to-jedox/"', jedox)
+        self.assertIn("Snowflake to Jedox load", snowflake)
+        self.assertIn('href="../jedox/snowflake-to-jedox/"', snowflake)
+        for section, href in (
+            (SITE / "jedox" / "index.html", "snowflake-to-jedox/"),
+            (SITE / "snowflake" / "index.html", "../jedox/snowflake-to-jedox/"),
+        ):
+            target = local_target(section, href)
+            self.assertIsNotNone(target, href)
+            self.assertTrue(target.is_file(), href)
+        nav = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Snowflake to Jedox load", nav)
+        self.assertNotIn(
+            "From Snowflake to Jedox: a rerun-safe actuals load with Integrator",
+            nav,
+        )
+
 
 VALUE_EMAIL_DOWNLOADS = (
     "email/send_value_emails.groovy",

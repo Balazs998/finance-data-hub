@@ -1,6 +1,4 @@
 ---
-# The edit/view-source icons overlap the hero banner corner on the home page.
-hide_actions: true
 social_image: home.png
 hide:
   - navigation

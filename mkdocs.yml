@@ -1,9 +1,6 @@
 site_name: Finance Data Hub
 site_description: Practical notes on Snowflake, Jedox, and Excel VBA for finance and FP&A.
 site_url: https://balazs998.github.io/finance-data-hub/
-repo_url: https://github.com/Balazs998/finance-data-hub
-repo_name: Balazs998/finance-data-hub
-edit_uri: edit/main/docs/
 copyright: Balazs · Finance Data Hub
 
 # The only analytics setting. Site code for https://financedatahub.goatcounter.com
@@ -54,7 +51,6 @@ theme:
     - search.highlight
     - content.code.copy
     - toc.follow
-    - content.action.edit
 
 hooks:
   - hooks/site.py

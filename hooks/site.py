@@ -93,10 +93,6 @@ def on_config(config):
 
 
 def on_page_context(context, page, config, nav):
-    # ``hide_actions: true`` in front matter drops the edit / view-source
-    # icons for that page only (Material renders them only when edit_url is set).
-    if page.meta.get("hide_actions"):
-        page.edit_url = None
     social_name = str(page.meta.get("social_image") or "home.png").strip()
     if (
         not social_name

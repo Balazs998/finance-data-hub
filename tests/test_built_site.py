@@ -725,13 +725,32 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertGreaterEqual(len(versioned.findall(plan)), 3)
         self.assertNotIn("gc.zgo.at/count.js?v=", home)
 
-    def test_home_page_hides_edit_icon_but_other_pages_keep_it(self):
-        home = (SITE / "index.html").read_text(encoding="utf-8")
-        about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn("md-content__button", home)
-        self.assertNotIn("/edit/main/docs/index.md", home)
-        self.assertIn("md-content__button", about)
-        self.assertIn("/edit/main/docs/about.md", about)
+    def test_no_repo_box_or_edit_button_and_release_links_stay(self):
+        pages = [
+            SITE / "index.html",
+            SITE / "snowflake" / "plan-vs-actuals" / "index.html",
+            SITE / "jedox" / "email-checker" / "index.html",
+        ]
+        for page in pages:
+            html = page.read_text(encoding="utf-8")
+            self.assertNotIn("md-header__source", html, page.name)
+            self.assertNotIn("md-content__button", html, page.name)
+            self.assertNotIn("/edit/main/docs/", html, page.name)
+        config = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertNotIn("repo_url:", config)
+        self.assertNotIn("repo_name:", config)
+        self.assertNotIn("edit_uri:", config)
+        self.assertNotIn("content.action.edit", config)
+        self.assertNotIn("content.action.view", config)
+        # Release URLs are built from the repo constant in hooks/site.py.
+        hook = (ROOT / "hooks" / "site.py").read_text(encoding="utf-8")
+        self.assertIn('REPO = "Balazs998/finance-data-hub"', hook)
+        self.assertNotIn("repo_url", hook)
+        checker = pages[2].read_text(encoding="utf-8")
+        self.assertIn("email-checker", checker.lower())
+        downloads = (SITE / "downloads" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('class="md-button download"', downloads)
+        self.assertIn("files/", downloads)
 
     def test_home_sections_use_three_columns_on_desktop(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

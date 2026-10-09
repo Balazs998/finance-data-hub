@@ -8,22 +8,20 @@ MASCOTS = ROOT / "docs" / "assets" / "mascots"
 CSS = ROOT / "docs" / "stylesheets" / "extra.css"
 
 EXPECTED_FILES = (
-    "jedox/head.png",
-    "jedox/head.webp",
-    "jedox/presenting.png",
-    "jedox/presenting.webp",
+    "jedox/head-laptop.png",
+    "jedox/head-laptop.webp",
+    "jedox/head-presenting.png",
+    "jedox/head-presenting.webp",
+    "jedox/head-thumbsup.png",
+    "jedox/head-thumbsup.webp",
     "snowflake/head.png",
     "snowflake/head.webp",
-    "snowflake/laptop.png",
-    "snowflake/laptop.webp",
-    "vba/pointing.png",
-    "vba/pointing.webp",
+    "trio-full.png",
+    "trio-full.webp",
 )
 
 HERO_ALTS = (
-    "Snowflake mascot in a blue hoodie, working on a laptop",
-    "Jedox mascot in a purple blazer, presenting a chart",
-    "VBA mascot in a green jacket, pointing ahead",
+    "Snowflake mascot with a tablet, Jedox mascot with a clipboard, and VBA mascot pointing outward",
 )
 
 HOME_LINKS = {
@@ -138,14 +136,29 @@ class HomePageTests(unittest.TestCase):
             ">701<",
             "inner join",
             "left join",
-            "full join ✓",
+            "full join",
+            "✓ no rows lost",
+            "Rows kept by each join. Only the full join keeps all 701.",
+            "Oct 9, 2026",
         ):
             self.assertIn(text, self.html)
-        self.assertEqual(self.html.count('class="home-new"'), 3)
+        self.assertNotIn('class="home-new"', self.html)
+        self.assertEqual(self.html.count('class="home-date"'), 4)
+        self.assertEqual(self.html.count(">Oct 9, 2026<"), 4)
         self.assertEqual(self.html.count('class="home-step"'), 3)
+        self.assertIn(
+            'class="home-card home-why" href="snowflake/plan-vs-actuals/"',
+            self.html,
+        )
         latest = self.html.split('id="latest-posts"', 1)[1].split('id="why-it-matters"', 1)[0]
         plan_post = latest.split('href="snowflake/plan-vs-actuals/"', 1)[1].split("</li>", 1)[0]
-        self.assertNotIn("home-new", plan_post)
+        self.assertIn('class="home-date"', plan_post)
+        jedox_srcs = re.findall(
+            r'href="jedox/[^"]+"[\s\S]*?src="(assets/mascots/jedox/[^"]+)"',
+            latest,
+        )
+        self.assertEqual(len(jedox_srcs), 3)
+        self.assertEqual(len(set(jedox_srcs)), 3)
 
     def test_newsletter_box_is_absent(self):
         for banned in (
@@ -180,8 +193,12 @@ class HomePageTests(unittest.TestCase):
                 self.assertEqual(png_size(MASCOTS / relative), webp_size(webp), relative)
 
         pictures = re.findall(r"<picture>\s*(.*?)</picture>", self.html, re.S)
-        self.assertGreaterEqual(len(pictures), 7)
+        self.assertGreaterEqual(len(pictures), 5)
         hero = self.html.split('class="hero"', 1)[1].split('class="reveal"', 1)[0]
+        self.assertIn("assets/mascots/trio-full.webp", hero)
+        self.assertIn("assets/mascots/trio-full.png", hero)
+        self.assertNotIn("pointing.", hero)
+        self.assertNotIn("thumbsup.", hero)
         for alt in HERO_ALTS:
             self.assertIn(f'alt="{alt}"', hero)
         self.assertNotIn('loading="lazy"', hero)
@@ -224,31 +241,30 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("order: -1;", block)
         self.assertIn("flex-direction: column;", block)
         self.assertIn("width: 100%;", block)
+        self.assertIn("gap: 12px;", self.css)
+        self.assertIn("flex-wrap: nowrap;", self.css)
+        self.assertIn("max-width: 1200px;", self.css)
+        self.assertIn("grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);", self.css)
+        self.assertNotIn("max-width: 90rem;", self.css)
         self.assertIn("overflow-x: auto;", block)
         self.assertIn("-webkit-overflow-scrolling: touch;", block)
         self.assertIn("min-width: 240px;", block)
         self.assertIn("grid-template-columns: 1fr;", block)
 
-        motion = media_blocks(self.css, "prefers-reduced-motion: no-preference")
-        self.assertTrue(any("animation-name: home-wave;" in item for item in motion))
         reduced = media_blocks(self.css, "prefers-reduced-motion: reduce")
         self.assertEqual(len(reduced), 1)
         self.assertIn("transition: none;", reduced[0])
-        self.assertIn("animation: none", reduced[0])
-        self.assertIn("@keyframes home-wave", self.css)
-        self.assertIn(
-            "radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 65%)",
-            self.css,
-        )
-        self.assertIn(
-            "radial-gradient(circle, rgba(139, 124, 246, 0.2) 0%, transparent 65%)",
-            self.css,
-        )
-        self.assertIn(
-            "radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, transparent 65%)",
-            self.css,
-        )
-        self.assertNotIn("radial-gradient(circle at 82%", self.css)
+        self.assertNotIn("@keyframes home-wave", self.css)
+        self.assertIn("rgba(56, 189, 248, .35)", self.css)
+        self.assertIn("rgba(139, 124, 246, .35)", self.css)
+        self.assertIn("rgba(163, 230, 53, .28)", self.css)
+        self.assertIn("circle at 22% 55%", self.css)
+        self.assertIn("circle at 52% 50%", self.css)
+        self.assertIn("circle at 82% 55%", self.css)
+        self.assertIn("mix-blend-mode: lighten;", self.css)
+        self.assertIn("max-width: 76.234375em", self.css)
+        phone_tabs = media_blocks(self.css, "max-width: 76.234375em")
+        self.assertTrue(any("display: none;" in item and ".md-tabs" in item for item in phone_tabs))
         self.assertNotIn("color: #8b7cf6", self.css.lower())
         self.assertNotIn("color: var(--chart-2)", self.css)
         self.assertNotIn("color: var(--dn-violet)", self.css)

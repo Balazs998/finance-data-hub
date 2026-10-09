@@ -42,6 +42,9 @@
     var fallback = document.getElementById("email-fallback");
     var sticky = document.getElementById("email-builder-sticky");
     var form = document.getElementById("email-form");
+    var lastEdited = null;
+    var phoneQuery = window.matchMedia("(max-width: 760px)");
+    var motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (form) form.addEventListener("submit", function (event) { event.preventDefault(); });
 
     function readForm() {
@@ -188,6 +191,7 @@
 
     Object.keys(fields).forEach(function (name) {
       fields[name].addEventListener("input", function () {
+        lastEdited = fields[name];
         status.textContent = "";
         render();
       });
@@ -281,9 +285,36 @@
         item.classList.toggle("is-on", on);
         item.setAttribute("aria-checked", on ? "true" : "false");
       });
+      lastEdited = null;
       status.textContent = "";
       render();
     });
+
+    function headerOffset() {
+      var header = document.querySelector(".md-header");
+      if (!header) return 0;
+      var pos = getComputedStyle(header).position;
+      if (pos !== "sticky" && pos !== "fixed") return 0;
+      return header.getBoundingClientRect().height;
+    }
+
+    function scrollToTarget(el) {
+      if (!el) return;
+      var details = el.closest && el.closest("details");
+      if (details && !details.open) details.open = true;
+      el.style.scrollMarginTop = shared.previewScrollMargin(headerOffset()) + "px";
+      el.scrollIntoView({
+        block: "start",
+        inline: "nearest",
+        behavior: shared.scrollBehavior(motionQuery.matches)
+      });
+    }
+
+    function focusTarget(el) {
+      if (!el) return;
+      if (el.tabIndex < 0) el.setAttribute("tabindex", "-1");
+      el.focus({ preventScroll: true });
+    }
 
     function fitSoon() {
       requestAnimationFrame(function () { requestAnimationFrame(fitFrame); });
@@ -295,6 +326,15 @@
         sticky.textContent = open ? "Back to form" : "Preview";
         sticky.setAttribute("aria-expanded", open ? "true" : "false");
         if (open) fitSoon();
+        if (!phoneQuery.matches) return;
+        var panel = document.getElementById("email-panel");
+        var backTo = shared.returnField(lastEdited, fields.subject);
+        var target = open ? panel : backTo;
+        var focusEl = open ? document.getElementById("tab-preview") : backTo;
+        requestAnimationFrame(function () {
+          scrollToTarget(target);
+          focusTarget(focusEl);
+        });
       });
     }
 

@@ -1,18 +1,12 @@
 site_name: Finance Data Hub
 site_description: Practical notes on Snowflake, Jedox, and Excel VBA for finance and FP&A.
 site_url: https://balazs998.github.io/finance-data-hub/
-repo_url: https://github.com/Balazs998/finance-data-hub
-repo_name: Balazs998/finance-data-hub
-edit_uri: edit/main/docs/
 copyright: Balazs · Finance Data Hub
 
 # The only analytics setting. Site code for https://financedatahub.goatcounter.com
 # Clear the value to turn analytics off. The site still builds.
 extra:
   goatcounter_code: financedatahub
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/Balazs998
 
 extra_css:
   - stylesheets/extra.css
@@ -42,6 +36,7 @@ theme:
     primary: black
     accent: light blue
   features:
+    - navigation.tabs
     - navigation.sections
     - navigation.expand
     - navigation.indexes
@@ -53,7 +48,6 @@ theme:
     - search.highlight
     - content.code.copy
     - toc.follow
-    - content.action.edit
 
 hooks:
   - hooks/site.py
@@ -92,7 +86,7 @@ nav:
       - Create your own email:
           - Builder: jedox/email-builder.md
           - Check your email script: jedox/email-checker.md
-  - VBA and Excel:
+  - VBA:
       - vba/index.md
       - Month-close checks: vba/month-close-checks.md
   - Downloads: downloads.md

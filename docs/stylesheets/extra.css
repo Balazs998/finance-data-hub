@@ -268,21 +268,39 @@
   margin-top: 0.75rem;
 }
 
-/* Home. Header, content, and footer share one wider measure so the
-   split hero can stand next to the three mascots. */
+/* Home. With the sidebar hidden, the page measure is the content width. */
 body:has(.home) .md-grid {
-  max-width: 90rem;
+  max-width: 1200px;
+}
+
+/* Desktop: the home page has no sidebar. Below Material's tab
+   breakpoint the tab row is hidden and the drawer carries navigation,
+   so a label is never cut off. */
+@media screen and (min-width: 76.25em) {
+  body:has(.home) .md-sidebar {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 76.234375em) {
+  body:has(.home) .md-tabs {
+    display: none;
+  }
+
+  body:has(.home) .md-sidebar--primary {
+    display: block !important;
+  }
 }
 
 .md-typeset .hero {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   align-items: center;
-  gap: 12px 20px;
+  gap: 20px;
   background: #0d1a2b;
   border: 1px solid var(--dn-border);
   border-radius: 16px;
-  padding: 28px 8px 12px 40px;
+  padding: 8px 8px 8px 40px;
   margin: 0;
   overflow: hidden;
 }
@@ -338,8 +356,8 @@ body:has(.home) .md-grid {
 
 .md-typeset .home-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-wrap: nowrap;
+  gap: 12px;
   margin: 0;
 }
 
@@ -386,98 +404,29 @@ body:has(.home) .md-grid {
   outline-offset: 2px;
 }
 
-/* Poses: Snowflake laptop (tablet), Jedox presenting, VBA pointing.
-   Height follows the art column so the row stays inside the hero. */
+/* Hero art, copied from the approved home-v3 mockup. */
 .md-typeset .home-art {
   position: relative;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: clamp(0px, 1cqw, 12px);
-  min-height: 180px;
-  container-type: inline-size;
-  container-name: art;
 }
 
-/* Soft circles behind each pose. The colour stops at 65% so the glow
-   fades out inside its own box and never meets the hero edge. */
-.md-typeset .home-mascot::before {
+.md-typeset .home-art::before {
   content: "";
   position: absolute;
-  z-index: 0;
-  left: 50%;
-  top: 46%;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 55%, rgba(56, 189, 248, .35), transparent 30%),
+    radial-gradient(circle at 52% 50%, rgba(139, 124, 246, .35), transparent 30%),
+    radial-gradient(circle at 82% 55%, rgba(163, 230, 53, .28), transparent 30%);
+  border-radius: 12px;
+}
+
+.md-typeset .home-art img {
+  position: relative;
   width: 100%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.md-typeset .home-mascot:nth-child(2)::before {
-  background: radial-gradient(circle, rgba(139, 124, 246, 0.2) 0%, transparent 65%);
-}
-
-.md-typeset .home-mascot:nth-child(3)::before {
-  background: radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, transparent 65%);
-}
-
-.md-typeset .home-art::after {
-  content: "";
-  position: absolute;
-  inset: 6% 4% 8%;
-  background-image:
-    linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(circle at 50% 58%, #000 20%, transparent 72%);
-  pointer-events: none;
-}
-
-.md-typeset .home-mascot {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  line-height: 0;
-}
-
-.md-typeset .home-mascot img {
-  position: relative;
-  z-index: 1;
+  height: auto;
+  border-radius: 12px;
   display: block;
-  height: min(320px, calc(100cqw / 2.62));
-  width: auto;
-  max-width: none;
-}
-
-@keyframes home-wave {
-  0%, 100% { transform: rotate(0deg); }
-  18% { transform: rotate(-4.5deg); }
-  36% { transform: rotate(4deg); }
-  54% { transform: rotate(-2.5deg); }
-  72% { transform: rotate(1.5deg); }
-}
-
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .home-art:hover .home-mascot img,
-  .home-art:focus-within .home-mascot img,
-  .home-mascot:hover img,
-  .home-mascot:focus-within img {
-    animation-name: home-wave;
-    animation-duration: 0.9s;
-    animation-timing-function: ease-in-out;
-    transform-origin: 50% 100%;
-  }
-
-  .home-art:hover .home-mascot:nth-child(2) img,
-  .home-art:focus-within .home-mascot:nth-child(2) img {
-    animation-delay: 0.1s;
-  }
-
-  .home-art:hover .home-mascot:nth-child(3) img,
-  .home-art:focus-within .home-mascot:nth-child(3) img {
-    animation-delay: 0.2s;
-  }
+  mix-blend-mode: lighten;
 }
 
 .md-typeset .home h2 {
@@ -686,25 +635,36 @@ body:has(.home) .md-grid {
   font-size: 13px;
 }
 
-.md-typeset .home-new {
+.md-typeset .home-date {
   margin-left: auto;
   flex: 0 0 auto;
+  font-family: var(--md-code-font);
   font-size: 12px;
   line-height: 1.4;
-  color: var(--chart-3);
-  border: 1px solid var(--chart-3);
-  border-radius: 999px;
-  padding: 2px 8px;
+  color: #9aa7b4;
 }
 
-.md-typeset .home-why {
+.md-typeset a.home-why {
+  display: block;
   padding: 16px 18px 18px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.md-typeset a.home-why:hover,
+.md-typeset a.home-why:focus {
+  border-color: var(--dn-link);
+  color: inherit;
 }
 
 .md-typeset .home-why > p {
   margin: 0 0 14px;
   color: var(--dn-text-muted);
   font-size: 14px;
+}
+
+.md-typeset .home-why > p.home-why__note {
+  margin: 14px 0 0;
 }
 
 .md-typeset .home-joins {
@@ -739,6 +699,12 @@ body:has(.home) .md-grid {
   color: #9aa7b4;
 }
 
+.md-typeset .home-join__kept {
+  display: block;
+  margin-top: 4px;
+  color: var(--chart-3);
+}
+
 /* Visible unless JavaScript has marked a below-fold section as waiting.
    Sections already on screen never get .reveal-wait, so the first paint
    shows them at full opacity. */
@@ -771,20 +737,12 @@ html.js .reveal.reveal-wait.is-visible {
     transition: none;
   }
 
-  .home-art:hover .home-mascot img,
-  .home-art:focus-within .home-mascot img,
-  .home-mascot:hover img,
-  .home-mascot:focus-within img,
-  .home-mascot img {
-    animation: none !important;
-    transform: none;
-  }
 }
 
 @media screen and (max-width: 760px) {
   .md-typeset .hero {
     grid-template-columns: 1fr;
-    padding: 16px 16px 22px;
+    padding: 20px;
   }
 
   .md-typeset .home-art {

@@ -157,6 +157,19 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("@media screen and (min-width: 45em)", css)
         self.assertIn("grid-template-columns: repeat(3, minmax(0, 1fr));", css)
 
+    def test_heading_permalinks_are_absent_but_ids_remain(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        article = (SITE / "snowflake" / "month-end-actuals" / "index.html").read_text(
+            encoding="utf-8"
+        )
+        for html in (home, article):
+            self.assertNotIn("headerlink", html)
+        self.assertIn('<h1 id="finance-data-hub">', home)
+        self.assertIn('<h2 id="where-to-start">', home)
+        self.assertIn('href="#where-to-start"', home)
+        self.assertIn('<h1 id="month-end-actuals">', article)
+        self.assertIn('href="#grain"', article)
+
 
 if __name__ == "__main__":
     unittest.main()

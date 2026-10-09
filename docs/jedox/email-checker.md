@@ -26,6 +26,7 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 <div class="email-grid email-grid-checker">
 <div class="email-editor-column">
 <div id="email-editor" class="email-editor" data-placeholder="Paste or type your Groovy script here."></div>
+<button type="button" class="email-text-btn email-expand" id="email-expand-btn" aria-expanded="false">Expand editor ↕</button>
 <div class="email-text-actions">
 <button type="button" class="email-text-btn" id="email-example-btn">Try an example</button>
 <button type="button" class="email-text-btn" id="email-clear-btn">Clear</button>
@@ -37,10 +38,11 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 <p class="email-banner" id="email-banner" role="status"></p>
 <div id="email-issue-list"></div>
 </div>
+</div>
 <details class="email-how" id="email-how" open>
 <summary>How it works</summary>
 <div class="email-how-body">
-<p>It checks as you type. It also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script.</p>
+<p>It suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script.</p>
 <p>The checker looks for nine mistakes we see again and again in Integrator email scripts. Each problem line gets an underline and a card that says what's wrong and how to fix it.</p>
 <p>It reads your script as text. It doesn't connect to Jedox, so it can't see your extracts, columns or connections. Names it can't verify get a grey "Check in your Jedox" card.</p>
 <ul class="email-legend">
@@ -50,7 +52,6 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 </ul>
 </div>
 </details>
-</div>
 <p id="email-status-live" class="email-sr" aria-live="polite"></p>
 <noscript><p>This page needs JavaScript.</p></noscript>
 </div>

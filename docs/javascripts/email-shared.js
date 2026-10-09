@@ -29,6 +29,15 @@
     "SOURCE_EXTRACT"
   ];
 
+  /* Documented Integrator calls on API. Anything else, including an
+     unfinished name like API.getM, is a name to check. */
+  var DOCUMENTED_API_MEMBERS = [
+    "getMailer",
+    "initSource",
+    "getProperty",
+    "getSource"
+  ];
+
   var WORDING_MARKERS = {
     COST_CENTER: true,
     COST_CENTER_NAME: true,
@@ -197,6 +206,7 @@
     inlineCode: inlineCode,
     HTML_ESCAPES: HTML_ESCAPES,
     KNOWN_JOB_VARIABLES: KNOWN_JOB_VARIABLES,
+    DOCUMENTED_API_MEMBERS: DOCUMENTED_API_MEMBERS,
     WORDING_MARKERS: WORDING_MARKERS,
     TEMPLATE_MARKERS: TEMPLATE_MARKERS,
     KNOWN_SCRIPT_MARKERS: KNOWN_SCRIPT_MARKERS,

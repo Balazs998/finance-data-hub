@@ -1,19 +1,30 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>{{SUBJECT}}</title></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>{{SUBJECT}}</title>
+<style>
+@media only screen and (max-width: 600px) {
+  .email-num { font-size: 11px !important; padding-left: 4px !important; padding-right: 4px !important; }
+  th, td { padding-left: 4px !important; padding-right: 4px !important; }
+  .email-pad { padding-left: 4px !important; padding-right: 4px !important; }
+}
+</style>
+</head>
 <body style="margin:0;padding:0;background:#F3F6F9;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F3F6F9;"><tr><td align="center" style="padding:24px 12px;">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #DDE3EA;border-radius:8px;font-family:Arial,Helvetica,sans-serif;color:#1F2933;">
-<tr><td style="background:#0F1720;padding:20px 24px;border-radius:8px 8px 0 0;border-bottom:4px solid #38BDF8;">
-<div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#9AA7B4;">{{HEADER_LABEL}}</div>
-<div style="font-size:22px;font-weight:bold;color:#FFFFFF;padding-top:4px;">{{TITLE}}</div>
-<div style="font-size:14px;color:#B7C5D3;padding-top:4px;">{{PERIOD}} &middot; {{VERSION}}</div></td></tr>
-<tr><td style="padding:24px 24px 8px;font-size:15px;line-height:22px;">{{GREETING}}<br><br>{{INTRO}}</td></tr>
-<tr><td style="padding:8px 24px 16px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-size:14px;">
+<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F3F6F9;"><tr><td class="email-pad" align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #DDE3EA;border-radius:8px;font-family:Arial,Helvetica,sans-serif;color:#1F2933;">
+<tr><td class="email-pad" style="background:#0F1720;padding:20px 24px;border-radius:8px 8px 0 0;border-bottom:4px solid #38BDF8;word-wrap:break-word;overflow-wrap:break-word;">
+<div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#9AA7B4;word-wrap:break-word;overflow-wrap:break-word;">{{HEADER_LABEL}}</div>
+<div style="font-size:22px;font-weight:bold;color:#FFFFFF;padding-top:4px;word-wrap:break-word;overflow-wrap:break-word;">{{TITLE}}</div>
+<div style="font-size:14px;color:#B7C5D3;padding-top:4px;word-wrap:break-word;overflow-wrap:break-word;">{{PERIOD}} &middot; {{VERSION}}</div></td></tr>
+<tr><td class="email-pad" style="padding:24px 24px 8px;font-size:15px;line-height:22px;word-wrap:break-word;overflow-wrap:break-word;">{{GREETING}}<br><br>{{INTRO}}</td></tr>
+<tr><td class="email-pad" style="padding:8px 24px 16px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;border-collapse:collapse;font-size:14px;">
 <tr>{{HEADER_CELLS}}</tr>
 {{TABLE_ROWS}}
 <tr>{{TOTAL_CELLS}}</tr>
 </table></td></tr>
-<tr><td style="padding:8px 24px 24px;font-size:13px;line-height:20px;color:#52606D;">{{NOTE}}</td></tr>
-<tr><td style="padding:16px 24px;border-top:1px solid #DDE3EA;font-size:12px;line-height:18px;color:#7B8794;">{{FOOTER}}</td></tr>
-</table></td></tr></table></body></html>
+<tr><td class="email-pad" style="padding:8px 24px 24px;font-size:13px;line-height:20px;color:#52606D;word-wrap:break-word;overflow-wrap:break-word;">{{NOTE}}</td></tr>
+<tr><td class="email-pad" style="padding:16px 24px;border-top:1px solid #DDE3EA;font-size:12px;line-height:18px;color:#7B8794;word-wrap:break-word;overflow-wrap:break-word;">{{FOOTER}}</td></tr>
+</table></td></tr></table>
+<!--[if mso]></td></tr></table><![endif]-->
+</body></html>

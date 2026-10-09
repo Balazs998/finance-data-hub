@@ -100,6 +100,77 @@ test("defaults generate the same script as the download", function () {
   assert.match(result.preview.html, /Sample data only\./);
 });
 
+test("the email template fits a phone without a fixed width", function () {
+  const template = fs.readFileSync(path.join(root, "docs/files/email/email-template.html"), "utf8");
+  const groovy = fs.readFileSync(path.join(root, "docs/files/email/send_value_emails.groovy"), "utf8");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-generate.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  const builder = fs.readFileSync(path.join(root, "docs/javascripts/email-builder-ui.js"), "utf8");
+  const msoOpen = '<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->';
+  const msoClose = '<!--[if mso]></td></tr></table><![endif]-->';
+  const visible = template.replace(/<!--\[if mso\][\s\S]*?<!\[endif\]-->/g, "");
+  assert.equal(template.split(msoOpen).length - 1, 1);
+  assert.equal(template.split(msoClose).length - 1, 1);
+  assert.ok(template.indexOf(msoOpen) < template.indexOf(msoClose));
+  assert.equal(visible.includes('width="600"'), false);
+  assert.equal(visible.replace(/max-width:600px/g, "").includes("width:600px"), false);
+  assert.equal((visible.match(/<table\b[^>]*>/g) || []).length, 3);
+  const tables = visible.match(/<table\b[^>]*>/g);
+  assert.match(tables[1], /width="100%"/);
+  assert.match(tables[1], /max-width:600px/);
+  assert.match(tables[2], /width="100%"/);
+  assert.match(tables[2], /max-width:600px/);
+  ["white-space:nowrap", "word-wrap:break-word"].forEach(function (piece) {
+    assert.ok(groovy.includes(piece), piece);
+    assert.ok(ui.includes(piece), piece);
+  });
+  const result = generate.generate();
+  assert.equal(result.script, sources.groovy);
+  assert.match(result.preview.html, /white-space:nowrap/);
+  assert.match(result.preview.html, /193\.06/);
+  assert.match(result.preview.html, /6,866\.96/);
+  assert.match(result.preview.html, /5,700\.21/);
+  assert.equal(result.preview.html.split(msoOpen).length - 1, 1);
+  assert.equal(result.preview.html.split(msoClose).length - 1, 1);
+  assert.ok(result.preview.html.indexOf(msoOpen) < result.preview.html.indexOf("193.06"));
+  assert.ok(result.preview.html.indexOf("5,700.21") < result.preview.html.indexOf(msoClose));
+  const zip = Buffer.from(result.zip()).toString("latin1");
+  assert.equal(zip.split(msoOpen).length - 1, 1);
+  assert.equal(zip.split(msoClose).length - 1, 1);
+  assert.equal(result.preview.html.replace(/<!--\[if mso\][\s\S]*?<!\[endif\]-->/g, "").includes('width="600"'), false);
+  assert.match(result.preview.html, /Sent automatically by a Jedox Integrator job\./);
+  assert.match(result.preview.html, /Test mode: on\. Intended recipient:/);
+  assert.doesNotMatch(css, /\.email-frame-wrap \{[^}]*overflow:\s*hidden/);
+  assert.doesNotMatch(css, /\.email-frame-wrap \{[^}]*width:\s*\d+px/);
+  assert.equal(builder.includes('frame.style.width = width + "px"'), false);
+});
+
+test("outlook conditional comments are not checker issues", function () {
+  const open = '<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->';
+  const close = '<!--[if mso]></td></tr></table><![endif]-->';
+  const script = [
+    "def mailer = API.getMailer()",
+    open,
+    "boolean testMode = true",
+    "mailer.reset()",
+    "mailer.addRecipient(to)",
+    "mailer.setHtmlMessage(email.html)",
+    "mailer.send()",
+    close
+  ].join("\n");
+  assert.deepEqual(checker.checkScript(script, { scriptType: "job" }).issues, []);
+  const hidden = [
+    "def mailer = API.getMailer()",
+    "<!--[if mso]>API.getNope()<![endif]-->",
+    "boolean testMode = true",
+    "mailer.reset()",
+    "mailer.addRecipient(to)",
+    "mailer.setHtmlMessage(email.html)",
+    "mailer.send()"
+  ].join("\n");
+  assert.deepEqual(checker.checkScript(hidden, { scriptType: "job" }).issues, []);
+});
+
 test("period must be a zero-padded YYYY-MM", function () {
   const bad = generate.generate({ period: "2026-3" });
   assert.equal(bad.ok, false);
@@ -523,16 +594,24 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.doesNotMatch(page, /Check script/);
   assert.match(page, /data-placeholder="Paste or type your Groovy script here\."/);
   assert.doesNotMatch(page, /Nothing leaves your browser\."/);
-  assert.match(page, /It checks as you type\. It also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
-  assert.doesNotMatch(page, /As you type, it also suggests/);
+  assert.match(page, /It suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
+  assert.doesNotMatch(page, /It also suggests/);
+  assert.equal(page.split("as you type").length - 1, 1);
   const leadAt = page.indexOf("Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.");
   const editorAt = page.indexOf('id="email-editor"');
-  const howAt = page.indexOf("<details");
+  const gridAt = page.indexOf('<div class="email-grid email-grid-checker">');
+  const howAt = page.indexOf('<details class="email-how"');
   assert.ok(leadAt >= 0 && leadAt < editorAt && editorAt < howAt);
+  const betweenGridAndHow = page.slice(gridAt, howAt);
+  assert.equal((betweenGridAndHow.match(/<div\b/g) || []).length, (betweenGridAndHow.match(/<\/div>/g) || []).length);
   assert.match(css, /@media screen and \(max-width: 1100px\)/);
   assert.match(css, /underline dotted #9aa7b4/);
   assert.match(css, /#email-checker \.cm-content:focus-visible \{\s*outline: none;/);
-  assert.match(css, /@media screen and \(min-width: 1100px\) \{\s*#email-checker \.email-editor-column \{\s*position: sticky;\s*top: 72px;/);
+  assert.match(css, /@media screen and \(min-width: 1100px\) \{\s*#email-checker \.email-grid-checker \{\s*grid-template-columns: minmax\(0, 1\.7fr\) minmax\(320px, 1fr\);/);
+  assert.equal(css.includes("position: sticky"), false);
+  assert.match(css, /#email-checker \.email-editor-column,\s*#email-checker \.email-editor \{\s*position: static;/);
+  assert.doesNotMatch(css, /#email-checker \.email-how \{\s*grid-column:/);
+  assert.doesNotMatch(css, /#email-checker \.email-how \{\s*order:/);
   assert.match(css, /#email-checker \.cm-lint-marker-error \{\s*color: #f87171;/);
   assert.match(css, /#email-checker \.cm-lint-marker-warning \{\s*color: #fbbf24;/);
   assert.match(ui, /mark = "✕"/);
@@ -600,13 +679,121 @@ test("the issues bar has four states", function () {
   assert.match(ui, /liveLint\.statusBar\(result\)/);
   assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*color: #A3E635;/);
   assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*border: 1px solid #A3E635;/);
-  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*color: #8B98A5;/);
-  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*border: 1px solid #8B98A5;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names,\s*#email-checker \.email-sticky\.is-cutoff \{[^}]*color: #8B98A5;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names,\s*#email-checker \.email-sticky\.is-cutoff \{[^}]*border: 1px solid #8B98A5;/);
   assert.match(css, /#email-checker \.email-sticky\[hidden\] \{\s*display: none !important;/);
   assert.match(css, /min-height: 48px;/);
   assert.match(css, /#email-checker \.email-how > summary::before \{[^}]*content: none;/);
   assert.match(css, /#email-checker \.email-how > summary::before \{[^}]*display: none;/);
   assert.match(css, /#email-checker \.email-how > summary::after \{[^}]*border-right: 2px solid currentColor;/);
+});
+
+test("a long script counts eight names in the bar and the pill", function () {
+  assert.equal(sources.groovy.replace(/\n$/, "").split("\n").length, 393);
+  const published = checker.checkScript(sources.groovy, { scriptType: "job" });
+  assert.equal(published.issues.every(function (issue) { return issue.severity === "check"; }), true);
+  assert.equal(liveLint.nameCount(published.issues), 8);
+  assert.equal(liveLint.checkPillText(published), "8 names to check");
+  const bar = liveLint.statusBar(published);
+  assert.equal(bar.state, "names");
+  assert.ok(bar.text.indexOf(liveLint.checkPillText(published)) >= 0, bar.text);
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  assert.match(ui, /liveLint\.checkPillText\(result\)/);
+});
+
+test("an unknown API call is a name to check", function () {
+  const unknown = checker.checkScript("def m = API.getM", { scriptType: "job" });
+  assert.equal(unknown.issues.length, 1);
+  assert.equal(unknown.issues[0].severity, "check");
+  assert.equal(unknown.issues[0].kind, "call");
+  assert.equal(unknown.issues[0].items[0].name, "API.getM");
+  assert.equal(liveLint.statusBar(unknown).state, "names");
+  assert.equal(liveLint.checkPillText(unknown), "1 name to check");
+  assert.ok(liveLint.statusBar(unknown).text.indexOf("1 name to check") >= 0);
+  const known = checker.checkScript("def m = API.getMailer()", { scriptType: "job" });
+  assert.deepEqual(known.issues, []);
+  assert.equal(liveLint.statusBar(known).state, "clear");
+  const commented = checker.checkScript("def m = API.getMailer()\n// API.getM\nString s = 'API.getNope'", { scriptType: "job" });
+  assert.deepEqual(commented.issues, []);
+  const deprecated = checker.checkScript("def src = API.getSource('X')", { scriptType: "job" });
+  assert.ok(deprecated.issues.some(function (issue) { return issue.rule === "EM07"; }));
+  assert.equal(deprecated.issues.some(function (issue) { return issue.kind === "call"; }), false);
+  assert.notEqual(liveLint.statusBar(deprecated).state, "clear");
+  const members = completions.CANDIDATES.map(function (label) {
+    var match = /^API\.([A-Za-z_][\w]*)/.exec(label);
+    return match ? match[1] : "";
+  }).filter(Boolean);
+  assert.deepEqual(members.slice().sort(), shared.DOCUMENTED_API_MEMBERS.slice().sort());
+  members.forEach(function (member) {
+    const result = checker.checkScript("def x = API." + member + "()", { scriptType: "job" });
+    assert.equal(result.issues.some(function (issue) { return issue.kind === "call"; }), false, member);
+  });
+});
+
+test("paste keeps the cursor on line 1", function () {
+  const change = liveLint.pasteChange(0, 0, sources.groovy);
+  assert.equal(change.selection.anchor, 0);
+  assert.equal(change.scrollIntoView, false);
+  assert.equal(change.changes.insert, sources.groovy);
+  const mid = liveLint.pasteChange(10, 12, "hello\nthere");
+  assert.equal(mid.selection.anchor, 10);
+  assert.notEqual(mid.selection.anchor, 10 + "hello\nthere".length);
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  const page = fs.readFileSync(path.join(root, "docs/jedox/email-checker.md"), "utf8");
+  assert.match(ui, /liveLint\.pasteChange\(/);
+  assert.match(ui, /scrollTop = 0/);
+  assert.doesNotMatch(ui, /EditorView\.lineWrapping/);
+  assert.match(ui, /is-line-target/);
+  assert.match(ui, /cm-lint-marker/);
+  assert.match(ui, /revealCard\(/);
+  assert.match(css, /max-height: calc\(100vh - 160px\)/);
+  assert.match(css, /max-height: 60vh/);
+  assert.match(css, /max-height: 50vh/);
+  assert.match(css, /overscroll-behavior: auto/);
+  assert.match(css, /white-space: pre;/);
+  assert.match(page, /id="email-expand-btn" aria-expanded="false"/);
+  assert.match(page, /Expand editor ↕/);
+});
+
+test("a mistake on line 2051 does not count as a clean script", function () {
+  const lines = ["def mailer = API.getMailer()"];
+  while (lines.length < 2050) lines.push("// still fine");
+  lines.push('String subject = "${cc}"');
+  assert.equal(lines.length, 2051);
+  const hidden = checker.checkScript(lines.join("\n"), { scriptType: "job" });
+  assert.equal(hidden.truncated, true);
+  assert.equal(hidden.lineLimit, 2000);
+  assert.equal(hidden.issues.length, 0);
+  assert.equal(hidden.issues.some(function (issue) { return issue.line === 2051; }), false);
+  const bar = liveLint.statusBar(hidden);
+  assert.notEqual(bar.state, "clear");
+  assert.equal(bar.state, "cutoff");
+  assert.equal(bar.text, "? No problems in the first 2,000 lines. The rest wasn't checked.");
+  lines[10] = 'String early = "${period}"';
+  const found = checker.checkScript(lines.join("\n"), { scriptType: "job" });
+  assert.ok(found.issues.some(function (issue) { return issue.rule === "EM01" && issue.line === 11; }));
+  assert.equal(found.issues.some(function (issue) { return issue.line > 2000; }), false);
+  assert.deepEqual(liveLint.statusBar(found), {
+    state: "issues",
+    text: "Issues (1)"
+  });
+  assert.equal(liveLint.checkedLinesNote(2000), "Only the first 2,000 lines were checked.");
+  assert.equal(
+    messages.tooLong.replace("{n}", liveLint.formatLineCount(2000)),
+    "That's a long script. The checker reads the first 2,000 lines."
+  );
+  const within = checker.checkScript("def mailer = API.getMailer()\n", { scriptType: "job" });
+  assert.equal(within.truncated, false);
+  assert.equal(liveLint.statusBar(within).state, "clear");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.match(ui, /is-cutoff/);
+  assert.match(ui, /email-sticky-note/);
+  assert.match(ui, /copy\.tooLong\.replace\("\{n\}", liveLint\.formatLineCount\(result\.lineLimit\)\)/);
+  assert.match(ui, /!result\.truncated && !errors\.length/);
+  assert.match(css, /#email-checker \.email-sticky\.is-cutoff \{[^}]*color: #8B98A5;/);
+  assert.match(css, /#email-checker \.cm-scroller \{\s*padding-bottom: 56px;/);
 });
 
 test("the live editor uses the Web Designer syntax colours", function () {

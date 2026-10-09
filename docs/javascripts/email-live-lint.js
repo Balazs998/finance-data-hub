@@ -54,25 +54,56 @@
     return issue.severity === "check" || issue.rule === "NAME";
   }
 
-  function nameTotal(issues) {
-    return issues.reduce(function (sum, issue) {
+  function nameCount(issues) {
+    return (issues || []).reduce(function (sum, issue) {
+      if (!isNameCheck(issue)) return sum;
       return sum + (issue.items && issue.items.length ? issue.items.length : 1);
     }, 0);
+  }
+
+  function checkPillText(result) {
+    var count = nameCount(result && result.issues);
+    if (!count) return "";
+    return (count === 1 ? "1 name" : count + " names") + " to check";
+  }
+
+  function formatLineCount(n) {
+    return String(n == null ? 2000 : n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function checkedLinesNote(lineLimit) {
+    return "Only the first " + formatLineCount(lineLimit) + " lines were checked.";
+  }
+
+  function cutoffClearText(lineLimit) {
+    return "? No problems in the first " + formatLineCount(lineLimit) + " lines. The rest wasn't checked.";
   }
 
   function statusBar(result) {
     var issues = result && result.issues ? result.issues : [];
     if (!result || result.empty || result.notGroovy) return { state: "hidden", text: "" };
+    if (result.truncated && !issues.length) {
+      return { state: "cutoff", text: cutoffClearText(result.lineLimit) };
+    }
     if (!issues.length) return { state: "clear", text: "✓ No problems found" };
     if (issues.every(isNameCheck)) {
-      var count = nameTotal(issues);
-      var names = count === 1 ? "1 name" : count + " names";
       return {
         state: "names",
-        text: "? No errors or warnings. " + names + " to check in your Jedox, listed below."
+        text: "? No errors or warnings. " + checkPillText(result) + " in your Jedox, listed below."
       };
     }
     return { state: "issues", text: "Issues (" + issues.length + ")" };
+  }
+
+  /* Paste leaves the cursor where the text went in. An empty editor
+     starts at 0, which is line 1, and the view must not follow the end. */
+  function pasteChange(from, to, text) {
+    return {
+      changes: { from: from, to: to, insert: text },
+      selection: { anchor: from },
+      scrollIntoView: false,
+      userEvent: "input.paste"
+    };
   }
 
   return {
@@ -83,6 +114,12 @@
     dropdownEnabled: dropdownEnabled,
     issuesBelowEditor: issuesBelowEditor,
     howDetailsOpen: howDetailsOpen,
-    statusBar: statusBar
+    nameCount: nameCount,
+    checkPillText: checkPillText,
+    formatLineCount: formatLineCount,
+    checkedLinesNote: checkedLinesNote,
+    cutoffClearText: cutoffClearText,
+    statusBar: statusBar,
+    pasteChange: pasteChange
   };
 });

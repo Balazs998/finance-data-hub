@@ -18,7 +18,9 @@ class EmailPageTests(unittest.TestCase):
         html = self.builder.read_text(encoding="utf-8")
         self.assertIn("Create your own Jedox email: Groovy script builder", html)
         self.assertIn("Fill in the form, watch the email build", html)
-        self.assertIn("Everything runs in your browser. Nothing you type or paste is sent anywhere.", html)
+        self.assertIn("Nothing you type leaves your browser.", html)
+        self.assertNotIn("Everything runs in your browser. Nothing you type or paste is sent anywhere.", html)
+        self.assertIn("This builder writes the same Groovy job as the", html)
         self.assertIn("HTML email with a styled table.", html)
         self.assertIn("Account · Budget · Actual · Variance", html)
         self.assertIn("Download script + template", html)
@@ -64,13 +66,17 @@ class EmailPageTests(unittest.TestCase):
         self.assertIn("the script will fail or send the wrong thing.", html)
         self.assertIn('data-placeholder="Paste or type your Groovy script here."', html)
         self.assertIn(
-            "It checks as you type. It also suggests documented Jedox calls, "
-            "plus the helper functions and job variables from the Automated value emails script.",
+            "It suggests documented Jedox calls, plus the helper functions and job variables "
+            "from the Automated value emails script.",
             html,
         )
+        self.assertNotIn("It also suggests", html)
+        self.assertEqual(html.count("as you type"), 1)
         self.assertIn("<details", html)
         self.assertIn("How it works", html)
         self.assertIn('id="email-checker-sticky"', html)
+        self.assertIn('id="email-expand-btn" aria-expanded="false"', html)
+        self.assertIn("Expand editor ↕", html)
         self.assertIn('id="email-status-live"', html)
         self.assertIn('aria-live="polite"', html)
         self.assertIn('href="../email-builder/"', html)

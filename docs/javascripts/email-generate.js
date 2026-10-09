@@ -124,13 +124,13 @@
     { name: "Rent & Facilities", type: "EXPENSE", plan: 2653522, actual: 2613206 }
   ];
 
-  var TH_LEFT = '<th align="left" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;">{{LABEL}}</th>';
-  var TH_RIGHT = '<th align="right" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;">{{LABEL}}</th>';
-  var TD_TEXT = '<td align="left" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;">{{VALUE}}</td>';
-  var TD_NUMBER = '<td align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;">{{NUMBER}}</td>';
-  var TD_NUMBER_UNFAVORABLE = '<td align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;color:#C2410C;">{{NUMBER}}</td>';
-  var TD_TOTAL = '<td align="right" style="padding:10px;border-top:2px solid #1F2933;font-weight:bold;font-family:Consolas,Menlo,monospace;">{{NUMBER}}</td>';
-  var TD_TOTAL_LABEL = '<td align="left" style="padding:10px;border-top:2px solid #1F2933;font-weight:bold;">{{VALUE}}</td>';
+  var TH_LEFT = '<th align="left" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;word-wrap:break-word;overflow-wrap:break-word;">{{LABEL}}</th>';
+  var TH_RIGHT = '<th class="email-num" align="right" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;white-space:nowrap;">{{LABEL}}</th>';
+  var TD_TEXT = '<td align="left" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;word-wrap:break-word;overflow-wrap:break-word;">{{VALUE}}</td>';
+  var TD_NUMBER = '<td class="email-num" align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;white-space:nowrap;font-size:14px;">{{NUMBER}}</td>';
+  var TD_NUMBER_UNFAVORABLE = '<td class="email-num" align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;color:#C2410C;white-space:nowrap;font-size:14px;">{{NUMBER}}</td>';
+  var TD_TOTAL = '<td class="email-num" align="right" style="padding:10px;border-top:2px solid #1F2933;font-weight:bold;font-family:Consolas,Menlo,monospace;white-space:nowrap;font-size:14px;">{{NUMBER}}</td>';
+  var TD_TOTAL_LABEL = '<td align="left" style="padding:10px;border-top:2px solid #1F2933;font-weight:bold;word-wrap:break-word;overflow-wrap:break-word;">{{VALUE}}</td>';
   var ROW_BORDER = "border-bottom:1px solid #E4E9EE;";
   var ROW_BORDER_SHADED = "border-bottom:1px solid #E4E9EE;background:#F7F9FB;";
   var UNFAVORABLE_COLOR = "color:#C2410C;";

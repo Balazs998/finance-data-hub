@@ -111,21 +111,11 @@
         var doc = frame.contentDocument;
         if (!doc || !doc.documentElement) return;
         frame.style.width = "100%";
+        frame.style.maxWidth = "100%";
         frame.style.transform = "none";
         if (wrap) wrap.style.height = "";
         var height = Math.max(doc.documentElement.scrollHeight || 0, doc.body ? doc.body.scrollHeight : 0);
-        var width = Math.max(doc.documentElement.scrollWidth || 0, doc.body ? doc.body.scrollWidth : 0);
-        var available = wrap ? wrap.clientWidth : frame.clientWidth;
-        if (available > 0 && width > available + 2) {
-          var scale = available / width;
-          frame.style.width = width + "px";
-          frame.style.height = Math.max(height, 280) + "px";
-          frame.style.transformOrigin = "top left";
-          frame.style.transform = "scale(" + scale + ")";
-          if (wrap) wrap.style.height = Math.ceil(Math.max(height, 280) * scale) + "px";
-        } else {
-          frame.style.height = Math.max(height, 280) + "px";
-        }
+        frame.style.height = Math.max(height, 280) + "px";
       } catch (error) {
         frame.style.width = "100%";
         frame.style.transform = "none";

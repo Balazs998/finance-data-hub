@@ -165,8 +165,23 @@
     return Math.round(height) + 12;
   }
 
+  /* Back to form lands on the label. The extra 16px keeps that label
+     clear of the sticky header. */
+  function labelScrollMargin(headerHeight) {
+    var height = Number(headerHeight);
+    if (!isFinite(height) || height < 0) height = 0;
+    return "calc(" + Math.round(height) + "px + 16px)";
+  }
+
   function returnField(lastEdited, firstField) {
     return lastEdited || firstField;
+  }
+
+  function fieldLabel(field) {
+    if (!field || !field.id) return field || null;
+    var doc = field.ownerDocument;
+    if (!doc || typeof doc.querySelector !== "function") return field;
+    return doc.querySelector('label[for="' + field.id + '"]') || field;
   }
 
   function formatCents(cents) {
@@ -228,7 +243,9 @@
     KNOWN_SCRIPT_MARKERS: KNOWN_SCRIPT_MARKERS,
     scrollBehavior: scrollBehavior,
     previewScrollMargin: previewScrollMargin,
+    labelScrollMargin: labelScrollMargin,
     returnField: returnField,
+    fieldLabel: fieldLabel,
     escapeHtml: escapeHtml,
     escapeText: escapeText,
     groovyQuote: groovyQuote,

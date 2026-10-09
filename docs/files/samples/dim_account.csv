@@ -1,0 +1,9 @@
+account,account_name,account_type
+400000,Product Revenue,REVENUE
+410000,Service Revenue,REVENUE
+500000,Material Cost,EXPENSE
+600000,Salaries,EXPENSE
+610000,Travel,EXPENSE
+620000,IT & Software,EXPENSE
+630000,Consulting,EXPENSE
+640000,Rent & Facilities,EXPENSE

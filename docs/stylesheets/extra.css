@@ -298,3 +298,30 @@ html.js .reveal.is-visible {
     font-size: 1.55rem;
   }
 }
+
+/* Wide diagrams swipe sideways. Border #2A3847, surface #18222E. */
+.md-typeset .diagram-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #2a3847;
+  background-color: #18222e;
+  border-radius: 0.6rem;
+  margin: 1.2em 0;
+}
+
+.md-typeset .diagram-scroll:focus {
+  outline: 2px solid var(--dn-link);
+  outline-offset: 2px;
+}
+
+.md-typeset .diagram-scroll a {
+  display: block;
+}
+
+.md-typeset .diagram-scroll img {
+  display: block;
+  width: 1200px;
+  min-width: 1000px;
+  max-width: none;
+  height: auto;
+}

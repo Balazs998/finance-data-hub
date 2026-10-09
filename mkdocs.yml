@@ -72,6 +72,7 @@ nav:
   - Snowflake:
       - snowflake/index.md
       - Month-end actuals: snowflake/month-end-actuals.md
+      - Plan vs. actuals in Snowflake SQL, without losing rows: snowflake/plan-vs-actuals.md
   - Jedox:
       - jedox/index.md
       - Management report export: jedox/management-report-export.md

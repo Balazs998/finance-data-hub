@@ -1,0 +1,11 @@
+cost_center,cost_center_name,parent
+CC1000,Sales North,Sales
+CC1010,Sales South,Sales
+CC2000,Marketing,Marketing
+CC3000,IT Operations,IT
+CC3010,IT Projects,IT
+CC4000,Finance,G&A
+CC4010,HR,G&A
+CC5000,R&D Lab A,R&D
+CC5010,R&D Lab B,R&D
+CC6000,Facilities,G&A

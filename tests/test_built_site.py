@@ -1,3 +1,4 @@
+import re
 import unittest
 from html.parser import HTMLParser
 from pathlib import Path
@@ -56,6 +57,85 @@ def local_target(page: Path, href: str) -> Path | None:
     if target.is_dir():
         target = target / "index.html"
     return target
+
+
+PLAN_VS_ACTUAL_DOWNLOADS = (
+    "samples/fact_budget.csv",
+    "samples/fact_actuals.csv",
+    "samples/dim_account.csv",
+    "samples/dim_cost_center.csv",
+    "samples/load_snowflake.sql",
+    "sql/plan_vs_actual.sql",
+)
+
+
+class PlanVsActualsPageTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if not (SITE / "index.html").is_file():
+            raise AssertionError("site/index.html is missing. Run mkdocs build first.")
+
+    def test_plan_vs_actuals_page_builds_with_diagram_and_downloads(self):
+        page = SITE / "snowflake" / "plan-vs-actuals" / "index.html"
+        self.assertTrue(page.is_file(), "plan vs actuals page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn("Plan vs. actuals in Snowflake SQL, without losing rows", html)
+        self.assertIn('class="diagram-scroll"', html)
+        self.assertIn('tabindex="0"', html)
+        self.assertIn(
+            'aria-label="Join coverage diagram, scroll sideways on small screens"',
+            html,
+        )
+        self.assertIn(
+            'alt="What each join keeps on the sample data. INNER JOIN keeps 605 cells with both budget and actual. LEFT JOIN from budget keeps 696, adding 91 budget-only cells. FULL OUTER JOIN keeps all 701, adding the 5 actual-only cells too."',
+            html,
+        )
+
+        css_hits = [
+            path
+            for path in SITE.rglob("*.css")
+            if ".diagram-scroll" in path.read_text(encoding="utf-8")
+        ]
+        self.assertTrue(css_hits, ".diagram-scroll is missing from the built CSS")
+        source_css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
+        built_css = "\n".join(path.read_text(encoding="utf-8") for path in css_hits)
+        self.assertIn(".diagram-scroll", source_css)
+        self.assertIn("overflow-x: auto;", source_css)
+        self.assertIn("-webkit-overflow-scrolling: touch;", source_css)
+        self.assertIn("--diagram-min-width: 600px;", source_css)
+        self.assertIn("min-width: var(--diagram-min-width);", source_css)
+        self.assertNotIn("min-width: 1000px;", source_css)
+        self.assertNotIn("width: 1200px;", source_css)
+        desktop_css = source_css.split("@media screen and (min-width: 60em)", 1)[1]
+        self.assertIn("overflow: visible;", desktop_css)
+        self.assertIn("width: 100%;", desktop_css)
+        self.assertIn("min-width: 0;", desktop_css)
+        self.assertIn("height: auto;", desktop_css)
+        self.assertIn("--diagram-min-width: 600px;", built_css)
+        self.assertIn("min-width: 60em", built_css)
+        self.assertIn('width="720"', html)
+        self.assertIn('height="400"', html)
+
+        srcs = re.findall(r'<img\b[^>]*\bsrc="([^"]*02-join-coverage\.svg)"', html)
+        self.assertEqual(len(srcs), 1, html)
+        image = local_target(page, srcs[0])
+        self.assertIsNotNone(image, srcs[0])
+        self.assertTrue(image.is_file(), f"diagram image missing: {srcs[0]}")
+        self.assertIn('viewBox="0 0 720 400"', image.read_text(encoding="utf-8"))
+
+        parser = parse(page)
+        resolved = []
+        for relative in PLAN_VS_ACTUAL_DOWNLOADS:
+            matches = [href for href in parser.hrefs if href.endswith(relative)]
+            self.assertEqual(len(matches), 1, relative)
+            target = local_target(page, matches[0])
+            self.assertIsNotNone(target, matches[0])
+            self.assertTrue(target.is_file(), f"missing download {relative} ({matches[0]})")
+            resolved.append(relative)
+        self.assertEqual(len(resolved), 6)
+
+        actuals = (SITE / "files" / "samples" / "fact_actuals.csv").read_text(encoding="utf-8")
+        self.assertEqual(len(actuals.splitlines()) - 1, 610)
 
 
 class BuiltSiteTests(unittest.TestCase):

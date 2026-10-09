@@ -100,6 +100,38 @@ test("defaults generate the same script as the download", function () {
   assert.match(result.preview.html, /Sample data only\./);
 });
 
+test("the email template fits a phone without a fixed width", function () {
+  const template = fs.readFileSync(path.join(root, "docs/files/email/email-template.html"), "utf8");
+  const groovy = fs.readFileSync(path.join(root, "docs/files/email/send_value_emails.groovy"), "utf8");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-generate.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  const builder = fs.readFileSync(path.join(root, "docs/javascripts/email-builder-ui.js"), "utf8");
+  assert.equal(template.includes('width="600"'), false);
+  assert.equal(template.replace(/max-width:600px/g, "").includes("width:600px"), false);
+  assert.equal((template.match(/<table\b[^>]*>/g) || []).length, 3);
+  const tables = template.match(/<table\b[^>]*>/g);
+  assert.match(tables[1], /width="100%"/);
+  assert.match(tables[1], /max-width:600px/);
+  assert.match(tables[2], /width="100%"/);
+  assert.match(tables[2], /max-width:600px/);
+  ["white-space:nowrap", "word-wrap:break-word"].forEach(function (piece) {
+    assert.ok(groovy.includes(piece), piece);
+    assert.ok(ui.includes(piece), piece);
+  });
+  const result = generate.generate();
+  assert.equal(result.script, sources.groovy);
+  assert.match(result.preview.html, /white-space:nowrap/);
+  assert.match(result.preview.html, /193\.06/);
+  assert.match(result.preview.html, /6,866\.96/);
+  assert.match(result.preview.html, /5,700\.21/);
+  assert.equal(result.preview.html.includes('width="600"'), false);
+  assert.match(result.preview.html, /Sent automatically by a Jedox Integrator job\./);
+  assert.match(result.preview.html, /Test mode: on\. Intended recipient:/);
+  assert.doesNotMatch(css, /\.email-frame-wrap \{[^}]*overflow:\s*hidden/);
+  assert.doesNotMatch(css, /\.email-frame-wrap \{[^}]*width:\s*\d+px/);
+  assert.equal(builder.includes('frame.style.width = width + "px"'), false);
+});
+
 test("period must be a zero-padded YYYY-MM", function () {
   const bad = generate.generate({ period: "2026-3" });
   assert.equal(bad.ok, false);

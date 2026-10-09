@@ -391,13 +391,13 @@
 .email-frame-wrap {
   background: #f3f6f9;
   border-radius: 8px;
-  overflow: hidden;
   max-width: 100%;
 }
 
 .email-frame-wrap iframe {
   display: block;
   width: 100%;
+  max-width: 100%;
   min-height: 280px;
   border: 0;
   background: #f3f6f9;

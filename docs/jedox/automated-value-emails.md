@@ -317,6 +317,8 @@ This job splits the emails by cost center, because in most FP&A teams the cost c
 2. In `recipients.csv`, keep the `cost_center` header, but fill that column with the new dimension's elements. The script finds the column by its header name.
 3. Point `COST_CENTERS_FILE` at a file with display names for the new elements, using the same `cost_center` and `cost_center_name` headers. Otherwise the names show up blank.
 
+This only works when the new split really is a dimension of the cube. With `onlyBases`, the extract returns base elements, never consolidated totals. So if country or ledger is a consolidation level above your entities, or an attribute on them, this script can't group by it as written. You'd need a dimension that really holds those elements, or a small code change that groups the base elements by country before it builds the emails.
+
 Keep the `{{COST_CENTER}}` marker names as they are, because the script stops on any marker it doesn't know. Only change the words around them in the `TEXT` block, for example `'Country {{COST_CENTER}}'`. Test it in test mode before you switch it on.
 
 ## Wrap-up

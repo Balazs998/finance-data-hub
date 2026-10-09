@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 500" width="840" height="500" role="img" aria-labelledby="t d">
+  <title id="t">Snowflake to Jedox actuals pipeline</title>
+  <desc id="d">Actuals flow from the Snowflake table FACT_ACTUALS through the view V_JEDOX_ACTUALS into a Jedox Integrator job. The job first clears the Actual slice for the months in scope with a Cube Slice extract in exclude mode and a Cube Load in delete mode, then reads the view with a relational extract and writes it with a Cube Load in insert mode into the PnL cube.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#38BDF8"/></marker>
+    <marker id="v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A78BFA"/></marker>
+    <filter id="g" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#38BDF8" flood-opacity="0.18"/></filter>
+  </defs>
+  <style>
+    .h{font:700 22px 'Space Grotesk',system-ui,sans-serif;fill:#E6EDF3}
+    .b{font:600 17px Inter,system-ui,sans-serif;fill:#E6EDF3}
+    .m{font:400 15px Inter,system-ui,sans-serif;fill:#B7C5D3}
+    .c{font:500 15px 'JetBrains Mono',ui-monospace,monospace;fill:#38BDF8}
+    .n{font:700 14px 'Space Grotesk',system-ui,sans-serif;fill:#0F1720}
+  </style>
+  <rect width="840" height="500" fill="#0F1720"/>
+
+  <!-- Snowflake -->
+  <text x="24" y="44" class="h">Snowflake</text>
+  <rect x="24" y="62" width="210" height="370" rx="12" fill="#18222E" stroke="#2A3847"/>
+  <rect x="40" y="96" width="178" height="100" rx="10" fill="#1F2B39" stroke="#2A3847"/>
+  <text x="54" y="124" class="m">Table</text>
+  <text x="54" y="150" class="c">FACT_ACTUALS</text>
+  <text x="54" y="176" class="m">one row per posting</text>
+  <line x1="129" y1="196" x2="129" y2="248" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="40" y="254" width="178" height="126" rx="10" fill="#1F2B39" stroke="#38BDF8" filter="url(#g)"/>
+  <text x="54" y="282" class="m">View, shaped like</text>
+  <text x="54" y="302" class="m">the cube</text>
+  <text x="54" y="330" class="c">V_JEDOX_ACTUALS</text>
+  <text x="54" y="358" class="m">SUM per cell</text>
+
+  <!-- Integrator -->
+  <text x="262" y="44" class="h">Jedox Integrator job</text>
+  <rect x="262" y="62" width="400" height="370" rx="12" fill="#18222E" stroke="#2A3847"/>
+  <text x="280" y="90" class="m">Logs in with a service user and private key</text>
+
+  <rect x="280" y="104" width="364" height="138" rx="10" fill="#1F2B39" stroke="#A78BFA"/>
+  <circle cx="304" cy="130" r="13" fill="#A78BFA"/><text x="300" y="135" class="n">1</text>
+  <text x="326" y="136" class="b">Clear the slice first</text>
+  <text x="298" y="166" class="m">Cube Slice extract, exclude mode</text>
+  <text x="298" y="188" class="m">Actual, months in scope, base cells</text>
+  <line x1="298" y1="219" x2="326" y2="219" stroke="#A78BFA" stroke-width="2" marker-end="url(#v)"/>
+  <text x="334" y="224" class="m" style="fill:#E6EDF3">Cube Load, delete</text>
+
+  <rect x="280" y="258" width="364" height="158" rx="10" fill="#1F2B39" stroke="#38BDF8"/>
+  <circle cx="304" cy="284" r="13" fill="#38BDF8"/><text x="300" y="289" class="n">2</text>
+  <text x="326" y="290" class="b">Load fresh actuals</text>
+  <text x="298" y="320" class="m">Relational extract from the view</text>
+  <text x="298" y="342" class="m">Months PERIOD_FROM to PERIOD_TO</text>
+  <text x="298" y="364" class="m">Maps Version, Period, CostCenter, Account</text>
+  <line x1="298" y1="393" x2="326" y2="393" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <text x="334" y="398" class="m" style="fill:#E6EDF3">Cube Load, insert</text>
+
+  <path d="M218 330 C 250 330, 250 320, 278 320" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- Jedox -->
+  <text x="690" y="44" class="h">Jedox</text>
+  <rect x="690" y="62" width="126" height="370" rx="12" fill="#18222E" stroke="#2A3847"/>
+  <rect x="704" y="180" width="98" height="136" rx="10" fill="#1F2B39" stroke="#A3E635"/>
+  <text x="716" y="210" class="m">Cube</text>
+  <text x="716" y="238" class="c" style="fill:#A3E635">PnL</text>
+  <text x="716" y="268" class="m">Actual,</text>
+  <text x="716" y="290" class="m">refreshed</text>
+  <path d="M644 172 C 680 172, 675 214, 700 214" fill="none" stroke="#A78BFA" stroke-width="2" marker-end="url(#v)"/>
+  <path d="M644 336 C 680 336, 675 284, 700 284" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+
+  <text x="24" y="466" class="m">Step 1 always runs before step 2, so a rerun never leaves old cells behind.</text>
+</svg>

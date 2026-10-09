@@ -8,6 +8,6 @@ Scripts in this section are Snowflake SQL and live under `docs/files/sql/` in th
 
 [Month-end actuals](month-end-actuals.md){ .md-button }
 
-Those actuals can be loaded into Jedox from the same kind of sample files. The job uses a key-pair service user, clears the Actual slice, then loads the month again.
+Those actuals can be loaded into Jedox from the same kind of sample files. The job uses a key-pair service user, clears the Actual slice for the months in scope, then loads them again.
 
 [Snowflake to Jedox load](../jedox/snowflake-to-jedox.md){ .md-button }

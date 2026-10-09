@@ -161,6 +161,93 @@ class PlanVsActualsPageTests(unittest.TestCase):
         self.assertEqual(len(actuals.splitlines()) - 1, 610)
 
 
+SNOWFLAKE_TO_JEDOX_DOWNLOADS = (
+    "samples/dim_cost_center.csv",
+    "samples/dim_account.csv",
+    "samples/fact_actuals.csv",
+    "samples/fact_budget.csv",
+    "samples/load_snowflake.sql",
+)
+
+PIPELINE_ALT = (
+    "Snowflake to Jedox pipeline: clear the Actual slice first, "
+    "then load fresh actuals into the PnL cube"
+)
+
+
+class SnowflakeToJedoxPageTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if not (SITE / "index.html").is_file():
+            raise AssertionError("site/index.html is missing. Run mkdocs build first.")
+
+    def test_snowflake_to_jedox_page_builds_with_diagram_and_downloads(self):
+        page = SITE / "jedox" / "snowflake-to-jedox" / "index.html"
+        self.assertTrue(page.is_file(), "snowflake to jedox page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "From Snowflake to Jedox: a rerun-safe actuals load with Integrator",
+            html,
+        )
+        self.assertNotIn("headerlink", html)
+        self.assertNotIn("DRAFT", html)
+        self.assertIn('class="diagram-scroll"', html)
+        self.assertIn('tabindex="0"', html)
+        self.assertIn(
+            'aria-label="Pipeline diagram, scroll sideways on small screens"',
+            html,
+        )
+        self.assertIn('style="--diagram-min-width: 700px"', html)
+        self.assertIn(f'alt="{PIPELINE_ALT}"', html)
+        self.assertIn('width="840"', html)
+        self.assertIn('height="500"', html)
+
+        srcs = re.findall(r'<img\b[^>]*\bsrc="([^"]*01-pipeline-diagram\.svg)"', html)
+        self.assertEqual(len(srcs), 1, html)
+        self.assertTrue(srcs[0].endswith("../01-pipeline-diagram.svg"), srcs[0])
+        image = local_target(page, srcs[0])
+        self.assertIsNotNone(image, srcs[0])
+        self.assertTrue(image.is_file(), f"diagram image missing: {srcs[0]}")
+        svg = image.read_text(encoding="utf-8")
+        self.assertIn('viewBox="0 0 840 500"', svg)
+        self.assertIn('width="840"', svg)
+        self.assertIn('height="500"', svg)
+
+        hrefs = re.findall(r'<a\b[^>]*\bhref="([^"]*01-pipeline-diagram\.svg)"', html)
+        self.assertEqual(hrefs, ["../01-pipeline-diagram.svg"])
+        linked = local_target(page, hrefs[0])
+        self.assertEqual(linked, image)
+
+        parser = parse(page)
+        resolved = []
+        for relative in SNOWFLAKE_TO_JEDOX_DOWNLOADS:
+            matches = [href for href in parser.hrefs if href.endswith(relative)]
+            self.assertEqual(len(matches), 1, relative)
+            target = local_target(page, matches[0])
+            self.assertIsNotNone(target, matches[0])
+            self.assertTrue(
+                target.is_file(), f"missing download {relative} ({matches[0]})"
+            )
+            resolved.append(relative)
+        self.assertEqual(len(resolved), 5)
+
+        start = html.find('<div class="downloads">')
+        self.assertGreaterEqual(start, 0)
+        end = html.find("</div>", start)
+        cluster = html[start:end]
+        self.assertEqual(cluster.count("md-button download"), 5)
+        self.assertEqual(cluster.count(' download="'), 5)
+
+        article_link = (
+            '<a href="../../snowflake/plan-vs-actuals/">Plan vs. actuals in Snowflake</a>'
+        )
+        self.assertIn(article_link, html)
+        plan = local_target(page, "../../snowflake/plan-vs-actuals/")
+        self.assertIsNotNone(plan)
+        self.assertTrue(plan.is_file(), "plan vs actuals link does not resolve")
+        self.assertEqual(plan, SITE / "snowflake" / "plan-vs-actuals" / "index.html")
+
+
 VALUE_EMAIL_DOWNLOADS = (
     "email/send_value_emails.groovy",
     "email/email-template.html",
@@ -276,6 +363,7 @@ SOCIAL_BASE = "https://balazs998.github.io/finance-data-hub/assets/social/"
 SOCIAL_PAGES = {
     "index.html": "home.png",
     "snowflake/plan-vs-actuals/index.html": "plan-vs-actuals.png",
+    "jedox/snowflake-to-jedox/index.html": "snowflake-to-jedox.png",
     "jedox/automated-value-emails/index.html": "automated-value-emails.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
@@ -357,6 +445,21 @@ class SocialPreviewTests(unittest.TestCase):
                 "Automated value emails from Jedox Integrator with a generic Groovy template"
                 " - Finance Data Hub"
             ],
+        )
+
+        load = (SITE / "jedox" / "snowflake-to-jedox" / "index.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(
+            meta_contents(load, "property", "og:title"),
+            [
+                "From Snowflake to Jedox: a rerun-safe actuals load with Integrator"
+                " - Finance Data Hub"
+            ],
+        )
+        self.assertIn(
+            "key-pair service user",
+            meta_contents(load, "property", "og:description")[0],
         )
 
         for name in SOCIAL_FILES:

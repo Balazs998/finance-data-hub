@@ -7,17 +7,22 @@ Articles link to files with ``[[download:path|Label]]`` or
 
 from __future__ import annotations
 
+import html
 import os
 import posixpath
 import re
 from pathlib import Path, PurePosixPath
 
 from mkdocs.exceptions import PluginError
+from mkdocs.utils import get_relative_url
 
 REPO = "Balazs998/finance-data-hub"
 RELEASE_TAG = "files"
 CODE_PATTERN = re.compile(r"[A-Za-z0-9-]+")
 SHORTCODE = re.compile(r"\[\[(download|release):([^\]|\s]+)(?:\|([^\]]+))?\]\]")
+BLOCK_SHORTCODE = re.compile(
+    r"\[\[(download|release):([^\]|\s]+)(?:\|([^\]]+))?\]\][ \t]*"
+)
 FENCE = re.compile(r"(?ms)^(```+)[^\n]*\n.*?^\1[ \t]*$")
 
 
@@ -42,22 +47,122 @@ def on_page_context(context, page, config, nav):
 
 def on_page_markdown(markdown, page, config, files):
     docs_dir = Path(config["docs_dir"])
-    return render_shortcodes(markdown, page.file.src_uri, docs_dir)
+    return render_shortcodes(
+        markdown,
+        page.file.src_uri,
+        docs_dir,
+        page_url=page.url or "",
+    )
 
 
-def render_shortcodes(markdown: str, src_uri: str, docs_dir: Path) -> str:
-    """Replace download shortcodes outside fenced code blocks."""
+def render_shortcodes(
+    markdown: str,
+    src_uri: str,
+    docs_dir: Path,
+    page_url: str | None = None,
+) -> str:
+    """Replace download shortcodes outside fenced code blocks.
+
+    Shortcodes that sit on their own lines (a Downloads section) become one
+    ``<div class="downloads">`` grid. Indented shortcodes, such as the button
+    inside a card, stay inline Markdown links.
+    """
 
     def replace_segment(segment: str) -> str:
-        def repl(match: re.Match) -> str:
-            kind = match.group(1)
-            target = match.group(2).strip()
-            label = match.group(3).strip() if match.group(3) else None
-            return build_link(kind, target, label, src_uri, docs_dir)
-
-        return SHORTCODE.sub(repl, segment)
+        return _render_segment(segment, src_uri, docs_dir, page_url)
 
     return _map_outside_fences(markdown, replace_segment)
+
+
+def _render_segment(
+    segment: str,
+    src_uri: str,
+    docs_dir: Path,
+    page_url: str | None,
+) -> str:
+    lines = segment.splitlines(keepends=True)
+    pieces: list[str] = []
+    index = 0
+    while index < len(lines):
+        if _is_block_shortcode(lines[index]):
+            group, index = _take_shortcode_group(lines, index)
+            pieces.append(_downloads_container(group, src_uri, docs_dir, page_url))
+            continue
+        pieces.append(
+            SHORTCODE.sub(
+                lambda match: _replace_shortcode(match, src_uri, docs_dir, page_url=page_url),
+                lines[index],
+            )
+        )
+        index += 1
+    return "".join(pieces)
+
+
+def _is_block_shortcode(line: str) -> bool:
+    return BLOCK_SHORTCODE.fullmatch(line.strip("\r\n")) is not None
+
+
+def _take_shortcode_group(lines: list[str], index: int) -> tuple[list[str], int]:
+    """Collect a Downloads run, including ones separated only by blank lines."""
+    group = [lines[index]]
+    index += 1
+    while index < len(lines):
+        if _is_block_shortcode(lines[index]):
+            group.append(lines[index])
+            index += 1
+            continue
+        if lines[index].strip() == "":
+            lookahead = index + 1
+            while lookahead < len(lines) and lines[lookahead].strip() == "":
+                lookahead += 1
+            if lookahead < len(lines) and _is_block_shortcode(lines[lookahead]):
+                index = lookahead
+                continue
+        break
+    return group, index
+
+
+def _downloads_container(
+    group: list[str],
+    src_uri: str,
+    docs_dir: Path,
+    page_url: str | None,
+) -> str:
+    anchors = []
+    for line in group:
+        match = SHORTCODE.search(line)
+        if match is None:
+            raise PluginError(f"Download shortcode could not be read: {line!r}")
+        anchors.append(
+            _replace_shortcode(match, src_uri, docs_dir, as_html=True, page_url=page_url)
+        )
+    last = group[-1]
+    if last.endswith("\r\n"):
+        newline = "\r\n"
+    elif last.endswith("\n"):
+        newline = "\n"
+    else:
+        newline = ""
+    return '<div class="downloads">\n' + "\n".join(anchors) + "\n</div>" + newline
+
+
+def _replace_shortcode(
+    match: re.Match,
+    src_uri: str,
+    docs_dir: Path,
+    as_html: bool = False,
+    page_url: str | None = None,
+) -> str:
+    label = match.group(3).strip() if match.group(3) else None
+    return build_link(
+        match.group(1),
+        match.group(2).strip(),
+        label,
+        src_uri,
+        docs_dir,
+        as_html=as_html,
+        page_url=page_url,
+    )
 
 
 def build_link(
@@ -66,10 +171,19 @@ def build_link(
     label: str | None,
     src_uri: str,
     docs_dir: Path,
+    as_html: bool = False,
+    page_url: str | None = None,
 ) -> str:
     if kind == "download":
         path = resolve_site_file(docs_dir, target)
-        href = relative_href(src_uri, f"files/{posix_target(target)}")
+        site_path = f"files/{posix_target(target)}"
+        # Markdown links are rewritten by MkDocs from the source file. Raw HTML
+        # is not, and a page is served as a directory (…/page/index.html), so an
+        # HTML href has to be relative to that directory URL.
+        if as_html and page_url is not None:
+            href = get_relative_url(site_path, page_url)
+        else:
+            href = relative_href(src_uri, site_path)
         filename = path.name
     elif kind == "release":
         filename = release_filename(target)
@@ -83,6 +197,16 @@ def build_link(
     text = label or f"Download {filename}"
     event = event_name(filename)
     title = f"Download {filename}"
+    if as_html:
+        return (
+            '<a class="md-button download"'
+            f' href="{escape_attr(href)}"'
+            f' download="{escape_attr(filename)}"'
+            f' data-goatcounter-click="{escape_attr(event)}"'
+            f' data-goatcounter-title="{escape_attr(title)}"'
+            ' data-goatcounter-no-session="1">'
+            f"{html.escape(text)}</a>"
+        )
     return (
         f"[{escape_label(text)}]({href})"
         "{ .md-button .download"

@@ -134,6 +134,29 @@ class PlanVsActualsPageTests(unittest.TestCase):
             resolved.append(relative)
         self.assertEqual(len(resolved), 6)
 
+        start = html.find('<div class="downloads">')
+        self.assertGreaterEqual(start, 0)
+        end = html.find("</div>", start)
+        cluster = html[start:end]
+        self.assertEqual(cluster.count("md-button download"), 6)
+        self.assertIn("grid-template-columns: minmax(0, 1fr);", source_css)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr));", source_css)
+        self.assertIn("gap: 0.75rem;", source_css)
+        self.assertIn("margin-top: 1rem;", source_css)
+        self.assertIn("border: 1px solid #2a3847;", source_css)
+        self.assertIn("border-color: #38bdf8;", source_css)
+        self.assertIn("outline: 2px solid #38bdf8;", source_css)
+        base_rule, desktop_rule = source_css.split(".md-typeset .downloads {")[1:]
+        self.assertIn(
+            "grid-template-columns: minmax(0, 1fr);",
+            base_rule.split("}", 1)[0],
+        )
+        self.assertIn("repeat(2, minmax(0, 1fr))", desktop_rule.split("}", 1)[0])
+        self.assertLess(
+            source_css.find("@media screen and (min-width: 45em)"),
+            source_css.find("repeat(2, minmax(0, 1fr))"),
+        )
+
         actuals = (SITE / "files" / "samples" / "fact_actuals.csv").read_text(encoding="utf-8")
         self.assertEqual(len(actuals.splitlines()) - 1, 610)
 

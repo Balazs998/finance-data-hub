@@ -15,10 +15,10 @@ actuals AS (
 )
 SELECT
     COALESCE(a.cost_center, b.cost_center) AS cost_center,
-    COALESCE(a.account,     b.account)     AS account,
-    COALESCE(a.period,      b.period)      AS period,
-    COALESCE(b.budget, 0)                  AS budget,
-    COALESCE(a.actual, 0)                  AS actual,
+    COALESCE(a.account, b.account) AS account,
+    COALESCE(a.period, b.period) AS period,
+    COALESCE(b.budget, 0) AS budget,
+    COALESCE(a.actual, 0) AS actual,
     COALESCE(a.actual, 0) - COALESCE(b.budget, 0) AS variance,
     CASE
         WHEN a.cost_center IS NULL THEN 'Budget only'
@@ -27,9 +27,9 @@ SELECT
     END AS match_status
 FROM actuals AS a
 FULL OUTER JOIN budget AS b
-    ON  a.cost_center = b.cost_center
-    AND a.account     = b.account
-    AND a.period      = b.period;
+    ON a.cost_center = b.cost_center
+    AND a.account = b.account
+    AND a.period = b.period;
 
 -- Check: expect Actual only 5, Both 605, Budget only 91 (701 cells)
 SELECT match_status, COUNT(*) AS cells, SUM(budget) AS budget, SUM(actual) AS actual

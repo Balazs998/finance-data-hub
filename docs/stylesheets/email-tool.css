@@ -788,10 +788,56 @@
   color: var(--dn-text);
 }
 
-#email-checker .email-how summary {
+#email-checker .email-how > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
   padding: 12px 14px;
+  background: transparent;
+  border: 0;
+  list-style: none;
   font-weight: 700;
   cursor: pointer;
+  position: relative;
+}
+
+#email-checker .email-how > summary::marker,
+#email-checker .email-how > summary::-webkit-details-marker {
+  display: none;
+  content: "";
+}
+
+#email-checker .email-how > summary::before {
+  content: none;
+  display: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+  position: static;
+}
+
+#email-checker .email-how > summary::after {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin: 0 2px 0 auto;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+  position: static;
+  transform: rotate(-45deg);
+}
+
+#email-checker .email-how[open] > summary::after {
+  transform: rotate(45deg);
 }
 
 #email-checker .email-how-body {

@@ -24,8 +24,8 @@
     testEmpty: "Add a test address, so test emails have somewhere to go.",
     testInvalid: "That doesn't look like an email address. Try something like `test.recipient@example.com`.",
     previewFailed: "The preview couldn't be built from these settings. Undo the last change, or reset to the example.",
-    copyFailed: "Couldn't copy automatically. Open the Groovy script tab, select all and copy it by hand.",
-    copied: "Script copied.",
+    copyFailed: "Copy failed. Select the text and press Ctrl+C.",
+    copied: "Copied ✓",
     downloaded: "Downloaded. Next, follow the steps below.",
     downloadNote: "Fix the [field name] to download."
   };

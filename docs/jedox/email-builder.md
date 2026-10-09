@@ -154,7 +154,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <button type="button" class="email-btn" id="email-copy">Copy script</button>
 <p class="email-download-note" id="email-download-note" hidden></p>
 </div>
-<p class="email-status" id="email-status" role="status"></p>
+<p class="email-status" id="email-status" role="status" aria-live="polite"></p>
 <button type="button" class="email-text-btn" id="email-reset">Reset to the example</button>
 </div>
 </form>

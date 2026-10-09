@@ -48,6 +48,8 @@ class EmailPageTests(unittest.TestCase):
         self.assertIn('aria-hidden="true">i</span>', html)
         self.assertIn('href="../email-checker/"', html)
         self.assertIn(">Preview</button>", html)
+        self.assertIn('id="email-status" role="status" aria-live="polite"', html)
+        self.assertIn(">Copy script</button>", html)
         self.assertEqual(html.count("data-goatcounter"), 1)
 
     def test_checker_page_uses_the_signed_off_text(self):

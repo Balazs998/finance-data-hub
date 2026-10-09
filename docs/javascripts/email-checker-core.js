@@ -12,6 +12,10 @@
 
   var shared = load("email-shared.js", "EmailShared");
   var messages = load("email-check-messages.js", "EmailCheckMessages");
+  var knownJobVariables = {};
+  shared.KNOWN_JOB_VARIABLES.forEach(function (name) {
+    knownJobVariables[name] = true;
+  });
 
   var MAX_LINES = 2000;
 
@@ -395,6 +399,7 @@
         pattern.re.lastIndex = 0;
         var match;
         while ((match = pattern.re.exec(code))) {
+          if (pattern.kind === "variable" && knownJobVariables[match[2]]) continue;
           push(issues, checkIssue(pattern.kind, index + 1, match[2]));
         }
       });

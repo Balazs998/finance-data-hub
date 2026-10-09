@@ -582,12 +582,19 @@ class BuiltSiteTests(unittest.TestCase):
         html = (SITE / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
         self.assertIn('document.documentElement.classList.add("js")', html)
-        self.assertGreaterEqual(html.count('class="hero reveal"'), 1)
-        self.assertGreaterEqual(html.count('class="reveal"'), 2)
+        self.assertIn('class="hero"', html)
+        self.assertNotIn("hero reveal", html)
+        self.assertGreaterEqual(html.count('class="reveal"'), 3)
         self.assertIn("javascripts/reveal.js", html)
         self.assertIn(".reveal {\n  opacity: 1;", css)
-        self.assertIn("html.js .reveal {\n  opacity: 0;", css)
+        self.assertIn("html.js .reveal.reveal-wait {\n  opacity: 0;", css)
         self.assertNotIn("\n.reveal {\n  opacity: 0;", css)
+        self.assertNotIn("html.js .reveal {\n  opacity: 0;", css)
+        reveal_js = (ROOT / "docs/javascripts/reveal.js").read_text(encoding="utf-8")
+        self.assertIn("IntersectionObserver", reveal_js)
+        self.assertIn("getBoundingClientRect", reveal_js)
+        self.assertIn("reveal-wait", reveal_js)
+        self.assertIn("pageFitsViewport", reveal_js)
         self.assertIn("@media (prefers-reduced-motion: reduce)", css)
 
     def test_links_and_headings_are_sky_not_violet(self):
@@ -704,10 +711,12 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("md-content__button", about)
         self.assertIn("/edit/main/docs/about.md", about)
 
-    def test_home_topic_cards_use_three_columns_on_desktop(self):
+    def test_home_sections_use_three_columns_on_desktop(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
-        self.assertIn('class="grid cards topic-cards"', home)
+        self.assertIn('class="home-path"', home)
+        self.assertIn('class="home-who"', home)
+        self.assertNotIn("topic-cards", home)
         self.assertIn("@media screen and (min-width: 45em)", css)
         self.assertIn("grid-template-columns: repeat(3, minmax(0, 1fr));", css)
 
@@ -718,9 +727,11 @@ class BuiltSiteTests(unittest.TestCase):
         )
         for html in (home, article):
             self.assertNotIn("headerlink", html)
-        self.assertIn('<h1 id="finance-data-hub">', home)
-        self.assertIn('<h2 id="where-to-start">', home)
-        self.assertIn('href="#where-to-start"', home)
+        self.assertIn('<h1 id="build-the-fpa-pack-without-the-manual-work">', home)
+        self.assertIn('<h2 id="follow-the-data-step-by-step">', home)
+        self.assertIn('id="latest-posts"', home)
+        self.assertIn('id="why-it-matters"', home)
+        self.assertNotIn('id="where-to-start"', home)
         self.assertIn('<h1 id="month-end-actuals">', article)
         self.assertIn('href="#grain"', article)
 

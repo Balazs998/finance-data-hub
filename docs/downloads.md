@@ -1,6 +1,6 @@
 # Downloads
 
-These files ship with the site. Save them and adapt the names to your model. Each group links to the note the files belong to. The same buttons appear in that note.
+These files ship with the site. Save them and adapt the names to your model. The shared sample data comes first. After that, each group links to the note its files belong to, and the same buttons appear in that note.
 
 [[file-index]]
 

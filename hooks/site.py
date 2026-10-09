@@ -4,9 +4,10 @@ Articles link to files with ``[[download:path|Label]]`` or
 ``[[release:filename|Label]]``. The path after ``download:`` is relative to
 ``docs/files/``. Release links point at the GitHub Release tagged ``files``.
 
-``docs/downloads.md`` includes ``[[file-index]]``. That token becomes one
-group per note, built from the files the note links, so the page lists every
-file under ``docs/files/``.
+``docs/downloads.md`` includes ``[[file-index]]``. That token becomes a
+"Sample data" group with the shared sample files, then one group per note with
+only that note's own files. Every file under ``docs/files/`` appears exactly
+once.
 """
 
 from __future__ import annotations
@@ -29,6 +30,16 @@ BLOCK_SHORTCODE = re.compile(
 )
 FENCE = re.compile(r"(?ms)^(```+)[^\n]*\n.*?^\1[ \t]*$")
 FILE_INDEX = "[[file-index]]"
+SAMPLE_DATA_TITLE = "Sample data"
+# Shared sample files, listed once at the top of the Downloads page in this
+# order. Several notes link them; their own groups leave them out.
+SAMPLE_DATA_FILES = (
+    "samples/dim_account.csv",
+    "samples/dim_cost_center.csv",
+    "samples/fact_actuals.csv",
+    "samples/fact_budget.csv",
+    "samples/load_snowflake.sql",
+)
 
 
 def on_config(config):
@@ -105,10 +116,13 @@ def on_page_markdown(markdown, page, config, files):
 
 
 def render_file_index(docs_dir: Path, nav) -> str:
-    """Markdown groups for the Downloads page, one group per note.
+    """Markdown for the Downloads page.
 
-    A file under ``docs/files/`` that no note links is an error. Otherwise a
-    new file shows up here as soon as its note links it.
+    One "Sample data" group with the shared sample files comes first, then one
+    group per note (in nav order) with only the files that are not already
+    listed above it. Every file under ``docs/files/`` appears exactly once. A
+    file that no note links is an error, so a new file shows up here as soon
+    as its note links it.
     """
     notes = _notes_with_downloads(docs_dir)
     groups = _order_notes(notes, nav)
@@ -122,7 +136,47 @@ def render_file_index(docs_dir: Path, nav) -> str:
         )
     if not groups:
         return ""
-    return "\n\n".join(_group_markdown(title, src, files) for src, title, files in groups) + "\n"
+
+    labels: dict[str, str | None] = {}
+    for _src, _title, files in groups:
+        for path, label in files:
+            if labels.get(path) is None:
+                labels[path] = label
+    sample_files = [(path, labels[path]) for path in SAMPLE_DATA_FILES if path in linked]
+    sample_users = [
+        (src, title)
+        for src, title, files in groups
+        if any(path in SAMPLE_DATA_FILES for path, _label in files)
+    ]
+
+    sections: list[str] = []
+    if sample_files:
+        sections.append(_sample_markdown(sample_files, sample_users))
+    shown = {path for path, _label in sample_files}
+    for src, title, files in groups:
+        own = [(path, label) for path, label in files if path not in shown]
+        if not own:
+            continue
+        shown.update(path for path, _label in own)
+        sections.append(_group_markdown(title, src, own))
+    return "\n\n".join(sections) + "\n"
+
+
+def _sample_markdown(
+    files: list[tuple[str, str | None]],
+    users: list[tuple[str, str]],
+) -> str:
+    lines = [f"## {SAMPLE_DATA_TITLE}", ""]
+    if users:
+        links = [f"[{escape_label(title)}]({src})" for src, title in users]
+        if len(links) == 1:
+            used_by = links[0]
+        else:
+            used_by = ", ".join(links[:-1]) + " and " + links[-1]
+        lines += [f"The shared sample tables and their Snowflake load script, used in {used_by}.", ""]
+    for relative, label in files:
+        lines.append(f"[[download:{relative}|{label}]]" if label else f"[[download:{relative}]]")
+    return "\n".join(lines)
 
 
 def _notes_with_downloads(docs_dir: Path) -> dict[str, tuple[str | None, list[tuple[str, str | None]]]]:

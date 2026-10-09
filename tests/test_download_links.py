@@ -1,3 +1,4 @@
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -6,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from hooks.site import (  # noqa: E402
+    SAMPLE_DATA_FILES,
     PluginError,
     event_name,
     on_config,
@@ -131,11 +133,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                 "Snowflake": [
                     "snowflake/index.md",
                     {"Month-end actuals": "snowflake/month-end-actuals.md"},
-                    {
-                        "Plan vs. actuals in Snowflake SQL, without losing rows": (
-                            "snowflake/plan-vs-actuals.md"
-                        )
-                    },
+                    {"Plan vs actuals": "snowflake/plan-vs-actuals.md"},
                 ]
             },
             {
@@ -159,49 +157,50 @@ class DownloadShortcodeTests(unittest.TestCase):
             if path.is_file():
                 relative = path.relative_to(files_root).as_posix()
                 self.assertIn(f"[[download:{relative}", index)
-        self.assertLess(
-            index.index("snowflake/month-end-actuals.md"),
-            index.index("snowflake/plan-vs-actuals.md"),
-        )
-        self.assertLess(
-            index.index("snowflake/plan-vs-actuals.md"),
-            index.index("jedox/management-report-export.md"),
-        )
-        self.assertLess(
-            index.index("jedox/management-report-export.md"),
-            index.index("jedox/snowflake-to-jedox.md"),
-        )
-        self.assertLess(
-            index.index("jedox/snowflake-to-jedox.md"),
-            index.index("jedox/automated-value-emails.md"),
-        )
-        self.assertLess(
-            index.index("jedox/automated-value-emails.md"),
-            index.index("vba/month-close-checks.md"),
-        )
-        plan = index.split("](snowflake/plan-vs-actuals.md)", 1)[1].split("## [", 1)[0]
+        order = [
+            "## Sample data",
+            "## [Month-end actuals](snowflake/month-end-actuals.md)",
+            "## [Plan vs actuals](snowflake/plan-vs-actuals.md)",
+            "## [Management report export](jedox/management-report-export.md)",
+            "## [Automated value emails](jedox/automated-value-emails.md)",
+            "## [Month-close checks](vba/month-close-checks.md)",
+        ]
+        positions = [index.index(heading) for heading in order]
+        self.assertEqual(positions, sorted(positions))
+        self.assertTrue(index.startswith("## Sample data\n"))
+        sample = index.split("## [", 1)[0]
+        for relative in SAMPLE_DATA_FILES:
+            self.assertIn(f"[[download:{relative}|", sample)
+        self.assertEqual(sample.count("[[download:"), len(SAMPLE_DATA_FILES))
+        self.assertIn("](snowflake/plan-vs-actuals.md)", sample)
+        self.assertIn("](jedox/snowflake-to-jedox.md)", sample)
+        self.assertIn("](jedox/automated-value-emails.md)", sample)
+        plan = index.split("## [Plan vs actuals](snowflake/plan-vs-actuals.md)", 1)[1].split("## [", 1)[0]
         self.assertIn("sql/plan_vs_actual.sql", plan)
-        self.assertIn("samples/fact_budget.csv", plan)
-        self.assertIn("samples/fact_actuals.csv", plan)
-        self.assertIn("samples/load_snowflake.sql", plan)
+        self.assertNotIn("samples/", plan)
         self.assertNotIn("email/send_value_emails.groovy", plan)
-        email = index.split("Automated value emails", 1)[1].split("## [", 1)[0]
+        email = index.split("## [Automated value emails]", 1)[1].split("## [", 1)[0]
         self.assertIn("email/send_value_emails.groovy", email)
         self.assertIn("email/recipients.csv", email)
         self.assertIn("email/email-template.html", email)
-        self.assertIn("samples/dim_account.csv", email)
-        load = index.split("](jedox/snowflake-to-jedox.md)", 1)[1].split("## [", 1)[0]
-        self.assertIn("samples/fact_actuals.csv", load)
-        self.assertIn("samples/load_snowflake.sql", load)
-        self.assertNotIn("email/send_value_emails.groovy", load)
-        for relative in ("samples/dim_account.csv", "samples/dim_cost_center.csv"):
-            mentions = 0
-            for path in DOCS.rglob("*.md"):
-                if path.name == "downloads.md":
-                    continue
-                mentions += path.read_text(encoding="utf-8").count(f"[[download:{relative}|")
-            self.assertEqual(index.count(relative), mentions)
-            self.assertGreaterEqual(mentions, 3)
+        self.assertNotIn("samples/", email)
+        # The load note links only sample files, so it gets no group of its own.
+        self.assertNotIn("## [Snowflake to Jedox load]", index)
+
+    def test_file_index_lists_each_file_exactly_once(self):
+        index = render_file_index(DOCS, None)
+        files_root = DOCS / "files"
+        disk = sorted(
+            path.relative_to(files_root).as_posix()
+            for path in files_root.rglob("*")
+            if path.is_file()
+        )
+        self.assertEqual(len(disk), 12)
+        listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
+        self.assertEqual(len(listed), len(disk))
+        self.assertEqual(sorted(listed), disk)
+        for relative in disk:
+            self.assertEqual(listed.count(relative), 1, relative)
 
     def test_downloads_page_expands_the_file_index(self):
         class File:

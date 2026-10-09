@@ -224,13 +224,13 @@
         banner.innerHTML = text ? shared.inlineCode(text) : "";
       }
       if (result.truncated) {
-        showBanner(copy.tooLong.replace("{n}", String(result.lineLimit)));
+        showBanner(liveLint.checkedLinesNote(result.lineLimit));
       }
       if (result.empty) {
         if (sawEdit) showBanner(copy.empty);
       } else if (result.notGroovy) {
         showBanner(copy.notGroovy);
-      } else if (!errors.length && !warnings.length && !checks.length) {
+      } else if (!result.truncated && !errors.length && !warnings.length && !checks.length) {
         var heading = document.createElement("h3");
         heading.textContent = copy.noProblems.heading;
         var note = document.createElement("p");
@@ -247,6 +247,7 @@
       var bar = liveLint.statusBar(result);
       sticky.classList.toggle("is-clear", bar.state === "clear");
       sticky.classList.toggle("is-names", bar.state === "names");
+      sticky.classList.toggle("is-cutoff", bar.state === "cutoff");
       sticky.classList.toggle("is-issues", bar.state === "issues");
       sticky.hidden = bar.state === "hidden";
       sticky.textContent = bar.text;

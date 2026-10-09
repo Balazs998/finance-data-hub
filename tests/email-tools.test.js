@@ -523,8 +523,9 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.doesNotMatch(page, /Check script/);
   assert.match(page, /data-placeholder="Paste or type your Groovy script here\."/);
   assert.doesNotMatch(page, /Nothing leaves your browser\."/);
-  assert.match(page, /It checks as you type\. It also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
-  assert.doesNotMatch(page, /As you type, it also suggests/);
+  assert.match(page, /It suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
+  assert.doesNotMatch(page, /It also suggests/);
+  assert.equal(page.split("as you type").length - 1, 1);
   const leadAt = page.indexOf("Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.");
   const editorAt = page.indexOf('id="email-editor"');
   const howAt = page.indexOf("<details");
@@ -601,8 +602,8 @@ test("the issues bar has four states", function () {
   assert.match(ui, /liveLint\.statusBar\(result\)/);
   assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*color: #A3E635;/);
   assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*border: 1px solid #A3E635;/);
-  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*color: #8B98A5;/);
-  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*border: 1px solid #8B98A5;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names,\s*#email-checker \.email-sticky\.is-cutoff \{[^}]*color: #8B98A5;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names,\s*#email-checker \.email-sticky\.is-cutoff \{[^}]*border: 1px solid #8B98A5;/);
   assert.match(css, /#email-checker \.email-sticky\[hidden\] \{\s*display: none !important;/);
   assert.match(css, /min-height: 48px;/);
   assert.match(css, /#email-checker \.email-how > summary::before \{[^}]*content: none;/);
@@ -676,6 +677,39 @@ test("paste keeps the cursor on line 1", function () {
   assert.match(css, /white-space: pre;/);
   assert.match(page, /id="email-expand-btn" aria-expanded="false"/);
   assert.match(page, /Expand editor ↕/);
+});
+
+test("a mistake on line 2051 does not count as a clean script", function () {
+  const lines = ["def mailer = API.getMailer()"];
+  while (lines.length < 2050) lines.push("// still fine");
+  lines.push('String subject = "${cc}"');
+  assert.equal(lines.length, 2051);
+  const hidden = checker.checkScript(lines.join("\n"), { scriptType: "job" });
+  assert.equal(hidden.truncated, true);
+  assert.equal(hidden.lineLimit, 2000);
+  assert.equal(hidden.issues.length, 0);
+  assert.equal(hidden.issues.some(function (issue) { return issue.line === 2051; }), false);
+  const bar = liveLint.statusBar(hidden);
+  assert.notEqual(bar.state, "clear");
+  assert.equal(bar.state, "cutoff");
+  assert.equal(bar.text, "? No problems in the first 2,000 lines. The rest wasn't checked.");
+  lines[10] = 'String early = "${period}"';
+  const found = checker.checkScript(lines.join("\n"), { scriptType: "job" });
+  assert.ok(found.issues.some(function (issue) { return issue.rule === "EM01" && issue.line === 11; }));
+  assert.equal(found.issues.some(function (issue) { return issue.line > 2000; }), false);
+  assert.deepEqual(liveLint.statusBar(found), {
+    state: "issues",
+    text: "Issues (1). Only the first 2,000 lines were checked."
+  });
+  const within = checker.checkScript("def mailer = API.getMailer()\n", { scriptType: "job" });
+  assert.equal(within.truncated, false);
+  assert.equal(liveLint.statusBar(within).state, "clear");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.match(ui, /is-cutoff/);
+  assert.match(ui, /!result\.truncated && !errors\.length/);
+  assert.match(css, /#email-checker \.email-sticky\.is-cutoff \{[^}]*color: #8B98A5;/);
+  assert.match(css, /#email-checker \.cm-scroller \{\s*padding-bottom: 56px;/);
 });
 
 test("the live editor uses the Web Designer syntax colours", function () {

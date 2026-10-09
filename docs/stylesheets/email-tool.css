@@ -878,6 +878,7 @@
 
 #email-checker .email-sticky.is-clear,
 #email-checker .email-sticky.is-names,
+#email-checker .email-sticky.is-cutoff,
 #email-checker .email-sticky.is-issues {
   display: flex;
   align-items: center;
@@ -890,7 +891,8 @@
   background: rgba(163, 230, 53, 0.12);
 }
 
-#email-checker .email-sticky.is-names {
+#email-checker .email-sticky.is-names,
+#email-checker .email-sticky.is-cutoff {
   height: 48px;
   color: #8B98A5;
   border: 1px solid #8B98A5;
@@ -1200,8 +1202,13 @@
     padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
   }
 
+  #email-checker .cm-scroller {
+    padding-bottom: 56px;
+  }
+
   #email-checker .email-sticky.is-clear,
   #email-checker .email-sticky.is-names,
+  #email-checker .email-sticky.is-cutoff,
   #email-checker .email-sticky.is-issues {
     position: fixed;
     left: 0;
@@ -1219,7 +1226,8 @@
     border-top: 1px solid var(--dn-border);
   }
 
-  #email-checker .email-sticky.is-names {
+  #email-checker .email-sticky.is-names,
+  #email-checker .email-sticky.is-cutoff {
     height: auto;
     min-height: 48px;
     padding: 6px 12px calc(6px + env(safe-area-inset-bottom));

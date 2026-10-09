@@ -15,8 +15,6 @@ Fill in the form, watch the email build, then download a tested Groovy script. N
 <a href="../email-checker/">Checker</a>
 </div>
 
-<p class="email-privacy">Everything runs in your browser. Nothing you type or paste is sent anywhere.</p>
-
 This builder writes the same Groovy job as the [Automated value emails](automated-value-emails.md) post, with your wording in it. The script is generated from the tested version in that post, so the safety rules come with it: `{{...}}` markers instead of `${...}`, single-quoted strings only, every value escaped, and test mode on by default.
 
 The preview uses the site's made-up sample data. Your real emails will show your own cube's numbers. Every address in the examples is on `example.com`.

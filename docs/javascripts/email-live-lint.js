@@ -67,17 +67,33 @@
     return (count === 1 ? "1 name" : count + " names") + " to check";
   }
 
+  function formatLineCount(n) {
+    return String(n == null ? 2000 : n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function checkedLinesNote(lineLimit) {
+    return "Only the first " + formatLineCount(lineLimit) + " lines were checked.";
+  }
+
+  function cutoffClearText(lineLimit) {
+    return "? No problems in the first " + formatLineCount(lineLimit) + " lines. The rest wasn't checked.";
+  }
+
   function statusBar(result) {
     var issues = result && result.issues ? result.issues : [];
     if (!result || result.empty || result.notGroovy) return { state: "hidden", text: "" };
+    if (result.truncated && !issues.length) {
+      return { state: "cutoff", text: cutoffClearText(result.lineLimit) };
+    }
     if (!issues.length) return { state: "clear", text: "✓ No problems found" };
     if (issues.every(isNameCheck)) {
-      return {
-        state: "names",
-        text: "? No errors or warnings. " + checkPillText(result) + " in your Jedox, listed below."
-      };
+      var names = "? No errors or warnings. " + checkPillText(result) + " in your Jedox, listed below.";
+      if (result.truncated) names += " " + checkedLinesNote(result.lineLimit);
+      return { state: "names", text: names };
     }
-    return { state: "issues", text: "Issues (" + issues.length + ")" };
+    var text = "Issues (" + issues.length + ")";
+    if (result.truncated) text += ". " + checkedLinesNote(result.lineLimit);
+    return { state: "issues", text: text };
   }
 
   /* Paste leaves the cursor where the text went in. An empty editor
@@ -101,6 +117,9 @@
     howDetailsOpen: howDetailsOpen,
     nameCount: nameCount,
     checkPillText: checkPillText,
+    formatLineCount: formatLineCount,
+    checkedLinesNote: checkedLinesNote,
+    cutoffClearText: cutoffClearText,
     statusBar: statusBar,
     pasteChange: pasteChange
   };

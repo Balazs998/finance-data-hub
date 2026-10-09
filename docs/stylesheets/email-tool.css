@@ -55,6 +55,25 @@
   grid-template-columns: minmax(0, 1fr) minmax(260px, 380px);
 }
 
+.email-editor-column,
+#email-checker .email-panel {
+  min-width: 0;
+}
+
+@media screen and (max-width: 1100px) {
+  .email-grid-checker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media screen and (min-width: 1100px) {
+  #email-checker .email-editor-column {
+    position: sticky;
+    top: 72px;
+    align-self: start;
+  }
+}
+
 .email-card {
   background: var(--dn-surface);
   border: 1px solid var(--dn-border);
@@ -554,12 +573,21 @@
   box-shadow: inset 3px 0 #fbbf24;
 }
 
-.email-line.is-error .email-wavy {
+.email-line.is-error .email-wavy,
+#email-checker .cm-lintRange-error {
+  background-image: none;
   text-decoration: underline wavy #f87171;
 }
 
-.email-line.is-warning .email-wavy {
+.email-line.is-warning .email-wavy,
+#email-checker .cm-lintRange-warning {
+  background-image: none;
   text-decoration: underline wavy #fbbf24;
+}
+
+#email-checker .cm-lintRange-info {
+  background-image: none;
+  text-decoration: underline dotted #9aa7b4;
 }
 
 .md-typeset .email-app .email-code-main textarea {
@@ -708,6 +736,12 @@
   line-height: 1.5;
 }
 
+.md-typeset .email-app .email-issue pre,
+.md-typeset .email-app .email-issue pre > code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .md-typeset .email-app .email-issue pre > code {
   margin: 0;
   padding: 0;
@@ -715,6 +749,7 @@
   background: transparent;
   box-shadow: none;
   color: var(--dn-text-muted);
+  white-space: pre-wrap;
 }
 
 .email-banner {
@@ -722,7 +757,7 @@
   color: var(--dn-text-muted);
 }
 
-.email-app :focus-visible {
+.email-app :focus-visible:not(.cm-content) {
   outline: 2px solid #38bdf8;
   outline-offset: 2px;
 }
@@ -733,6 +768,180 @@
 
 .email-next {
   margin-top: 28px;
+}
+
+#email-checker .email-editor,
+#email-checker .cm-editor {
+  background: #18222e;
+  border-radius: 8px;
+}
+
+#email-checker .cm-editor {
+  min-height: 420px;
+  color: var(--dn-text);
+}
+
+#email-checker .cm-scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  min-height: 420px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-content {
+  padding: 20px 16px 20px 20px;
+  caret-color: #e6edf3;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-content:focus,
+#email-checker .cm-content:focus-visible {
+  outline: none;
+}
+
+#email-checker .cm-line {
+  padding: 0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-gutters {
+  background: #18222e;
+  border-right: 1px solid #243241;
+  min-width: 48px;
+  min-height: 420px !important;
+  color: #8b98a5;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+}
+
+#email-checker .cm-lineNumbers .cm-gutterElement {
+  color: #8b98a5;
+  text-align: right;
+  padding: 0 12px 0 8px;
+  min-width: 36px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-gutter-lint {
+  width: 16px;
+}
+
+#email-checker .cm-gutter-lint .cm-gutterElement {
+  padding-left: 2px;
+  padding-right: 0;
+}
+
+#email-checker .cm-lint-marker {
+  width: auto;
+  height: auto;
+  min-height: 1em;
+  content: none;
+  font-family: Inter, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+#email-checker .cm-lint-marker-error {
+  color: #f87171;
+}
+
+#email-checker .cm-lint-marker-warning {
+  color: #fbbf24;
+}
+
+#email-checker .cm-lint-marker-info {
+  color: #8b98a5;
+}
+
+#email-checker .cm-activeLine,
+#email-checker .cm-activeLineGutter {
+  background-color: rgba(56, 189, 248, 0.06);
+}
+
+#email-checker .cm-editor.cm-focused {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+#email-checker .cm-placeholder {
+  color: var(--dn-text-faint);
+}
+
+#email-checker .cm-tooltip.cm-tooltip-autocomplete {
+  background: #18222e;
+  border: 1px solid #2b3a4a;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+#email-checker .cm-tooltip-autocomplete ul {
+  max-height: 256px;
+  min-width: 280px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+#email-checker .cm-tooltip-autocomplete ul li {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: var(--dn-text);
+}
+
+#email-checker .cm-tooltip-autocomplete ul li[aria-selected] {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--dn-text);
+  box-shadow: inset 2px 0 #38bdf8;
+}
+
+#email-checker .cm-completionLabel {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+#email-checker .cm-completionDetail {
+  margin-left: auto;
+  padding-left: 16px;
+  color: var(--dn-text-muted);
+  font-family: Inter, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+}
+
+#email-checker .cm-tooltip.cm-tooltip-hover,
+#email-checker .cm-tooltip.cm-tooltip-lint {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+#email-checker .email-hover-stack .email-issue {
+  max-width: 360px;
+  margin: 0;
+}
+
+#email-checker .cm-diagnostic {
+  padding: 0;
+  margin: 0;
+}
+
+@media screen and (max-width: 760px) {
+  #email-checker .cm-editor,
+  #email-checker .cm-scroller,
+  #email-checker .cm-gutters {
+    min-height: 240px !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -752,12 +961,25 @@
     grid-template-columns: 1fr;
   }
 
-  .email-app:not(.is-panel-open) .email-panel {
+  #email-checker .cm-editor,
+  #email-checker .cm-content,
+  #email-checker .cm-line,
+  #email-checker .cm-gutters {
+    font-size: 13px;
+  }
+
+  #email-checker .cm-content,
+  #email-checker .cm-line,
+  #email-checker .cm-gutterElement {
+    line-height: calc(1.7 * 13px);
+  }
+
+  #email-builder:not(.is-panel-open) .email-panel {
     display: none;
   }
 
-  .email-app.is-panel-open .email-form,
-  .email-app.is-panel-open .email-editor-column {
+  #email-builder.is-panel-open .email-form,
+  #email-builder.is-panel-open .email-editor-column {
     display: none;
   }
 

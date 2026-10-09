@@ -57,9 +57,18 @@ class EmailPageTests(unittest.TestCase):
         self.assertIn("Groovy job", html)
         self.assertIn("Groovy function", html)
         self.assertIn("the script will fail or send the wrong thing.", html)
-        self.assertIn("Paste your Groovy job script here. Nothing leaves your browser.", html)
+        self.assertIn("Paste or type your Groovy script here. Nothing leaves your browser.", html)
+        self.assertIn(
+            "It checks as you type. As you type, it also suggests documented Jedox calls, "
+            "plus the helper functions and job variables from the Automated value emails script.",
+            html,
+        )
         self.assertIn('href="../email-builder/"', html)
         self.assertIn(">Issues</button>", html)
+        self.assertIn("codemirror-bundle.js", html)
+        self.assertNotIn("jsdelivr", html)
+        self.assertNotIn("unpkg.com", html)
+        self.assertNotIn(">Check script<", html)
         self.assertEqual(html.count("data-goatcounter"), 1)
 
     def test_published_scripts_and_styles_are_local(self):

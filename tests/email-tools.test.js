@@ -9,6 +9,8 @@ const sources = require("../docs/javascripts/email-sources.js");
 const messages = require("../docs/javascripts/email-check-messages.js");
 const generate = require("../docs/javascripts/email-generate.js");
 const checker = require("../docs/javascripts/email-checker-core.js");
+const completions = require("../docs/javascripts/email-completions.js");
+const liveLint = require("../docs/javascripts/email-live-lint.js");
 
 function problems(script, scriptType) {
   return checker.checkScript(script, { scriptType: scriptType || "job" }).issues
@@ -322,4 +324,187 @@ test("grey Jedox cards are grouped by kind and list every line", function () {
 test("plain setMessage is not an html error", function () {
   const script = "def mailer = API.getMailer()\nboolean testMode = true\nmailer.reset()\nmailer.addRecipient(to)\nmailer.setMessage('Hello')\nmailer.send()\n";
   assert.deepEqual(allIssues(script), []);
+});
+
+test("autocomplete offers Jedox calls and job variables, not deprecated setServer", function () {
+  const labels = completions.suggestions().map(function (item) { return item.label; });
+  const joined = labels.join("\n");
+  ["API.getMailer()", "API.initSource()", "API.getProperty()", "setHtmlMessage()", "setting()", "readFile()"].forEach(function (label) {
+    assert.ok(labels.indexOf(label) >= 0, label);
+  });
+  ["TEST_MODE", "RECIPIENT_TEST", "PERIOD", "VERSION_PLAN", "VERSION_ACTUAL", "SUBJECT_TEMPLATE", "COLOR_VARIANCE", "SOURCE_EXTRACT", "TEMPLATE_FILE", "RECIPIENTS_FILE", "ACCOUNTS_FILE", "COST_CENTERS_FILE"].forEach(function (label) {
+    const item = completions.suggestions().filter(function (row) { return row.label === label; })[0];
+    assert.ok(item, label);
+    assert.equal(item.detail, "job variable");
+  });
+  assert.equal(completions.suggestions().filter(function (row) { return row.label === "API.initSource()"; })[0].detail, "Jedox API");
+  assert.equal(joined.indexOf("setServer"), -1);
+  assert.equal(joined.indexOf("setSMTPServer"), -1);
+  assert.equal(joined.indexOf("setSender"), -1);
+  assert.equal(joined.indexOf("smtp.example.com"), -1);
+  assert.deepEqual(completions.matching("setServer").map(function (item) { return item.label; }), []);
+  assert.deepEqual(completions.matching("setS").map(function (item) { return item.label; }), ["setSubject()"]);
+  assert.ok(completions.matching("set").every(function (item) { return item.label.indexOf("setServer") < 0; }));
+  assert.equal(completions.visible(completions.suggestions()).length, completions.MAX_ROWS);
+  assert.equal(completions.MAX_ROWS, 8);
+});
+
+test("autocomplete excludes calls the checker flags as deprecated or wrong", function () {
+  assert.deepEqual(completions.wrongCallRules(), ["EM04", "EM06", "EM07"]);
+  assert.equal(completions.blockedByChecker("API.getSource()"), "EM07");
+  assert.equal(completions.blockedByChecker("setServer('smtp.example.com', 'user', 'secret')"), "EM04");
+  assert.equal(completions.blockedByChecker("mailer.setServer('smtp.example.com', 'user', 'secret')"), "EM04");
+  assert.equal(completions.blockedByChecker("setSMTPServer('smtp.example.com')"), "EM04");
+  assert.equal(completions.blockedByChecker("setSender('reports@example.com')"), "EM04");
+  assert.equal(completions.blockedByChecker("setMessage(html)"), "EM06");
+  assert.equal(completions.blockedByChecker("API.initSource()"), "");
+  assert.equal(completions.blockedByChecker("setHtmlMessage()"), "");
+  assert.equal(completions.blockedByChecker("setMessage()"), "");
+  assert.equal(completions.blockedByChecker("API.getMailer()"), "");
+  assert.equal(completions.blockedByChecker("readFile()"), "");
+  assert.equal(completions.blockedByChecker("setting()"), "");
+  const labels = completions.suggestions().map(function (item) { return item.label; });
+  assert.equal(labels.indexOf("API.getSource()"), -1);
+  assert.equal(labels.indexOf("setMessage(html)"), -1);
+  assert.ok(labels.indexOf("API.initSource()") >= 0);
+  assert.ok(labels.indexOf("API.getMailer()") >= 0);
+  assert.ok(labels.indexOf("setMessage()") >= 0);
+  completions.CANDIDATES.forEach(function (label) {
+    const blocked = completions.blockedByChecker(label);
+    assert.equal(labels.indexOf(label) >= 0, !blocked, label + " " + blocked);
+  });
+  labels.forEach(function (label) {
+    assert.equal(completions.blockedByChecker(label), "", label);
+  });
+  assert.ok(completions.CANDIDATES.indexOf("API.getSource()") >= 0);
+  assert.ok(completions.CANDIDATES.some(function (label) {
+    return label.indexOf("setServer(") >= 0 && label.indexOf("secret") >= 0;
+  }));
+  assert.deepEqual(completions.matching("getSource").map(function (item) { return item.label; }), []);
+  assert.ok(completions.matching("getS").every(function (item) { return item.label.indexOf("getSource") < 0; }));
+  assert.deepEqual(completions.JEDOX_CALLS, labels.filter(function (label) {
+    return completions.JOB_VARIABLES.indexOf(label) < 0;
+  }));
+});
+
+test("autocomplete matches the documented Jedox 26.1 calls", function () {
+  const rows = completions.suggestions();
+  const labels = rows.map(function (item) { return item.label; });
+  ["getColumnDouble()", "getColumnInt()", "getColumnLong()", "readText()"].forEach(function (label) {
+    assert.equal(completions.CANDIDATES.indexOf(label), -1, label);
+    assert.equal(labels.indexOf(label), -1, label);
+  });
+  ["nextRow()", "getColumnString()", "getColumnValue()", "close()", "readBinary()"].forEach(function (label) {
+    const item = rows.filter(function (row) { return row.label === label; })[0];
+    assert.ok(item, label);
+    assert.equal(item.detail, "Jedox API");
+  });
+  ["readFile()", "setting()"].forEach(function (label) {
+    const item = rows.filter(function (row) { return row.label === label; })[0];
+    assert.ok(item, label);
+    assert.equal(item.detail, "from the email script");
+  });
+  assert.deepEqual(completions.matching("readT").map(function (item) { return item.label; }), []);
+  assert.deepEqual(completions.matching("read").map(function (item) { return item.label; }).sort(), ["readBinary()", "readFile()"]);
+  assert.ok(completions.matching("getColumn").every(function (item) {
+    return item.label !== "getColumnDouble()" && item.label !== "getColumnInt()" && item.label !== "getColumnLong()";
+  }));
+  assert.deepEqual(completions.matching("API.").map(function (item) { return item.label; }), [
+    "API.getMailer()",
+    "API.getProperty()",
+    "API.initSource()"
+  ]);
+});
+
+test("live lint waits 400ms after typing stops", function () {
+  const { mock } = require("node:test");
+  mock.timers.enable({ apis: ["setTimeout"] });
+  try {
+    assert.equal(liveLint.QUIET_MS, 400);
+    assert.equal(liveLint.DROPDOWN_MIN_WIDTH, 640);
+    assert.equal(liveLint.STACK_BELOW, 1100);
+    assert.equal(liveLint.dropdownEnabled(639), false);
+    assert.equal(liveLint.dropdownEnabled(640), true);
+    assert.equal(liveLint.dropdownEnabled(390), false);
+    assert.equal(liveLint.issuesBelowEditor(1099), true);
+    assert.equal(liveLint.issuesBelowEditor(1100), false);
+    assert.equal(liveLint.issuesBelowEditor(1440), false);
+    const runs = [];
+    const live = liveLint.createLiveLint(liveLint.QUIET_MS);
+    live.push(function () { runs.push("first"); });
+    mock.timers.tick(399);
+    assert.deepEqual(runs, []);
+    live.push(function () { runs.push("second"); });
+    mock.timers.tick(399);
+    assert.deepEqual(runs, []);
+    mock.timers.tick(1);
+    assert.deepEqual(runs, ["second"]);
+    assert.equal(live.pending(), false);
+  } finally {
+    mock.timers.reset();
+  }
+});
+
+test("the checker page lints on the quiet period and stacks by width", function () {
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const page = fs.readFileSync(path.join(root, "docs/jedox/email-checker.md"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.match(ui, /delay:\s*liveLint\.QUIET_MS/);
+  assert.match(ui, /maxRenderedOptions:\s*completions\.MAX_ROWS/);
+  assert.match(ui, /dropdownEnabled\(window\.innerWidth\)/);
+  assert.doesNotMatch(page, /Check script/);
+  assert.match(page, /data-placeholder="Paste or type your Groovy script here\. Nothing leaves your browser\."/);
+  assert.match(page, /It checks as you type\. As you type, it also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
+  assert.match(css, /@media screen and \(max-width: 1100px\)/);
+  assert.match(css, /underline dotted #9aa7b4/);
+  assert.match(css, /#email-checker \.cm-content:focus-visible \{\s*outline: none;/);
+  assert.match(css, /@media screen and \(min-width: 1100px\) \{\s*#email-checker \.email-editor-column \{\s*position: sticky;\s*top: 72px;/);
+  assert.match(css, /#email-checker \.cm-lint-marker-error \{\s*color: #f87171;/);
+  assert.match(css, /#email-checker \.cm-lint-marker-warning \{\s*color: #fbbf24;/);
+  assert.match(ui, /mark = "✕"/);
+  assert.match(ui, /mark = "!"/);
+  assert.match(ui, /setAttribute\("aria-label", kind\)/);
+  assert.match(css, /#email-checker \.cm-content,\s*#email-checker \.cm-line,\s*#email-checker \.cm-gutters \{\s*font-size: 13px;/);
+  assert.match(css, /\.email-issue pre > code \{[^}]*white-space: pre-wrap;/);
+  assert.match(css, /\.email-issue pre > code \{[^}]*overflow-wrap: anywhere;/);
+  const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
+  assert.equal(bundle.indexOf("jsdelivr"), -1);
+  assert.equal(bundle.indexOf("unpkg.com"), -1);
+  assert.equal(bundle.indexOf("esm.sh"), -1);
+});
+
+test("the CodeMirror bundle keeps the MIT banner", function () {
+  const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
+  const license = fs.readFileSync(path.join(root, "docs/javascripts/LICENSE-codemirror.txt"), "utf8");
+  assert.ok(bundle.startsWith("/*!\n" + license + "*/\n"), "banner is the licence file at the top of the bundle");
+  assert.match(license, /Permission is hereby granted, free of charge/);
+  assert.match(license, /THE SOFTWARE IS PROVIDED "AS IS"/);
+  [
+    "@codemirror/autocomplete",
+    "@codemirror/commands",
+    "@codemirror/language",
+    "@codemirror/lint",
+    "@codemirror/state",
+    "@codemirror/view",
+    "@lezer/common",
+    "@lezer/highlight",
+    "@marijn/find-cluster-break",
+    "crelt",
+    "style-mod",
+    "w3c-keyname"
+  ].forEach(function (name) {
+    assert.match(license, new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  });
+  [
+    "Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others",
+    "Copyright (C) 2018 by Marijn Haverbeke <marijn@haverbeke.berlin> and others",
+    "Copyright (C) 2024 by Marijn Haverbeke <marijn@haverbeke.berlin>",
+    "Copyright (C) 2020 by Marijn Haverbeke <marijn@haverbeke.berlin>",
+    "Copyright (C) 2016 by Marijn Haverbeke <marijn@haverbeke.berlin> and others"
+  ].forEach(function (line) {
+    assert.ok(license.indexOf(line) >= 0, line);
+  });
+  const code = bundle.slice(bundle.indexOf("*/\n") + 3);
+  assert.ok(code.length > 1000);
+  assert.equal(code.indexOf("/*"), -1);
 });

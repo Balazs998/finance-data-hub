@@ -3,17 +3,17 @@
 // Groovy job for Jedox Integrator 26.1. Synthetic sample data, example.com addresses only.
 //
 // The file has two parts:
-//   PART 1  Plain Groovy, no Jedox API. Builds the subject and HTML of one email.
-//           You can run and test it anywhere Groovy runs.
-//   PART 2  The Jedox block at the end. Reads the job variables, the files and the
-//           cube extract, then sends one email per cost center.
+// PART 1 Plain Groovy, no Jedox API. Builds the subject and HTML of one email.
+// You can run and test it anywhere Groovy runs.
+// PART 2 The Jedox block at the end. Reads the job variables, the files and the
+// cube extract, then sends one email per cost center.
 //
 // Two rules this file follows on purpose:
-//   - Only single-quoted strings, and no dollar sign followed by a brace anywhere.
-//     Integrator replaces its own variables written that way in job scripts, and
-//     Groovy double-quoted strings expand them as well.
-//   - The email template uses {{NAME}} markers. They are filled literally, in one
-//     pass, so a value that contains $ < & or {{ is never expanded again.
+// - Only single-quoted strings, and no dollar sign followed by a brace anywhere.
+// Integrator replaces its own variables written that way in job scripts, and
+// Groovy double-quoted strings expand them as well.
+// - The email template uses {{NAME}} markers. They are filled literally, in one
+// pass, so a value that contains $ < & or {{ is never expanded again.
 
 import groovy.transform.Field
 import java.math.RoundingMode
@@ -29,9 +29,9 @@ import java.text.DecimalFormatSymbols
 ]
 
 // Cell snippets, copied from Web Designer's cell-snippets.html.
-@Field final String TH_LEFT  = '<th align="left" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;">{{LABEL}}</th>'
+@Field final String TH_LEFT = '<th align="left" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;">{{LABEL}}</th>'
 @Field final String TH_RIGHT = '<th align="right" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;">{{LABEL}}</th>'
-@Field final String TD_TEXT  = '<td align="left" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;">{{VALUE}}</td>'
+@Field final String TD_TEXT = '<td align="left" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;">{{VALUE}}</td>'
 @Field final String TD_NUMBER = '<td align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;">{{NUMBER}}</td>'
 @Field final String TD_NUMBER_UNFAVORABLE = '<td align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;color:#C2410C;">{{NUMBER}}</td>'
 @Field final String TD_TOTAL = '<td align="right" style="padding:10px;border-top:2px solid #1F2933;font-weight:bold;font-family:Consolas,Menlo,monospace;">{{NUMBER}}</td>'
@@ -47,17 +47,17 @@ import java.text.DecimalFormatSymbols
 // {{PERIOD}} {{VERSION_PLAN}} {{VERSION_ACTUAL}}
 @Field final Map<String, String> TEXT = [
     HEADER_LABEL : 'Monthly cost center report',
-    TITLE        : 'Cost center {{COST_CENTER}} {{COST_CENTER_NAME}}',
-    GREETING     : 'Hello {{OWNER_NAME}},',
-    INTRO        : 'Here are the {{PERIOD}} values for your cost center, {{VERSION_ACTUAL}} against {{VERSION_PLAN}} by account.',
-    NOTE         : 'Variance is {{VERSION_ACTUAL}} minus {{VERSION_PLAN}}. Highlighted variances are unfavorable for that account type. Sample data only.',
-    FOOTER       : 'Sent automatically by a Jedox Integrator job.',
-    FOOTER_TEST  : ' Test mode: on. Intended recipient: {{OWNER_EMAIL}}.',
-    COL_ACCOUNT  : 'Account',
+    TITLE : 'Cost center {{COST_CENTER}} {{COST_CENTER_NAME}}',
+    GREETING : 'Hello {{OWNER_NAME}},',
+    INTRO : 'Here are the {{PERIOD}} values for your cost center, {{VERSION_ACTUAL}} against {{VERSION_PLAN}} by account.',
+    NOTE : 'Variance is {{VERSION_ACTUAL}} minus {{VERSION_PLAN}}. Highlighted variances are unfavorable for that account type. Sample data only.',
+    FOOTER : 'Sent automatically by a Jedox Integrator job.',
+    FOOTER_TEST : ' Test mode: on. Intended recipient: {{OWNER_EMAIL}}.',
+    COL_ACCOUNT : 'Account',
     COL_VARIANCE : 'Variance',
-    TOTAL_NET    : 'Net result (revenue minus expense)',
+    TOTAL_NET : 'Net result (revenue minus expense)',
     TOTAL_EXPENSE: 'Total expense',
-    TEST_PREFIX  : '[TEST for {{OWNER_EMAIL}}] '
+    TEST_PREFIX : '[TEST for {{OWNER_EMAIL}}] '
 ]
 
 // Characters replaced before any value goes into the HTML. $ { } are encoded too,
@@ -217,8 +217,8 @@ String numberCell(String snippet, BigDecimal value) {
 
 // Builds one email. Returns [subject: plain text, html: finished HTML].
 // args: template, subjectTemplate, costCenter, costCenterName, ownerName, ownerEmail,
-//       period, versionPlan, versionActual, amounts (account -> [plan, actual]),
-//       accounts (account -> [name, type]), colorVariance, testMode
+// period, versionPlan, versionActual, amounts (account -> [plan, actual]),
+// accounts (account -> [name, type]), colorVariance, testMode
 Map<String, String> buildEmail(Map args) {
     String template = args.template
     checkTemplate(template)
@@ -228,13 +228,13 @@ Map<String, String> buildEmail(Map args) {
 
     // Plain-text values for the wording markers.
     Map<String, String> words = [
-        COST_CENTER     : args.costCenter ?: '',
+        COST_CENTER : args.costCenter ?: '',
         COST_CENTER_NAME: args.costCenterName ?: '',
-        OWNER_NAME      : args.ownerName ?: '',
-        OWNER_EMAIL     : args.ownerEmail ?: '',
-        PERIOD          : args.period ?: '',
-        VERSION_PLAN    : args.versionPlan ?: '',
-        VERSION_ACTUAL  : args.versionActual ?: ''
+        OWNER_NAME : args.ownerName ?: '',
+        OWNER_EMAIL : args.ownerEmail ?: '',
+        PERIOD : args.period ?: '',
+        VERSION_PLAN : args.versionPlan ?: '',
+        VERSION_ACTUAL : args.versionActual ?: ''
     ]
     Closure<String> say = { String key -> escapeHtml(fillMarkers(TEXT.get(key), words).trim()) }
 
@@ -293,18 +293,18 @@ Map<String, String> buildEmail(Map args) {
     String footer = fillMarkers(TEXT.FOOTER, words) + (args.testMode ? fillMarkers(TEXT.FOOTER_TEST, words) : '')
 
     Map<String, String> values = [
-        SUBJECT     : escapeHtml(subject),
+        SUBJECT : escapeHtml(subject),
         HEADER_LABEL: say('HEADER_LABEL'),
-        TITLE       : say('TITLE'),
-        PERIOD      : escapeHtml(args.period),
-        VERSION     : escapeHtml(args.versionActual + ' vs ' + args.versionPlan),
-        GREETING    : say('GREETING'),
-        INTRO       : say('INTRO'),
+        TITLE : say('TITLE'),
+        PERIOD : escapeHtml(args.period),
+        VERSION : escapeHtml(args.versionActual + ' vs ' + args.versionPlan),
+        GREETING : say('GREETING'),
+        INTRO : say('INTRO'),
         HEADER_CELLS: headerCells,
-        TABLE_ROWS  : rows.toString(),
+        TABLE_ROWS : rows.toString(),
         TOTAL_CELLS : totalCells,
-        NOTE        : say('NOTE'),
-        FOOTER      : escapeHtml(footer)
+        NOTE : say('NOTE'),
+        FOOTER : escapeHtml(footer)
     ]
     String html = fillMarkers(template, values)
     assertNoLeftovers(html, 'email for ' + args.costCenter)
@@ -330,14 +330,14 @@ Closure<String> readFile = { String connectionName ->
 }
 
 // Anything other than 'false' keeps test mode on.
-boolean testMode    = !setting('TEST_MODE', 'true').equalsIgnoreCase('false')
-String testTo       = setting('RECIPIENT_TEST', 'test.recipient@example.com')
-String period       = setting('PERIOD', '2026-03')
-String vPlan        = setting('VERSION_PLAN', 'Budget')
-String vActual      = setting('VERSION_ACTUAL', 'Actual')
-String subjectTpl   = setting('SUBJECT_TEMPLATE', '{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}')
-boolean colorVar    = !setting('COLOR_VARIANCE', 'true').equalsIgnoreCase('false')
-String extractName  = setting('SOURCE_EXTRACT', 'PnL_BudgetActual')
+boolean testMode = !setting('TEST_MODE', 'true').equalsIgnoreCase('false')
+String testTo = setting('RECIPIENT_TEST', 'test.recipient@example.com')
+String period = setting('PERIOD', '2026-03')
+String vPlan = setting('VERSION_PLAN', 'Budget')
+String vActual = setting('VERSION_ACTUAL', 'Actual')
+String subjectTpl = setting('SUBJECT_TEMPLATE', '{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}')
+boolean colorVar = !setting('COLOR_VARIANCE', 'true').equalsIgnoreCase('false')
+String extractName = setting('SOURCE_EXTRACT', 'PnL_BudgetActual')
 
 // File connections (location FileSystem, relative to the local files folder).
 // Their file names are the job variables TEMPLATE_FILE, RECIPIENTS_FILE,
@@ -357,9 +357,9 @@ def src = API.initSource(extractName)
 if (src == null) throw new IllegalStateException('Could not initialize extract ' + extractName)
 while (src.nextRow()) {
     rows.add([costCenter: src.getColumnString('CostCenter'),
-              account   : src.getColumnString('Account'),
-              version   : src.getColumnString('Version'),
-              value     : src.getColumnValue('#Value')])
+              account : src.getColumnString('Account'),
+              version : src.getColumnString('Version'),
+              value : src.getColumnValue('#Value')])
 }
 src.close()
 

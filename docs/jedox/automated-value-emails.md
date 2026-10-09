@@ -29,7 +29,7 @@ mailer.addRecipient('owner.cc4010@example.com')
 mailer.setSubject('CC4010 Actual vs Budget, 2026-03')
 mailer.setHtmlMessage(html)
 mailer.send()
-mailer.reset()   // clear recipients, subject and body before the next email
+mailer.reset() // clear recipients, subject and body before the next email
 ```
 
 `addCcRecipient` and `addBccRecipient` work the same way as `addRecipient`. `addAttachment('file.xlsx')` attaches a file, with the path relative to the local files folder.
@@ -201,14 +201,14 @@ Closure<String> readFile = { String connectionName ->
 }
 
 // Anything other than 'false' keeps test mode on.
-boolean testMode    = !setting('TEST_MODE', 'true').equalsIgnoreCase('false')
-String testTo       = setting('RECIPIENT_TEST', 'test.recipient@example.com')
-String period       = setting('PERIOD', '2026-03')
-String vPlan        = setting('VERSION_PLAN', 'Budget')
-String vActual      = setting('VERSION_ACTUAL', 'Actual')
-String subjectTpl   = setting('SUBJECT_TEMPLATE', '{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}')
-boolean colorVar    = !setting('COLOR_VARIANCE', 'true').equalsIgnoreCase('false')
-String extractName  = setting('SOURCE_EXTRACT', 'PnL_BudgetActual')
+boolean testMode = !setting('TEST_MODE', 'true').equalsIgnoreCase('false')
+String testTo = setting('RECIPIENT_TEST', 'test.recipient@example.com')
+String period = setting('PERIOD', '2026-03')
+String vPlan = setting('VERSION_PLAN', 'Budget')
+String vActual = setting('VERSION_ACTUAL', 'Actual')
+String subjectTpl = setting('SUBJECT_TEMPLATE', '{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}')
+boolean colorVar = !setting('COLOR_VARIANCE', 'true').equalsIgnoreCase('false')
+String extractName = setting('SOURCE_EXTRACT', 'PnL_BudgetActual')
 
 // File connections (location FileSystem, relative to the local files folder).
 // Their file names are the job variables TEMPLATE_FILE, RECIPIENTS_FILE,
@@ -228,9 +228,9 @@ def src = API.initSource(extractName)
 if (src == null) throw new IllegalStateException('Could not initialize extract ' + extractName)
 while (src.nextRow()) {
     rows.add([costCenter: src.getColumnString('CostCenter'),
-              account   : src.getColumnString('Account'),
-              version   : src.getColumnString('Version'),
-              value     : src.getColumnValue('#Value')])
+              account : src.getColumnString('Account'),
+              version : src.getColumnString('Version'),
+              value : src.getColumnValue('#Value')])
 }
 src.close()
 

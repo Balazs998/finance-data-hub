@@ -60,6 +60,11 @@
   min-width: 0;
 }
 
+#email-checker .email-editor-column,
+#email-checker .email-editor {
+  position: static;
+}
+
 @media screen and (max-width: 1100px) {
   .email-grid-checker {
     grid-template-columns: minmax(0, 1fr);
@@ -71,17 +76,9 @@
     grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
   }
 
-  #email-checker .email-editor-column {
-    position: static;
-  }
-
   #email-checker .email-panel {
     max-height: calc(100vh - 160px);
     overflow: auto;
-  }
-
-  #email-checker .email-how {
-    grid-column: 1 / -1;
   }
 }
 
@@ -791,8 +788,7 @@
 }
 
 #email-checker .email-how {
-  grid-column: 1 / -1;
-  margin: 0;
+  margin: 24px 0 0;
   border: 1px solid var(--dn-border);
   border-radius: 10px;
   background: #111b26;
@@ -921,20 +917,6 @@
   line-height: 1.3;
 }
 
-@media screen and (max-width: 639px) {
-  #email-checker .email-editor-column {
-    order: 1;
-  }
-
-  #email-checker .email-how {
-    order: 2;
-  }
-
-  #email-checker .email-panel {
-    order: 3;
-  }
-}
-
 .email-next {
   margin-top: 28px;
 }
@@ -946,6 +928,7 @@
 }
 
 #email-checker .cm-editor {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 420px;

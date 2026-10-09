@@ -38,6 +38,7 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 <p class="email-banner" id="email-banner" role="status"></p>
 <div id="email-issue-list"></div>
 </div>
+</div>
 <details class="email-how" id="email-how" open>
 <summary>How it works</summary>
 <div class="email-how-body">
@@ -51,7 +52,6 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 </ul>
 </div>
 </details>
-</div>
 <p id="email-status-live" class="email-sr" aria-live="polite"></p>
 <noscript><p>This page needs JavaScript.</p></noscript>
 </div>

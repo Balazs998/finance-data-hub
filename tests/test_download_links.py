@@ -142,6 +142,11 @@ class DownloadShortcodeTests(unittest.TestCase):
                 "Jedox": [
                     "jedox/index.md",
                     {"Management report export": "jedox/management-report-export.md"},
+                    {
+                        "From Snowflake to Jedox: a rerun-safe actuals load with Integrator": (
+                            "jedox/snowflake-to-jedox.md"
+                        )
+                    },
                     {"Automated value emails": "jedox/automated-value-emails.md"},
                 ]
             },
@@ -168,6 +173,10 @@ class DownloadShortcodeTests(unittest.TestCase):
         )
         self.assertLess(
             index.index("jedox/management-report-export.md"),
+            index.index("jedox/snowflake-to-jedox.md"),
+        )
+        self.assertLess(
+            index.index("jedox/snowflake-to-jedox.md"),
             index.index("jedox/automated-value-emails.md"),
         )
         self.assertLess(
@@ -185,8 +194,18 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn("email/recipients.csv", email)
         self.assertIn("email/email-template.html", email)
         self.assertIn("samples/dim_account.csv", email)
-        self.assertEqual(index.count("samples/dim_account.csv"), 2)
-        self.assertEqual(index.count("samples/dim_cost_center.csv"), 2)
+        load = index.split("](jedox/snowflake-to-jedox.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("samples/fact_actuals.csv", load)
+        self.assertIn("samples/load_snowflake.sql", load)
+        self.assertNotIn("email/send_value_emails.groovy", load)
+        for relative in ("samples/dim_account.csv", "samples/dim_cost_center.csv"):
+            mentions = 0
+            for path in DOCS.rglob("*.md"):
+                if path.name == "downloads.md":
+                    continue
+                mentions += path.read_text(encoding="utf-8").count(f"[[download:{relative}|")
+            self.assertEqual(index.count(relative), mentions)
+            self.assertGreaterEqual(mentions, 3)
 
     def test_downloads_page_expands_the_file_index(self):
         class File:

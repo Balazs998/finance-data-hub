@@ -8,7 +8,7 @@ social_image: snowflake-to-jedox.png
 
 Most finance teams keep their actuals in a warehouse and do their planning in a separate tool. This post connects the two. We'll pull monthly actuals out of Snowflake and load them into a Jedox planning cube, in a way you can rerun as often as you like without leaving stale numbers behind.
 
-Everything here runs on made-up sample data: 10 cost centers, 8 accounts, and twelve months of Budget and eleven of Actual for fiscal year 2026. You can download the files below and follow along.
+Everything here runs on made-up sample data: 10 cost centers, 8 accounts, and twelve months of Budget and eleven of Actual for fiscal year 2026 (October 2025 to September 2026). You can download the files below and follow along.
 
 **What you'll build**
 
@@ -16,7 +16,7 @@ Everything here runs on made-up sample data: 10 cost centers, 8 accounts, and tw
 2. A Snowflake view that shapes actuals exactly the way the Jedox cube expects them.
 3. A Jedox Integrator job that first clears the target slice, then loads the fresh actuals.
 
-> **Which Integrator UI?** Jedox 2026.1 ships a legacy Integrator UI and a new UI that's still in beta behind a toggle. The steps and screenshots in this post use the **legacy** UI, because the new UI is still beta and not yet feature-complete.
+> **Which Integrator UI?** Jedox 2026.1 ships a legacy Integrator UI and a new UI that's still in beta behind a toggle. The steps in this post use the **legacy** UI, because the new UI is still beta and not yet feature-complete.
 
 ---
 
@@ -122,7 +122,7 @@ The job has four pieces:
 |---|---|---|
 | 1 | Snowflake connection | Logs in as `JEDOX_SVC` with the private key |
 | 2 | Cube Slice extract + Cube Load (delete mode) | Clears `Actual` for the months being reloaded |
-| 3 | Relational extract | `SELECT * FROM V_JEDOX_ACTUALS WHERE period BETWEEN ...` |
+| 3 | Relational extract | `SELECT version, period, cost_center, account, amount FROM V_JEDOX_ACTUALS WHERE period BETWEEN ...` |
 | 4 | Cube Load | Writes the fresh actuals into `PnL` |
 
 ### 4.1 Connection

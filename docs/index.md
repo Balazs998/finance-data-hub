@@ -40,6 +40,10 @@ Practical notes on Snowflake, Jedox, and Excel VBA for people who build the FP&A
 
     [:octicons-arrow-right-24: Value emails](jedox/automated-value-emails.md)
 
+    Fill in that job in the browser, or paste a script and check it.
+
+    [:octicons-arrow-right-24: Create your own email](jedox/email-builder.md)
+
 -   :material-microsoft-excel:{ .lg .middle } __VBA and Excel__
 
     ---

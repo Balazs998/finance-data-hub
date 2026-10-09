@@ -16,9 +16,17 @@ extra:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/email-tool.css
 
 extra_javascript:
   - javascripts/reveal.js
+  - javascripts/email-sources.js
+  - javascripts/email-shared.js
+  - javascripts/email-check-messages.js
+  - javascripts/email-generate.js
+  - javascripts/email-checker-core.js
+  - javascripts/email-builder-ui.js
+  - javascripts/email-checker-ui.js
 
 theme:
   name: material
@@ -78,6 +86,9 @@ nav:
       - Management report export: jedox/management-report-export.md
       - Snowflake to Jedox load: jedox/snowflake-to-jedox.md
       - Automated value emails: jedox/automated-value-emails.md
+      - Create your own email:
+          - Builder: jedox/email-builder.md
+          - Checker: jedox/email-checker.md
   - VBA and Excel:
       - vba/index.md
       - Month-close checks: vba/month-close-checks.md

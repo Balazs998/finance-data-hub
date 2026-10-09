@@ -624,22 +624,35 @@ class BuiltSiteTests(unittest.TestCase):
 
         notes = _downloads_linked_from_notes()
         self.assertEqual(sorted({rel for _src, files in notes for rel in files}), disk)
-        sections = []
+
+        # Each file has exactly one button on the page.
+        buttons = re.findall(r'<a class="md-button download" href="\.\./files/([^"]+)"', article)
+        self.assertEqual(sorted(buttons), disk)
+        self.assertEqual(article.count("md-button download"), len(disk))
+
+        # Shared sample files sit in one "Sample data" group at the top.
+        sample_heading = article.find(">Sample data<")
+        self.assertGreaterEqual(sample_heading, 0)
+        sample_files = [rel for rel in disk if rel.startswith("samples/")]
+        self.assertEqual(len(sample_files), 5)
+        first_note_heading = article.find("<h2", sample_heading + 1)
+        sample_section = article[sample_heading:first_note_heading]
+        for relative in sample_files:
+            self.assertIn(f"files/{relative}", sample_section, relative)
+
+        # Every other file sits in the group of the note that links it.
+        rest = article[first_note_heading:]
         for src, files in notes:
+            own = [rel for rel in files if rel not in sample_files]
+            if not own:
+                continue
             href = f'href="{_note_href(src)}"'
-            pos = article.find(href)
+            pos = rest.find(href)
             self.assertGreaterEqual(pos, 0, src)
-            sections.append((pos, src, files))
-        sections.sort()
-        for index, (pos, src, files) in enumerate(sections):
-            end_pos = sections[index + 1][0] if index + 1 < len(sections) else len(article)
-            section = article[pos:end_pos]
-            for relative in files:
-                self.assertIn(
-                    f"files/{relative}",
-                    section,
-                    f"{relative} is missing from the {src} group",
-                )
+            next_heading = rest.find("<h2", pos)
+            section = rest[pos : next_heading if next_heading >= 0 else len(rest)]
+            for relative in own:
+                self.assertIn(f"files/{relative}", section, f"{relative} is missing from the {src} group")
 
     def test_download_events_are_named_per_file_and_the_files_exist(self):
         page = SITE / "downloads" / "index.html"

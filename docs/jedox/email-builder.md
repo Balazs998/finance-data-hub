@@ -82,7 +82,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-field-msg" id="msg-footer" role="status"></p>
 
 <button type="button" class="email-switch is-on" id="test-mode" role="switch" aria-checked="true">
-<span class="email-switch-copy">Test mode: send everything to one address <span class="email-var-tag">job variable</span></span>
+<span class="email-switch-copy">Test mode: send everything <span class="email-switch-tail">to one address <span class="email-var-tag">job variable</span></span></span>
 <span class="email-switch-track" aria-hidden="true"></span>
 </button>
 <p class="email-help" id="test-mode-help-on">Every email goes to the test address. The subject starts with <code>[TEST for owner.cc4010@example.com]</code>, so you can see who it was meant for.</p>
@@ -111,7 +111,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-field-msg" id="msg-versionActual" role="status"></p>
 
 <button type="button" class="email-switch is-on" id="color-variance" role="switch" aria-checked="true">
-<span class="email-switch-copy">Highlight unfavorable variances <span class="email-var-tag">job variable</span></span>
+<span class="email-switch-copy">Highlight unfavorable <span class="email-switch-tail">variances <span class="email-var-tag">job variable</span></span></span>
 <span class="email-switch-track" aria-hidden="true"></span>
 </button>
 <p class="email-help">Colors a variance when it's bad news for that account type. Becomes <code>COLOR_VARIANCE</code>.</p>

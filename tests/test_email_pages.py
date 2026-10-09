@@ -37,9 +37,9 @@ class EmailPageTests(unittest.TestCase):
             "Period <span class=\"email-var-tag\">job variable</span>",
             "Plan version <span class=\"email-var-tag\">job variable</span>",
             "Actual version <span class=\"email-var-tag\">job variable</span>",
-            "Test mode: send everything to one address <span class=\"email-var-tag\">job variable</span>",
+            "Test mode: send everything <span class=\"email-switch-tail\">to one address <span class=\"email-var-tag\">job variable</span>",
             "Test address <span class=\"email-var-tag\">job variable</span>",
-            "Highlight unfavorable variances <span class=\"email-var-tag\">job variable</span>",
+            "Highlight unfavorable <span class=\"email-switch-tail\">variances <span class=\"email-var-tag\">job variable</span>",
             "Extract name <span class=\"email-var-tag\">job variable</span>",
         ):
             self.assertIn(snippet, html)

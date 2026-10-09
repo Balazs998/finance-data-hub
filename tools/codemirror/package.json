@@ -3,7 +3,7 @@
   "private": true,
   "description": "Builds the self-hosted CodeMirror 6 bundle for the email checker.",
   "scripts": {
-    "build": "esbuild entry.js --bundle --minify --format=iife --legal-comments=eof --outfile=../../docs/javascripts/codemirror-bundle.js"
+    "build": "node build.js"
   },
   "dependencies": {
     "@codemirror/autocomplete": "6.18.6",

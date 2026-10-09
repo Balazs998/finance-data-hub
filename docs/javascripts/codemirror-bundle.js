@@ -1,3 +1,63 @@
+/*!
+CodeMirror 6 and the dependencies bundled in codemirror-bundle.js.
+Each package is under the MIT License. Copyright lines are copied from that package's LICENSE file.
+
+@codemirror/autocomplete 6.18.6
+Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@codemirror/commands 6.8.1
+Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@codemirror/language 6.11.3
+Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@codemirror/lint 6.8.5
+Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@codemirror/state 6.5.2
+Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@codemirror/view 6.38.1
+Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@lezer/common 1.5.3
+Copyright (C) 2018 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@lezer/highlight 1.2.5
+Copyright (C) 2018 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+@marijn/find-cluster-break 1.0.4
+Copyright (C) 2024 by Marijn Haverbeke <marijn@haverbeke.berlin>
+
+crelt 1.0.7
+Copyright (C) 2020 by Marijn Haverbeke <marijn@haverbeke.berlin>
+
+style-mod 4.1.4
+Copyright (C) 2018 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+w3c-keyname 2.2.8
+Copyright (C) 2016 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 (()=>{var cs=[],ko=[];(()=>{let n="lc,34,7n,7,7b,19,,,,2,,2,,,20,b,1c,l,g,,2t,7,2,6,2,2,,4,z,,u,r,2j,b,1m,9,9,,o,4,,9,,3,,5,17,3,1n,9,16,o,,x,1i,3,,i,,7,a,2,t,3,1k,,,7,2,2,2,3,9,,a,2,q,,2,3,1k,,,5,4,2,2,3,3,,u,2,3,,b,3,1k,,,8,,3,,3,k,2,m,6,,3,1k,,,7,2,2,2,3,7,3,a,2,u,,1n,5,3,3,,4,9,,14,5,1j,,,7,,3,,4,7,2,b,2,t,3,1k,,,7,,3,,4,7,2,b,2,f,,c,4,1j,2,,7,,3,,4,9,,a,2,t,3,1y,,4,6,,,,8,i,2,1p,,,8,c,8,2q,,,a,b,7,21,2,r,,,,,,4,2,1d,k,,2,5,b,,10,9,,2u,b,,6,n,4,4,3,g,4,d,,,3,6,,f,,jj,3,qa,4,s,3,t,2,u,2,1s,w,9,,19,3,,,39,2,y,,3a,c,4,c,63,5,1l,a,,,,,2,o,2,,1c,1a,2,c,k,5,1b,h,12,9,c,3,u,d,1k,e,1c,k,48,3,,l,4,,6,,2,3,5i,1s,ek,,5f,x,2da,3,3x,,2o,w,fe,6,2x,2,n9w,4,,a,w,2,28,2,7k,,3,,4,,n,5,4,,2b,2,1e,i,q,i,d,,12,8,p,d,18,4,1b,e,10,,1v,e,c,,8,2,1a,,1f,,,3,2,2,5,2,,,15,5,5,2,6k,8,,2,fn4,,kh,g,g,g,a6,2,gt,,6a,,45,5,1ae,3,,2,5,4,14,3,4,,4l,2,fx,4,1t,5,8t,2,25,6,1y,b,1d,4,3e,3,1h,f,15,,2,2,a,4,19,b,7,,1p,3,10,e,g,2,18,,c,3,1c,e,8,4,,2,2k,c,6,,2,,4d,c,l,4,1j,2,,7,2,2,2,3,9,,a,2,2,7,3,5,1v,9,,,2,,,4,,5,,,e,2,2a,i,n,,29,k,6j,7,2,9,r,2,2a,h,2y,d,2t,3,2,a,74,f,6t,6,,2,2,4,,,,2,3x,7,2,7,3,,s,a,14,7,,4,8,,9,b,1a,g,5i,8,5j,8,,8,2a,m,,e,3e,6,3,,,2,,7,,,1u,5,,2,,5,9n,4,9,2,,,1c,7,3,5,n,,44l,,6,f,8ug,i,1xc,5,1n,7,t4,,,1j,7,4,29,,b,2,f57,2,3mp,1a,2,n,f2,5,3,6,8,8,2,7,u,4,44,3,1iz,1j,4,1e,8,,e,,m,5,,f,11s,7,,h,2,7,,2,,5,2s,,4g,7,af,,1p,4,e4,4,72,2,6r,,2,,7,2,5,,d6,7,31,7,240,5".split(",").map(t=>t?parseInt(t,36):1);for(let t=0,e=0;t<n.length;t++)(t%2?ko:cs).push(e=e+n[t])})();function pf(n){if(n<768)return!1;for(let t=0,e=cs.length;;){let i=t+e>>1;if(n<cs[i])e=i;else if(n>=ko[i])t=i+1;else return!0;if(t==e)return!1}}function wo(n){return n>=127462&&n<=127487}var xo=8205;function So(n,t,e=!0,i=!0){return(e?Co:mf)(n,t,i)}function Co(n,t,e){if(t==n.length)return t;t&&Ao(n.charCodeAt(t))&&Mo(n.charCodeAt(t-1))&&t--;let i=fs(n,t);for(t+=vo(i);t<n.length;){let s=fs(n,t);if(i==xo||s==xo||e&&pf(s))t+=vo(s),i=s;else if(wo(s)){let r=0,o=t-2;for(;o>=0&&wo(fs(n,o));)r++,o-=2;if(r%2==0)break;t+=2}else break}return t}function mf(n,t,e){for(;t>1;){let i=Co(n,t-2,e);if(i<t)return i;t--}return 0}function fs(n,t){let e=n.charCodeAt(t);if(!Mo(e)||t+1==n.length)return e;let i=n.charCodeAt(t+1);return Ao(i)?(e-55296<<10)+(i-56320)+65536:e}function Ao(n){return n>=56320&&n<57344}function Mo(n){return n>=55296&&n<56320}function vo(n){return n<65536?1:2}var I=class n{lineAt(t){if(t<0||t>this.length)throw new RangeError(`Invalid position ${t} in document of length ${this.length}`);return this.lineInner(t,!1,1,0)}line(t){if(t<1||t>this.lines)throw new RangeError(`Invalid line number ${t} in ${this.lines}-line document`);return this.lineInner(t,!0,1,0)}replace(t,e,i){[t,e]=ze(this,t,e);let s=[];return this.decompose(0,t,s,2),i.length&&i.decompose(0,i.length,s,3),this.decompose(e,this.length,s,1),He.from(s,this.length-(e-t)+i.length)}append(t){return this.replace(this.length,this.length,t)}slice(t,e=this.length){[t,e]=ze(this,t,e);let i=[];return this.decompose(t,e,i,0),He.from(i,e-t)}eq(t){if(t==this)return!0;if(t.length!=this.length||t.lines!=this.lines)return!1;let e=this.scanIdentical(t,1),i=this.length-this.scanIdentical(t,-1),s=new ve(this),r=new ve(t);for(let o=e,l=e;;){if(s.next(o),r.next(o),o=0,s.lineBreak!=r.lineBreak||s.done!=r.done||s.value!=r.value)return!1;if(l+=s.value.length,s.done||l>=i)return!0}}iter(t=1){return new ve(this,t)}iterRange(t,e=this.length){return new _i(this,t,e)}iterLines(t,e){let i;if(t==null)i=this.iter();else{e==null&&(e=this.lines+1);let s=this.line(t).from;i=this.iterRange(s,Math.max(s,e==this.lines+1?this.length:e<=1?0:this.line(e-1).to))}return new Ji(i)}toString(){return this.sliceString(0)}toJSON(){let t=[];return this.flatten(t),t}constructor(){}static of(t){if(t.length==0)throw new RangeError("A document must have at least one line");return t.length==1&&!t[0]?n.empty:t.length<=32?new gt(t):He.from(gt.split(t,[]))}},gt=class n extends I{constructor(t,e=gf(t)){super(),this.text=t,this.length=e}get lines(){return this.text.length}get children(){return null}lineInner(t,e,i,s){for(let r=0;;r++){let o=this.text[r],l=s+o.length;if((e?i:l)>=t)return new ds(s,l,i,o);s=l+1,i++}}decompose(t,e,i,s){let r=t<=0&&e>=this.length?this:new n(To(this.text,t,e),Math.min(e,this.length)-Math.max(0,t));if(s&1){let o=i.pop(),l=Yi(r.text,o.text.slice(),0,r.length);if(l.length<=32)i.push(new n(l,o.length+r.length));else{let a=l.length>>1;i.push(new n(l.slice(0,a)),new n(l.slice(a)))}}else i.push(r)}replace(t,e,i){if(!(i instanceof n))return super.replace(t,e,i);[t,e]=ze(this,t,e);let s=Yi(this.text,Yi(i.text,To(this.text,0,t)),e),r=this.length+i.length-(e-t);return s.length<=32?new n(s,r):He.from(n.split(s,[]),r)}sliceString(t,e=this.length,i=`
 `){[t,e]=ze(this,t,e);let s="";for(let r=0,o=0;r<=e&&o<this.text.length;o++){let l=this.text[o],a=r+l.length;r>t&&o&&(s+=i),t<a&&e>r&&(s+=l.slice(Math.max(0,t-r),e-r)),r=a+1}return s}flatten(t){for(let e of this.text)t.push(e)}scanIdentical(){return 0}static split(t,e){let i=[],s=-1;for(let r of t)i.push(r),s+=r.length+1,i.length==32&&(e.push(new n(i,s)),i=[],s=-1);return s>-1&&e.push(new n(i,s)),e}},He=class n extends I{constructor(t,e){super(),this.children=t,this.length=e,this.lines=0;for(let i of t)this.lines+=i.lines}lineInner(t,e,i,s){for(let r=0;;r++){let o=this.children[r],l=s+o.length,a=i+o.lines-1;if((e?a:l)>=t)return o.lineInner(t,e,i,s);s=l+1,i=a+1}}decompose(t,e,i,s){for(let r=0,o=0;o<=e&&r<this.children.length;r++){let l=this.children[r],a=o+l.length;if(t<=a&&e>=o){let f=s&((o<=t?1:0)|(a>=e?2:0));o>=t&&a<=e&&!f?i.push(l):l.decompose(t-o,e-o,i,f)}o=a+1}}replace(t,e,i){if([t,e]=ze(this,t,e),i.lines<this.lines)for(let s=0,r=0;s<this.children.length;s++){let o=this.children[s],l=r+o.length;if(t>=r&&e<=l){let a=o.replace(t-r,e-r,i),f=this.lines-o.lines+a.lines;if(a.lines<f>>4&&a.lines>f>>6){let h=this.children.slice();return h[s]=a,new n(h,this.length-(e-t)+i.length)}return super.replace(r,l,a)}r=l+1}return super.replace(t,e,i)}sliceString(t,e=this.length,i=`
 `){[t,e]=ze(this,t,e);let s="";for(let r=0,o=0;r<this.children.length&&o<=e;r++){let l=this.children[r],a=o+l.length;o>t&&r&&(s+=i),t<a&&e>o&&(s+=l.sliceString(t-o,e-o,i)),o=a+1}return s}flatten(t){for(let e of this.children)e.flatten(t)}scanIdentical(t,e){if(!(t instanceof n))return 0;let i=0,[s,r,o,l]=e>0?[0,0,this.children.length,t.children.length]:[this.children.length-1,t.children.length-1,-1,-1];for(;;s+=e,r+=e){if(s==o||r==l)return i;let a=this.children[s],f=t.children[r];if(a!=f)return i+a.scanIdentical(f,e);i+=a.length+1}}static from(t,e=t.reduce((i,s)=>i+s.length+1,-1)){let i=0;for(let d of t)i+=d.lines;if(i<32){let d=[];for(let p of t)p.flatten(d);return new gt(d,e)}let s=Math.max(32,i>>5),r=s<<1,o=s>>1,l=[],a=0,f=-1,h=[];function c(d){let p;if(d.lines>r&&d instanceof n)for(let m of d.children)c(m);else d.lines>o&&(a>o||!a)?(u(),l.push(d)):d instanceof gt&&a&&(p=h[h.length-1])instanceof gt&&d.lines+p.lines<=32?(a+=d.lines,f+=d.length+1,h[h.length-1]=new gt(p.text.concat(d.text),p.length+1+d.length)):(a+d.lines>s&&u(),a+=d.lines,f+=d.length+1,h.push(d))}function u(){a!=0&&(l.push(h.length==1?h[0]:n.from(h,f)),f=-1,a=h.length=0)}for(let d of t)c(d);return u(),l.length==1?l[0]:new n(l,e)}};I.empty=new gt([""],0);function gf(n){let t=-1;for(let e of n)t+=e.length+1;return t}function Yi(n,t,e=0,i=1e9){for(let s=0,r=0,o=!0;r<n.length&&s<=i;r++){let l=n[r],a=s+l.length;a>=e&&(a>i&&(l=l.slice(0,i-s)),s<e&&(l=l.slice(e-s)),o?(t[t.length-1]+=l,o=!1):t.push(l)),s=a+1}return t}function To(n,t,e){return Yi(n,[""],t,e)}var ve=class{constructor(t,e=1){this.dir=e,this.done=!1,this.lineBreak=!1,this.value="",this.nodes=[t],this.offsets=[e>0?1:(t instanceof gt?t.text.length:t.children.length)<<1]}nextInner(t,e){for(this.done=this.lineBreak=!1;;){let i=this.nodes.length-1,s=this.nodes[i],r=this.offsets[i],o=r>>1,l=s instanceof gt?s.text.length:s.children.length;if(o==(e>0?l:0)){if(i==0)return this.done=!0,this.value="",this;e>0&&this.offsets[i-1]++,this.nodes.pop(),this.offsets.pop()}else if((r&1)==(e>0?0:1)){if(this.offsets[i]+=e,t==0)return this.lineBreak=!0,this.value=`

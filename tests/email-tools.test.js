@@ -387,6 +387,35 @@ test("autocomplete excludes calls the checker flags as deprecated or wrong", fun
   }));
 });
 
+test("autocomplete matches the documented Jedox 26.1 calls", function () {
+  const rows = completions.suggestions();
+  const labels = rows.map(function (item) { return item.label; });
+  ["getColumnDouble()", "getColumnInt()", "getColumnLong()", "readText()"].forEach(function (label) {
+    assert.equal(completions.CANDIDATES.indexOf(label), -1, label);
+    assert.equal(labels.indexOf(label), -1, label);
+  });
+  ["nextRow()", "getColumnString()", "getColumnValue()", "close()", "readBinary()"].forEach(function (label) {
+    const item = rows.filter(function (row) { return row.label === label; })[0];
+    assert.ok(item, label);
+    assert.equal(item.detail, "Jedox API");
+  });
+  ["readFile()", "setting()"].forEach(function (label) {
+    const item = rows.filter(function (row) { return row.label === label; })[0];
+    assert.ok(item, label);
+    assert.equal(item.detail, "from the email script");
+  });
+  assert.deepEqual(completions.matching("readT").map(function (item) { return item.label; }), []);
+  assert.deepEqual(completions.matching("read").map(function (item) { return item.label; }).sort(), ["readBinary()", "readFile()"]);
+  assert.ok(completions.matching("getColumn").every(function (item) {
+    return item.label !== "getColumnDouble()" && item.label !== "getColumnInt()" && item.label !== "getColumnLong()";
+  }));
+  assert.deepEqual(completions.matching("API.").map(function (item) { return item.label; }), [
+    "API.getMailer()",
+    "API.getProperty()",
+    "API.initSource()"
+  ]);
+});
+
 test("live lint waits 400ms after typing stops", function () {
   const { mock } = require("node:test");
   mock.timers.enable({ apis: ["setTimeout"] });
@@ -424,11 +453,48 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.match(ui, /maxRenderedOptions:\s*completions\.MAX_ROWS/);
   assert.match(ui, /dropdownEnabled\(window\.innerWidth\)/);
   assert.doesNotMatch(page, /Check script/);
-  assert.match(page, /data-placeholder="Paste your Groovy job script here\. Nothing leaves your browser\."/);
+  assert.match(page, /data-placeholder="Paste or type your Groovy script here\. Nothing leaves your browser\."/);
+  assert.match(page, /It checks as you type\. As you type, it also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
   assert.match(css, /@media screen and \(max-width: 1100px\)/);
   assert.match(css, /underline dotted #9aa7b4/);
   const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
   assert.equal(bundle.indexOf("jsdelivr"), -1);
   assert.equal(bundle.indexOf("unpkg.com"), -1);
   assert.equal(bundle.indexOf("esm.sh"), -1);
+});
+
+test("the CodeMirror bundle keeps the MIT banner", function () {
+  const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
+  const license = fs.readFileSync(path.join(root, "docs/javascripts/LICENSE-codemirror.txt"), "utf8");
+  assert.ok(bundle.startsWith("/*!\n" + license + "*/\n"), "banner is the licence file at the top of the bundle");
+  assert.match(license, /Permission is hereby granted, free of charge/);
+  assert.match(license, /THE SOFTWARE IS PROVIDED "AS IS"/);
+  [
+    "@codemirror/autocomplete",
+    "@codemirror/commands",
+    "@codemirror/language",
+    "@codemirror/lint",
+    "@codemirror/state",
+    "@codemirror/view",
+    "@lezer/common",
+    "@lezer/highlight",
+    "@marijn/find-cluster-break",
+    "crelt",
+    "style-mod",
+    "w3c-keyname"
+  ].forEach(function (name) {
+    assert.match(license, new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  });
+  [
+    "Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others",
+    "Copyright (C) 2018 by Marijn Haverbeke <marijn@haverbeke.berlin> and others",
+    "Copyright (C) 2024 by Marijn Haverbeke <marijn@haverbeke.berlin>",
+    "Copyright (C) 2020 by Marijn Haverbeke <marijn@haverbeke.berlin>",
+    "Copyright (C) 2016 by Marijn Haverbeke <marijn@haverbeke.berlin> and others"
+  ].forEach(function (line) {
+    assert.ok(license.indexOf(line) >= 0, line);
+  });
+  const code = bundle.slice(bundle.indexOf("*/\n") + 3);
+  assert.ok(code.length > 1000);
+  assert.equal(code.indexOf("/*"), -1);
 });

@@ -1,9 +1,9 @@
-/* Autocomplete for the email checker. Documented Jedox calls, plus the
-   job variables from the value-email post. A call is offered only when
-   the checker does not flag it: rules whose signed-off text says the
-   call is deprecated, or whose before-example drops the call, are probed
-   against a clean job. The 3-argument setServer() and API.getSource()
-   fail that probe and are not offered. */
+/* Autocomplete for the email checker. Documented Jedox calls, the helper
+   functions from the value-email script, and that post's job variables.
+   A call is offered only when the checker does not flag it: rules whose
+   signed-off text says the call is deprecated, or whose before-example
+   drops the call, are probed against a clean job. The 3-argument
+   setServer() and API.getSource() fail that probe and are not offered. */
 (function (root, factory) {
   var api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
@@ -35,12 +35,8 @@
     "close()",
     "getColumnString()",
     "getColumnValue()",
-    "getColumnDouble()",
-    "getColumnInt()",
-    "getColumnLong()",
     "readFile()",
     "readBinary()",
-    "readText()",
     "setting()"
   ];
 
@@ -58,6 +54,8 @@
     "ACCOUNTS_FILE",
     "COST_CENTERS_FILE"
   ];
+
+  var SCRIPT_HELPERS = ["readFile()", "setting()"];
 
   var MAX_ROWS = 8;
   var blockCache = {};
@@ -132,9 +130,13 @@
     return allowedCalls;
   }
 
+  function detailFor(label) {
+    return SCRIPT_HELPERS.indexOf(label) >= 0 ? "from the email script" : "Jedox API";
+  }
+
   function suggestions() {
     return allowedJedoxCalls().map(function (label) {
-      return { label: label, detail: "Jedox API", apply: label };
+      return { label: label, detail: detailFor(label), apply: label };
     }).concat(JOB_VARIABLES.map(function (label) {
       return { label: label, detail: "job variable", apply: label };
     }));
@@ -166,6 +168,7 @@
 
   return {
     CANDIDATES: CANDIDATES,
+    SCRIPT_HELPERS: SCRIPT_HELPERS,
     JEDOX_CALLS: allowedJedoxCalls(),
     JOB_VARIABLES: JOB_VARIABLES,
     MAX_ROWS: MAX_ROWS,

@@ -57,7 +57,7 @@ Then create the role, warehouse, and user in Snowflake:
 ```sql
 USE ROLE SECURITYADMIN;
 CREATE ROLE IF NOT EXISTS JEDOX_ETL_ROLE;
-GRANT ROLE JEDOX_ETL_ROLE TO ROLE SYSADMIN;  -- keeps the custom role in the normal hierarchy
+GRANT ROLE JEDOX_ETL_ROLE TO ROLE SYSADMIN; -- keeps the custom role in the normal hierarchy
 
 USE ROLE SYSADMIN;
 CREATE WAREHOUSE IF NOT EXISTS JEDOX_ETL_WH
@@ -96,11 +96,11 @@ Our target cube is `PnL` with four dimensions: `Version`, `Period`, `CostCenter`
 USE ROLE SYSADMIN;
 CREATE OR REPLACE VIEW FDH_DEMO.SAMPLE.V_JEDOX_ACTUALS AS
 SELECT
-    'Actual'          AS version,
-    period            AS period,       -- 'YYYY-MM', matches the Period elements
-    cost_center       AS cost_center,
-    account           AS account,
-    SUM(amount)       AS amount
+    'Actual' AS version,
+    period AS period, -- 'YYYY-MM', matches the Period elements
+    cost_center AS cost_center,
+    account AS account,
+    SUM(amount) AS amount
 FROM FDH_DEMO.SAMPLE.FACT_ACTUALS
 GROUP BY period, cost_center, account;
 

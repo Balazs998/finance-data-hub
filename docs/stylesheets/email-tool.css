@@ -820,6 +820,7 @@
 }
 
 #email-checker .email-sticky.is-clear,
+#email-checker .email-sticky.is-names,
 #email-checker .email-sticky.is-issues {
   display: flex;
   align-items: center;
@@ -830,6 +831,16 @@
   color: #A3E635;
   border: 1px solid #A3E635;
   background: rgba(163, 230, 53, 0.12);
+}
+
+#email-checker .email-sticky.is-names {
+  height: 48px;
+  color: #8B98A5;
+  border: 1px solid #8B98A5;
+  background: rgba(139, 152, 165, 0.12);
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 15px;
 }
 
 #email-checker .email-sticky.is-issues {
@@ -1112,6 +1123,7 @@
   }
 
   #email-checker .email-sticky.is-clear,
+  #email-checker .email-sticky.is-names,
   #email-checker .email-sticky.is-issues {
     position: fixed;
     left: 0;
@@ -1127,6 +1139,12 @@
 
   #email-checker .email-sticky.is-issues {
     border-top: 1px solid var(--dn-border);
+  }
+
+  #email-checker .email-sticky.is-names {
+    height: auto;
+    min-height: 48px;
+    padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
   }
 
   .email-app,

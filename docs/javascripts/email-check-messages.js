@@ -19,8 +19,7 @@
     tooLong: "That's a long script. The checker reads the first {n} lines.",
     noProblems: {
       heading: "No problems found",
-      text: "None of the nine checks found anything. That's a good sign, but the checker only reads the text. Run the job in Jedox in test mode before anyone else gets an email.",
-      withChecks: "No errors or warnings. There are still {n} names to check in your Jedox. They're listed below."
+      text: "None of the nine checks found anything. That's a good sign, but the checker only reads the text. Run the job in Jedox in test mode before anyone else gets an email."
     },
     checkTitle: "Check in your Jedox",
     nameGroup: function (kind, count) {

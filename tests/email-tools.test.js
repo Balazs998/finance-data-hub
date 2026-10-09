@@ -509,23 +509,58 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.equal(bundle.indexOf("esm.sh"), -1);
 });
 
-test("the issues bar has three states", function () {
+test("the issues bar has four states", function () {
   assert.deepEqual(liveLint.statusBar({ empty: true, issues: [] }), { state: "hidden", text: "" });
   assert.deepEqual(liveLint.statusBar({ empty: false, notGroovy: true, issues: [] }), { state: "hidden", text: "" });
   assert.deepEqual(liveLint.statusBar({ empty: false, issues: [] }), { state: "clear", text: "✓ No problems found" });
+  const oneName = checker.checkScript("API.getProperty('PERIOD')", { scriptType: "job" });
+  assert.deepEqual(oneName.issues.map(function (issue) { return issue.severity; }), ["check"]);
+  assert.deepEqual(liveLint.statusBar(oneName), {
+    state: "names",
+    text: "? No errors or warnings. 1 name to check in your Jedox, listed below."
+  });
+  const twoNames = checker.checkScript("API.getProperty('PERIOD')\nAPI.getProperty('TEST_MODE')", { scriptType: "job" });
+  assert.deepEqual(liveLint.statusBar(twoNames), {
+    state: "names",
+    text: "? No errors or warnings. 2 names to check in your Jedox, listed below."
+  });
+  const threeNames = liveLint.statusBar({
+    empty: false,
+    issues: [
+      { severity: "check", items: [{ name: "PERIOD" }] },
+      { severity: "check", items: [{ name: "PnL" }, { name: "Other" }] }
+    ]
+  });
+  assert.equal(threeNames.state, "names");
+  assert.equal(threeNames.text, "? No errors or warnings. 3 names to check in your Jedox, listed below.");
+  assert.deepEqual(liveLint.statusBar({
+    empty: false,
+    issues: [{ severity: "error", rule: "EM01" }, { severity: "check", rule: "NAME", items: [{ name: "PERIOD" }] }]
+  }), {
+    state: "issues",
+    text: "Issues (2)"
+  });
   assert.deepEqual(liveLint.statusBar({ empty: false, issues: [{ rule: "EM01" }, { rule: "EM04" }] }), {
     state: "issues",
     text: "Issues (2)"
   });
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const messages = fs.readFileSync(path.join(root, "docs/javascripts/email-check-messages.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.equal(ui.indexOf("withChecks"), -1);
+  assert.equal(ui.indexOf("There are still"), -1);
+  assert.equal(messages.indexOf("There are still"), -1);
+  assert.match(ui, /!errors\.length && !warnings\.length && !checks\.length/);
+  assert.match(ui, /is-names/);
   assert.equal(liveLint.howDetailsOpen(639), false);
   assert.equal(liveLint.howDetailsOpen(640), true);
   assert.equal(liveLint.howDetailsOpen(1440), true);
-  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
-  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
   assert.match(ui, /aria-live="polite"|statusLive/);
   assert.match(ui, /liveLint\.statusBar\(result\)/);
   assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*color: #A3E635;/);
   assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*border: 1px solid #A3E635;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*color: #8B98A5;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*border: 1px solid #8B98A5;/);
   assert.match(css, /#email-checker \.email-sticky\[hidden\] \{\s*display: none !important;/);
   assert.match(css, /min-height: 48px;/);
 });

@@ -159,16 +159,11 @@
         if (sawEdit) showBanner(copy.empty);
       } else if (result.notGroovy) {
         showBanner(copy.notGroovy);
-      } else if (!errors.length && !warnings.length) {
+      } else if (!errors.length && !warnings.length && !checks.length) {
         var heading = document.createElement("h3");
         heading.textContent = copy.noProblems.heading;
         var note = document.createElement("p");
-        var nameCount = checks.reduce(function (sum, issue) {
-          return sum + (issue.items ? issue.items.length : 1);
-        }, 0);
-        note.textContent = checks.length
-          ? copy.noProblems.withChecks.replace("{n}", String(nameCount))
-          : copy.noProblems.text;
+        note.textContent = copy.noProblems.text;
         list.appendChild(heading);
         list.appendChild(note);
       }
@@ -180,6 +175,7 @@
       if (!sticky) return;
       var bar = liveLint.statusBar(result);
       sticky.classList.toggle("is-clear", bar.state === "clear");
+      sticky.classList.toggle("is-names", bar.state === "names");
       sticky.classList.toggle("is-issues", bar.state === "issues");
       sticky.hidden = bar.state === "hidden";
       sticky.textContent = bar.text;

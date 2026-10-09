@@ -224,7 +224,7 @@
         banner.innerHTML = text ? shared.inlineCode(text) : "";
       }
       if (result.truncated) {
-        showBanner(liveLint.checkedLinesNote(result.lineLimit));
+        showBanner(copy.tooLong.replace("{n}", liveLint.formatLineCount(result.lineLimit)));
       }
       if (result.empty) {
         if (sawEdit) showBanner(copy.empty);
@@ -250,10 +250,23 @@
       sticky.classList.toggle("is-cutoff", bar.state === "cutoff");
       sticky.classList.toggle("is-issues", bar.state === "issues");
       sticky.hidden = bar.state === "hidden";
-      sticky.textContent = bar.text;
+      sticky.textContent = "";
+      var label = document.createElement("span");
+      label.className = "email-sticky-label";
+      label.textContent = bar.text;
+      sticky.appendChild(label);
+      var noteText = result.truncated && bar.state === "issues" ? liveLint.checkedLinesNote(result.lineLimit) : "";
+      if (noteText) {
+        var note = document.createElement("span");
+        note.className = "email-sticky-note";
+        note.textContent = noteText;
+        sticky.appendChild(note);
+      }
+      sticky.classList.toggle("has-cutoff-note", !!noteText);
       if (bar.state === "issues") sticky.setAttribute("aria-expanded", "false");
       else sticky.removeAttribute("aria-expanded");
-      if (statusLive && statusLive.textContent !== bar.text) statusLive.textContent = bar.text;
+      var spoken = noteText ? bar.text + ". " + noteText : bar.text;
+      if (statusLive && statusLive.textContent !== spoken) statusLive.textContent = spoken;
     }
 
     function diagnosticsFor(state, result) {

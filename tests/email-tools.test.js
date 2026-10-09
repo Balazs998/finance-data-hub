@@ -699,14 +699,21 @@ test("a mistake on line 2051 does not count as a clean script", function () {
   assert.equal(found.issues.some(function (issue) { return issue.line > 2000; }), false);
   assert.deepEqual(liveLint.statusBar(found), {
     state: "issues",
-    text: "Issues (1). Only the first 2,000 lines were checked."
+    text: "Issues (1)"
   });
+  assert.equal(liveLint.checkedLinesNote(2000), "Only the first 2,000 lines were checked.");
+  assert.equal(
+    messages.tooLong.replace("{n}", liveLint.formatLineCount(2000)),
+    "That's a long script. The checker reads the first 2,000 lines."
+  );
   const within = checker.checkScript("def mailer = API.getMailer()\n", { scriptType: "job" });
   assert.equal(within.truncated, false);
   assert.equal(liveLint.statusBar(within).state, "clear");
   const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
   const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
   assert.match(ui, /is-cutoff/);
+  assert.match(ui, /email-sticky-note/);
+  assert.match(ui, /copy\.tooLong\.replace\("\{n\}", liveLint\.formatLineCount\(result\.lineLimit\)\)/);
   assert.match(ui, /!result\.truncated && !errors\.length/);
   assert.match(css, /#email-checker \.email-sticky\.is-cutoff \{[^}]*color: #8B98A5;/);
   assert.match(css, /#email-checker \.cm-scroller \{\s*padding-bottom: 56px;/);

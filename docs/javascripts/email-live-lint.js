@@ -87,13 +87,12 @@
     }
     if (!issues.length) return { state: "clear", text: "✓ No problems found" };
     if (issues.every(isNameCheck)) {
-      var names = "? No errors or warnings. " + checkPillText(result) + " in your Jedox, listed below.";
-      if (result.truncated) names += " " + checkedLinesNote(result.lineLimit);
-      return { state: "names", text: names };
+      return {
+        state: "names",
+        text: "? No errors or warnings. " + checkPillText(result) + " in your Jedox, listed below."
+      };
     }
-    var text = "Issues (" + issues.length + ")";
-    if (result.truncated) text += ". " + checkedLinesNote(result.lineLimit);
-    return { state: "issues", text: text };
+    return { state: "issues", text: "Issues (" + issues.length + ")" };
   }
 
   /* Paste leaves the cursor where the text went in. An empty editor

@@ -908,6 +908,19 @@
   background: #38bdf8;
 }
 
+#email-checker .email-sticky.has-cutoff-note {
+  flex-direction: column;
+  gap: 2px;
+  height: auto;
+  min-height: 48px;
+}
+
+#email-checker .email-sticky-note {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
 @media screen and (max-width: 639px) {
   #email-checker .email-editor-column {
     order: 1;

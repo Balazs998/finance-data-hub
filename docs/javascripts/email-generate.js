@@ -18,6 +18,8 @@
     unknown: "`{{[NAME]}}` isn't a marker this script knows. Check the spelling, or pick one from the list. The script stops on markers it doesn't know.",
     dollar: "`${` is how Integrator writes its own variables, so it would be replaced before your script runs. For a value that changes per email, use a `{{...}}` marker instead.",
     subjectEmpty: "Add a subject. Even a short one like `{{COST_CENTER}} {{PERIOD}}` works.",
+    subjectLong: "Keep the subject to 150 characters.",
+    periodInvalid: "Use YYYY-MM, like 2026-03.",
     greetingEmpty: "No greeting. The email will start with the table text.",
     testEmpty: "Add a test address, so test emails have somewhere to go.",
     testInvalid: "That doesn't look like an email address. Try something like `test.recipient@example.com`.",
@@ -92,10 +94,10 @@
 
   var DEFAULTS = {
     dimension: "cost_center",
-    subject: "{{COST_CENTER}} actuals for {{PERIOD}}",
+    subject: "{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}",
     greeting: "Hello {{OWNER_NAME}},",
     intro: introFor("cost_center"),
-    note: "Variance is {{VERSION_ACTUAL}} minus {{VERSION_PLAN}}. Highlighted variances are unfavorable for that account type.",
+    note: "Variance is {{VERSION_ACTUAL}} minus {{VERSION_PLAN}}. Highlighted variances are unfavorable for that account type. Sample data only.",
     footer: "Sent automatically by a Jedox Integrator job.",
     testMode: true,
     testAddress: "test.recipient@example.com",
@@ -177,6 +179,10 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.indexOf("${") < 0 && value.indexOf("{{") < 0;
   }
 
+  function validPeriod(value) {
+    return /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
+  }
+
   function validate(fields) {
     var form = normalize(fields);
     var raw = fields || {};
@@ -192,6 +198,9 @@
       errors.push({ field: "subject", message: MESSAGES.subjectEmpty });
     } else {
       addMarker("subject", form.subject, shared.WORDING_MARKERS);
+      if (form.subject.length > 150 && !errors.some(function (error) { return error.field === "subject"; })) {
+        errors.push({ field: "subject", message: MESSAGES.subjectLong });
+      }
     }
 
     if (!trim(raw.greeting != null ? raw.greeting : DEFAULTS.greeting)) {
@@ -217,6 +226,10 @@
     ["period", "versionPlan", "versionActual", "extractName"].forEach(function (field) {
       var text = trim(raw[field] != null ? raw[field] : "");
       if (!text) return;
+      if (field === "period" && !validPeriod(text)) {
+        errors.push({ field: "period", message: MESSAGES.periodInvalid });
+        return;
+      }
       addMarker(field, text, {});
     });
 

@@ -91,7 +91,7 @@ nav:
       - Automated value emails: jedox/automated-value-emails.md
       - Create your own email:
           - Builder: jedox/email-builder.md
-          - Checker: jedox/email-checker.md
+          - Check your email script: jedox/email-checker.md
   - VBA and Excel:
       - vba/index.md
       - Month-close checks: vba/month-close-checks.md

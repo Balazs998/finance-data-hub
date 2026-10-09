@@ -46,12 +46,25 @@
     return width < STACK_BELOW;
   }
 
+  function howDetailsOpen(width) {
+    return width >= DROPDOWN_MIN_WIDTH;
+  }
+
+  function statusBar(result) {
+    var issues = result && result.issues ? result.issues : [];
+    if (!result || result.empty || result.notGroovy) return { state: "hidden", text: "" };
+    if (!issues.length) return { state: "clear", text: "✓ No problems found" };
+    return { state: "issues", text: "Issues (" + issues.length + ")" };
+  }
+
   return {
     QUIET_MS: QUIET_MS,
     STACK_BELOW: STACK_BELOW,
     DROPDOWN_MIN_WIDTH: DROPDOWN_MIN_WIDTH,
     createLiveLint: createLiveLint,
     dropdownEnabled: dropdownEnabled,
-    issuesBelowEditor: issuesBelowEditor
+    issuesBelowEditor: issuesBelowEditor,
+    howDetailsOpen: howDetailsOpen,
+    statusBar: statusBar
   };
 });

@@ -453,8 +453,14 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.match(ui, /maxRenderedOptions:\s*completions\.MAX_ROWS/);
   assert.match(ui, /dropdownEnabled\(window\.innerWidth\)/);
   assert.doesNotMatch(page, /Check script/);
-  assert.match(page, /data-placeholder="Paste or type your Groovy script here\. Nothing leaves your browser\."/);
-  assert.match(page, /It checks as you type\. As you type, it also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
+  assert.match(page, /data-placeholder="Paste or type your Groovy script here\."/);
+  assert.doesNotMatch(page, /Nothing leaves your browser\."/);
+  assert.match(page, /It checks as you type\. It also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
+  assert.doesNotMatch(page, /As you type, it also suggests/);
+  const leadAt = page.indexOf("Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.");
+  const editorAt = page.indexOf('id="email-editor"');
+  const howAt = page.indexOf("<details");
+  assert.ok(leadAt >= 0 && leadAt < editorAt && editorAt < howAt);
   assert.match(css, /@media screen and \(max-width: 1100px\)/);
   assert.match(css, /underline dotted #9aa7b4/);
   assert.match(css, /#email-checker \.cm-content:focus-visible \{\s*outline: none;/);
@@ -471,6 +477,27 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.equal(bundle.indexOf("jsdelivr"), -1);
   assert.equal(bundle.indexOf("unpkg.com"), -1);
   assert.equal(bundle.indexOf("esm.sh"), -1);
+});
+
+test("the issues bar has three states", function () {
+  assert.deepEqual(liveLint.statusBar({ empty: true, issues: [] }), { state: "hidden", text: "" });
+  assert.deepEqual(liveLint.statusBar({ empty: false, notGroovy: true, issues: [] }), { state: "hidden", text: "" });
+  assert.deepEqual(liveLint.statusBar({ empty: false, issues: [] }), { state: "clear", text: "✓ No problems found" });
+  assert.deepEqual(liveLint.statusBar({ empty: false, issues: [{ rule: "EM01" }, { rule: "EM04" }] }), {
+    state: "issues",
+    text: "Issues (2)"
+  });
+  assert.equal(liveLint.howDetailsOpen(639), false);
+  assert.equal(liveLint.howDetailsOpen(640), true);
+  assert.equal(liveLint.howDetailsOpen(1440), true);
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.match(ui, /aria-live="polite"|statusLive/);
+  assert.match(ui, /liveLint\.statusBar\(result\)/);
+  assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*color: #A3E635;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*border: 1px solid #A3E635;/);
+  assert.match(css, /#email-checker \.email-sticky\[hidden\] \{\s*display: none !important;/);
+  assert.match(css, /min-height: 48px;/);
 });
 
 test("the CodeMirror bundle keeps the MIT banner", function () {

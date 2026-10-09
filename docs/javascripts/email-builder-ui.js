@@ -106,13 +106,31 @@
     }
 
     function fitFrame() {
+      var wrap = frame.parentElement;
       try {
         var doc = frame.contentDocument;
         if (!doc || !doc.documentElement) return;
+        frame.style.width = "100%";
+        frame.style.transform = "none";
+        if (wrap) wrap.style.height = "";
         var height = Math.max(doc.documentElement.scrollHeight || 0, doc.body ? doc.body.scrollHeight : 0);
-        frame.style.height = Math.max(height, 280) + "px";
+        var width = Math.max(doc.documentElement.scrollWidth || 0, doc.body ? doc.body.scrollWidth : 0);
+        var available = wrap ? wrap.clientWidth : frame.clientWidth;
+        if (available > 0 && width > available + 2) {
+          var scale = available / width;
+          frame.style.width = width + "px";
+          frame.style.height = Math.max(height, 280) + "px";
+          frame.style.transformOrigin = "top left";
+          frame.style.transform = "scale(" + scale + ")";
+          if (wrap) wrap.style.height = Math.ceil(Math.max(height, 280) * scale) + "px";
+        } else {
+          frame.style.height = Math.max(height, 280) + "px";
+        }
       } catch (error) {
+        frame.style.width = "100%";
+        frame.style.transform = "none";
         frame.style.height = "640px";
+        if (wrap) wrap.style.height = "";
       }
     }
 
@@ -208,7 +226,7 @@
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
       status.textContent = gen.MESSAGES.downloaded;
     });
 
@@ -264,15 +282,25 @@
       render();
     });
 
+    function fitSoon() {
+      requestAnimationFrame(function () { requestAnimationFrame(fitFrame); });
+    }
+
     if (sticky) {
       sticky.addEventListener("click", function () {
         var open = root.classList.toggle("is-panel-open");
         sticky.textContent = open ? "Back to form" : "Preview";
         sticky.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) fitSoon();
       });
     }
 
-    frame.addEventListener("load", fitFrame);
+    frame.addEventListener("load", fitSoon);
+    window.addEventListener("resize", function () {
+      var phone = window.matchMedia("(max-width: 760px)").matches;
+      if (phone && !root.classList.contains("is-panel-open")) return;
+      fitSoon();
+    });
     render();
   });
 })();

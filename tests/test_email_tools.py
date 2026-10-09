@@ -42,6 +42,8 @@ class EmailToolTests(unittest.TestCase):
         css = (ROOT / "docs/stylesheets/email-tool.css").read_text(encoding="utf-8")
         self.assertIn("underline wavy #f87171", css)
         self.assertIn("underline wavy #fbbf24", css)
+        self.assertIn(".md-typeset .email-app pre.email-highlight", css)
+        self.assertIn("line-height: calc(1.7 * 13px)", css)
         self.assertIn("prefers-reduced-motion: reduce", css)
         self.assertNotIn("color: #8b7cf6", css.lower())
         self.assertNotIn("color: var(--dn-violet);", css)

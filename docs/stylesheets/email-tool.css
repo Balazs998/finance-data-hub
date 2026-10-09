@@ -299,6 +299,7 @@
   background: #f3f6f9;
   border-radius: 8px;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .email-frame-wrap iframe {
@@ -315,8 +316,8 @@
   font-size: 14px;
 }
 
-.email-code-view,
-.email-template-view {
+.md-typeset .email-app pre.email-code-view,
+.md-typeset .email-app pre.email-template-view {
   max-height: 32rem;
   overflow: auto;
   margin: 0;
@@ -324,10 +325,11 @@
   background: #111b26;
   border: 1px solid var(--dn-border);
   border-radius: 8px;
+  box-shadow: none;
   color: var(--dn-text);
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: calc(1.7 * 13px);
   white-space: pre;
 }
 
@@ -395,13 +397,14 @@
   color: var(--dn-text-faint);
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: calc(1.7 * 13px);
 }
 
 .email-gline {
   display: flex;
   align-items: center;
-  height: 1.7em;
+  height: calc(1.7 * 13px);
+  line-height: calc(1.7 * 13px);
   padding: 0 8px 0 6px;
 }
 
@@ -451,19 +454,28 @@
 .email-code-main textarea {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: calc(1.7 * 13px);
   tab-size: 4;
 }
 
-.email-highlight {
+.md-typeset .email-app pre.email-highlight {
   margin: 0;
   padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
   white-space: pre;
   color: var(--dn-text);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: calc(1.7 * 13px);
 }
 
 .email-line {
-  height: 1.7em;
+  height: calc(1.7 * 13px);
+  line-height: calc(1.7 * 13px);
 }
 
 .email-line.is-error {
@@ -602,10 +614,24 @@
   font-size: 13px;
 }
 
-.email-issue pre {
-  margin: 0;
+.md-typeset .email-app .email-issue pre {
+  margin: 8px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   white-space: pre-wrap;
   font-size: 12px;
+  line-height: 1.5;
+}
+
+.md-typeset .email-app .email-issue pre > code {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--dn-text-muted);
 }
 
 .email-banner {

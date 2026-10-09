@@ -53,8 +53,14 @@
       });
       highlight.innerHTML = code;
       gutter.innerHTML = gut;
-      highlight.style.transform = "translate(0,0)";
-      gutter.style.transform = "translateY(0)";
+      syncScroll();
+    }
+
+    function syncScroll() {
+      var x = -input.scrollLeft;
+      var y = -input.scrollTop;
+      highlight.style.transform = "translate(" + x + "px," + y + "px)";
+      gutter.style.transform = "translateY(" + y + "px)";
     }
 
     function card(issue) {
@@ -83,8 +89,12 @@
         article.appendChild(pre);
       }
       article.addEventListener("click", function () {
-        var line = highlight.querySelectorAll(".email-line")[issue.line - 1];
-        if (line) line.scrollIntoView({ block: "center", behavior: "auto" });
+        var lines = highlight.querySelectorAll(".email-line");
+        var line = lines[issue.line - 1];
+        if (!line) return;
+        var pitch = lines[0].getBoundingClientRect().height || 22.1;
+        input.scrollTop = Math.max(0, (issue.line - 1) * pitch - (input.clientHeight - pitch) / 2);
+        syncScroll();
       });
       return article;
     }
@@ -144,12 +154,7 @@
     }
 
     input.addEventListener("input", runCheck);
-    input.addEventListener("scroll", function () {
-      var x = -input.scrollLeft;
-      var y = -input.scrollTop;
-      highlight.style.transform = "translate(" + x + "px," + y + "px)";
-      gutter.style.transform = "translateY(" + y + "px)";
-    });
+    input.addEventListener("scroll", syncScroll);
 
     root.querySelectorAll(".email-seg-btn").forEach(function (button) {
       button.addEventListener("click", function () {

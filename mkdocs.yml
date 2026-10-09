@@ -7,9 +7,6 @@ copyright: Balazs · Finance Data Hub
 # Clear the value to turn analytics off. The site still builds.
 extra:
   goatcounter_code: financedatahub
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/Balazs998
 
 extra_css:
   - stylesheets/extra.css

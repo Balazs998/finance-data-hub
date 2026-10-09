@@ -19,24 +19,10 @@ hide:
 </div>
 </div>
 <div class="home-art">
-<figure class="home-mascot">
 <picture>
-<source srcset="assets/mascots/snowflake/pointing.webp" type="image/webp">
-<img src="assets/mascots/snowflake/pointing.png" width="426" height="721" alt="Snowflake mascot in a blue hoodie, pointing ahead">
+<source srcset="assets/mascots/trio-full.webp" type="image/webp">
+<img src="assets/mascots/trio-full.png" width="825" height="662" alt="Snowflake mascot with a tablet, Jedox mascot with a clipboard, and VBA mascot pointing outward">
 </picture>
-</figure>
-<figure class="home-mascot">
-<picture>
-<source srcset="assets/mascots/jedox/thumbsup.webp" type="image/webp">
-<img src="assets/mascots/jedox/thumbsup.png" width="294" height="734" alt="Jedox mascot in a purple blazer, giving a thumbs-up">
-</picture>
-</figure>
-<figure class="home-mascot">
-<picture>
-<source srcset="assets/mascots/vba/pointing.webp" type="image/webp">
-<img src="assets/mascots/vba/pointing.png" width="439" height="721" alt="VBA mascot in a green jacket, pointing ahead">
-</picture>
-</figure>
 </div>
 </div>
 

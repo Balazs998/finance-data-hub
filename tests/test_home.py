@@ -14,20 +14,14 @@ EXPECTED_FILES = (
     "jedox/head-presenting.webp",
     "jedox/head-thumbsup.png",
     "jedox/head-thumbsup.webp",
-    "jedox/thumbsup.png",
-    "jedox/thumbsup.webp",
     "snowflake/head.png",
     "snowflake/head.webp",
-    "snowflake/pointing.png",
-    "snowflake/pointing.webp",
-    "vba/pointing.png",
-    "vba/pointing.webp",
+    "trio-full.png",
+    "trio-full.webp",
 )
 
 HERO_ALTS = (
-    "Snowflake mascot in a blue hoodie, pointing ahead",
-    "Jedox mascot in a purple blazer, giving a thumbs-up",
-    "VBA mascot in a green jacket, pointing ahead",
+    "Snowflake mascot with a tablet, Jedox mascot with a clipboard, and VBA mascot pointing outward",
 )
 
 HOME_LINKS = {
@@ -199,8 +193,12 @@ class HomePageTests(unittest.TestCase):
                 self.assertEqual(png_size(MASCOTS / relative), webp_size(webp), relative)
 
         pictures = re.findall(r"<picture>\s*(.*?)</picture>", self.html, re.S)
-        self.assertGreaterEqual(len(pictures), 7)
+        self.assertGreaterEqual(len(pictures), 5)
         hero = self.html.split('class="hero"', 1)[1].split('class="reveal"', 1)[0]
+        self.assertIn("assets/mascots/trio-full.webp", hero)
+        self.assertIn("assets/mascots/trio-full.png", hero)
+        self.assertNotIn("pointing.", hero)
+        self.assertNotIn("thumbsup.", hero)
         for alt in HERO_ALTS:
             self.assertIn(f'alt="{alt}"', hero)
         self.assertNotIn('loading="lazy"', hero)
@@ -253,26 +251,20 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("min-width: 240px;", block)
         self.assertIn("grid-template-columns: 1fr;", block)
 
-        motion = media_blocks(self.css, "prefers-reduced-motion: no-preference")
-        self.assertTrue(any("animation-name: home-wave;" in item for item in motion))
         reduced = media_blocks(self.css, "prefers-reduced-motion: reduce")
         self.assertEqual(len(reduced), 1)
         self.assertIn("transition: none;", reduced[0])
-        self.assertIn("animation: none", reduced[0])
-        self.assertIn("@keyframes home-wave", self.css)
-        self.assertIn(
-            "radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 65%)",
-            self.css,
-        )
-        self.assertIn(
-            "radial-gradient(circle, rgba(139, 124, 246, 0.2) 0%, transparent 65%)",
-            self.css,
-        )
-        self.assertIn(
-            "radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, transparent 65%)",
-            self.css,
-        )
-        self.assertNotIn("radial-gradient(circle at 82%", self.css)
+        self.assertNotIn("@keyframes home-wave", self.css)
+        self.assertIn("rgba(56, 189, 248, .35)", self.css)
+        self.assertIn("rgba(139, 124, 246, .35)", self.css)
+        self.assertIn("rgba(163, 230, 53, .28)", self.css)
+        self.assertIn("circle at 22% 55%", self.css)
+        self.assertIn("circle at 52% 50%", self.css)
+        self.assertIn("circle at 82% 55%", self.css)
+        self.assertIn("mix-blend-mode: lighten;", self.css)
+        self.assertIn("max-width: 76.234375em", self.css)
+        phone_tabs = media_blocks(self.css, "max-width: 76.234375em")
+        self.assertTrue(any("display: none;" in item and ".md-tabs" in item for item in phone_tabs))
         self.assertNotIn("color: #8b7cf6", self.css.lower())
         self.assertNotIn("color: var(--chart-2)", self.css)
         self.assertNotIn("color: var(--dn-violet)", self.css)

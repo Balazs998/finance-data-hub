@@ -736,6 +736,8 @@ class BuiltSiteTests(unittest.TestCase):
             self.assertNotIn("md-header__source", html, page.name)
             self.assertNotIn("md-content__button", html, page.name)
             self.assertNotIn("/edit/main/docs/", html, page.name)
+            self.assertNotIn("md-social", html, page.name)
+            self.assertNotIn("fontawesome/brands/github", html, page.name)
         config = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
         self.assertNotIn("repo_url:", config)
         self.assertNotIn("repo_name:", config)

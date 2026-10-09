@@ -8,7 +8,7 @@ hide:
 
 <div class="home">
 
-<div class="hero reveal">
+<div class="hero">
 <div class="hero__copy">
 <p class="home-eyebrow">FINANCE DATA HUB</p>
 <h1 id="build-the-fpa-pack-without-the-manual-work">Build the FP&amp;A pack <span class="home-accent">without the manual work</span></h1>
@@ -23,7 +23,7 @@ hide:
 <figure class="home-mascot">
 <picture>
 <source srcset="assets/mascots/snowflake/laptop.webp" type="image/webp">
-<img src="assets/mascots/snowflake/laptop.png" width="509" height="691" alt="Snowflake mascot in a blue hoodie, holding a tablet">
+<img src="assets/mascots/snowflake/laptop.png" width="509" height="691" alt="Snowflake mascot in a blue hoodie, working on a laptop">
 </picture>
 </figure>
 <figure class="home-mascot">
@@ -98,7 +98,7 @@ hide:
 <a class="home-post" href="jedox/email-builder/">
 <picture>
 <source srcset="assets/mascots/jedox/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="Jedox mascot">
+<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Create your own email</strong><span>Jedox · Builder</span></span>
 <span class="home-new">New</span>
@@ -108,7 +108,7 @@ hide:
 <a class="home-post" href="jedox/automated-value-emails/">
 <picture>
 <source srcset="assets/mascots/jedox/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="Jedox mascot">
+<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Automated value emails</strong><span>Jedox · Groovy</span></span>
 <span class="home-new">New</span>
@@ -118,7 +118,7 @@ hide:
 <a class="home-post" href="jedox/snowflake-to-jedox/">
 <picture>
 <source srcset="assets/mascots/jedox/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="Jedox mascot">
+<img class="home-avatar" src="assets/mascots/jedox/head.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Snowflake to Jedox load</strong><span>Jedox · Integrator</span></span>
 <span class="home-new">New</span>
@@ -128,7 +128,7 @@ hide:
 <a class="home-post" href="snowflake/plan-vs-actuals/">
 <picture>
 <source srcset="assets/mascots/snowflake/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/snowflake/head.png" width="176" height="176" alt="Snowflake mascot">
+<img class="home-avatar" src="assets/mascots/snowflake/head.png" width="176" height="176" alt="" loading="lazy">
 </picture>
 <span class="home-post__text"><strong>Plan vs actuals</strong><span>Snowflake · SQL</span></span>
 </a>

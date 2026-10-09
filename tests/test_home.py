@@ -21,7 +21,7 @@ EXPECTED_FILES = (
 )
 
 HERO_ALTS = (
-    "Snowflake mascot in a blue hoodie, holding a tablet",
+    "Snowflake mascot in a blue hoodie, working on a laptop",
     "Jedox mascot in a purple blazer, presenting a chart",
     "VBA mascot in a green jacket, pointing ahead",
 )
@@ -143,7 +143,8 @@ class HomePageTests(unittest.TestCase):
             self.assertIn(text, self.html)
         self.assertEqual(self.html.count('class="home-new"'), 3)
         self.assertEqual(self.html.count('class="home-step"'), 3)
-        plan_post = self.html.split('alt="Snowflake mascot"', 1)[1].split("</a>", 1)[0]
+        latest = self.html.split('id="latest-posts"', 1)[1].split('id="why-it-matters"', 1)[0]
+        plan_post = latest.split('href="snowflake/plan-vs-actuals/"', 1)[1].split("</li>", 1)[0]
         self.assertNotIn("home-new", plan_post)
 
     def test_newsletter_box_is_absent(self):
@@ -180,34 +181,41 @@ class HomePageTests(unittest.TestCase):
 
         pictures = re.findall(r"<picture>\s*(.*?)</picture>", self.html, re.S)
         self.assertGreaterEqual(len(pictures), 7)
+        hero = self.html.split('class="hero"', 1)[1].split('class="reveal"', 1)[0]
         for alt in HERO_ALTS:
-            self.assertIn(f'alt="{alt}"', self.html)
+            self.assertIn(f'alt="{alt}"', hero)
+        self.assertNotIn('loading="lazy"', hero)
+        avatars = re.findall(r"<img\b[^>]*class=\"home-avatar\"[^>]*>", self.html)
+        self.assertEqual(len(avatars), 4)
+        for tag in avatars:
+            self.assertIn('alt=""', tag)
+            self.assertIn('loading="lazy"', tag)
+            self.assertIn('width="176"', tag)
+            self.assertIn('height="176"', tag)
         for block in pictures:
             source = re.search(r'<source srcset="([^"]+\.webp)" type="image/webp">', block)
-            image = re.search(
-                r'<img\b[^>]*\bsrc="([^"]+\.png)"[^>]*\bwidth="(\d+)"[^>]*\bheight="(\d+)"[^>]*\balt="([^"]+)"',
-                block,
-            )
-            if image is None:
-                image = re.search(
-                    r'<img\b[^>]*\bwidth="(\d+)"[^>]*\bheight="(\d+)"[^>]*\balt="([^"]+)"[^>]*\bsrc="([^"]+\.png)"',
-                    block,
-                )
-                self.assertIsNotNone(image, block)
-                width, height, alt, src = image.groups()
-            else:
-                self.assertIsNotNone(source, block)
-                src = image.group(1)
-                width, height, alt = image.group(2), image.group(3), image.group(4)
+            image = re.search(r"<img\b[^>]*>", block)
             self.assertIsNotNone(source, block)
-            self.assertTrue(alt.strip())
+            self.assertIsNotNone(image, block)
+            attrs = dict(re.findall(r'([:\w-]+)="([^"]*)"', image.group(0)))
+            src = attrs.get("src", "")
+            self.assertTrue(src.endswith(".png"), block)
+            self.assertIn("width", attrs)
+            self.assertIn("height", attrs)
+            self.assertIn("alt", attrs)
+            if "home-avatar" in attrs.get("class", ""):
+                self.assertEqual(attrs["alt"], "")
+                self.assertEqual(attrs.get("loading"), "lazy")
+            else:
+                self.assertTrue(attrs["alt"].strip())
+                self.assertNotIn("loading", attrs)
             png = local_target(self.page, src)
             webp = local_target(self.page, source.group(1))
             self.assertIsNotNone(png)
             self.assertIsNotNone(webp)
             self.assertTrue(png.is_file(), src)
             self.assertTrue(webp.is_file(), source.group(1))
-            self.assertEqual(png_size(png), (int(width), int(height)), src)
+            self.assertEqual(png_size(png), (int(attrs["width"]), int(attrs["height"])), src)
 
     def test_phone_layout_and_reduced_motion(self):
         phone = media_blocks(self.css, "max-width: 760px")
@@ -229,11 +237,18 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("animation: none", reduced[0])
         self.assertIn("@keyframes home-wave", self.css)
         self.assertIn(
-            "radial-gradient(circle at 22% 55%, rgba(56, 189, 248, 0.35)",
+            "radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 65%)",
             self.css,
         )
-        self.assertIn("rgba(139, 124, 246, 0.35)", self.css)
-        self.assertIn("rgba(163, 230, 53, 0.28)", self.css)
+        self.assertIn(
+            "radial-gradient(circle, rgba(139, 124, 246, 0.2) 0%, transparent 65%)",
+            self.css,
+        )
+        self.assertIn(
+            "radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, transparent 65%)",
+            self.css,
+        )
+        self.assertNotIn("radial-gradient(circle at 82%", self.css)
         self.assertNotIn("color: #8b7cf6", self.css.lower())
         self.assertNotIn("color: var(--chart-2)", self.css)
         self.assertNotIn("color: var(--dn-violet)", self.css)

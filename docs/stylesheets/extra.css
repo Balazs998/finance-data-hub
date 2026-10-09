@@ -399,15 +399,27 @@ body:has(.home) .md-grid {
   container-name: art;
 }
 
-.md-typeset .home-art::before {
+/* Soft circles behind each pose. The colour stops at 65% so the glow
+   fades out inside its own box and never meets the hero edge. */
+.md-typeset .home-mascot::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 22% 55%, rgba(56, 189, 248, 0.35), transparent 32%),
-    radial-gradient(circle at 52% 48%, rgba(139, 124, 246, 0.35), transparent 32%),
-    radial-gradient(circle at 82% 55%, rgba(163, 230, 53, 0.28), transparent 32%);
+  z-index: 0;
+  left: 50%;
+  top: 46%;
+  width: 100%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 65%);
   pointer-events: none;
+}
+
+.md-typeset .home-mascot:nth-child(2)::before {
+  background: radial-gradient(circle, rgba(139, 124, 246, 0.2) 0%, transparent 65%);
+}
+
+.md-typeset .home-mascot:nth-child(3)::before {
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, transparent 65%);
 }
 
 .md-typeset .home-art::after {
@@ -430,6 +442,8 @@ body:has(.home) .md-grid {
 }
 
 .md-typeset .home-mascot img {
+  position: relative;
+  z-index: 1;
   display: block;
   height: min(320px, calc(100cqw / 2.62));
   width: auto;
@@ -653,7 +667,7 @@ body:has(.home) .md-grid {
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: center center;
   background: #111b26;
 }
 
@@ -725,28 +739,33 @@ body:has(.home) .md-grid {
   color: #9aa7b4;
 }
 
-/* Visible unless JavaScript has actually started. */
+/* Visible unless JavaScript has marked a below-fold section as waiting.
+   Sections already on screen never get .reveal-wait, so the first paint
+   shows them at full opacity. */
 .reveal {
   opacity: 1;
   transform: none;
 }
 
-html.js .reveal {
+html.js .reveal.reveal-wait {
   opacity: 0;
   transform: translateY(var(--reveal-distance));
+  transition: none;
+}
+
+html.js .reveal.reveal-wait.is-visible {
+  opacity: 1;
+  transform: none;
   transition:
     opacity var(--reveal-duration) ease,
     transform var(--reveal-duration) ease;
   transition-delay: var(--reveal-delay, 0ms);
 }
 
-html.js .reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  html.js .reveal {
+  html.js .reveal,
+  html.js .reveal.reveal-wait,
+  html.js .reveal.reveal-wait.is-visible {
     opacity: 1;
     transform: none;
     transition: none;

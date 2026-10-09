@@ -9,6 +9,8 @@ from hooks.site import (  # noqa: E402
     PluginError,
     event_name,
     on_config,
+    on_page_markdown,
+    render_file_index,
     render_shortcodes,
 )
 
@@ -121,6 +123,128 @@ class DownloadShortcodeTests(unittest.TestCase):
             name = event_name(filename)
             self.assertEqual(name, f"download-{filename}")
             self.assertFalse(name.startswith("/"))
+
+    def test_file_index_lists_every_file_under_its_note(self):
+        nav = [
+            {"Home": "index.md"},
+            {
+                "Snowflake": [
+                    "snowflake/index.md",
+                    {"Month-end actuals": "snowflake/month-end-actuals.md"},
+                    {
+                        "Plan vs. actuals in Snowflake SQL, without losing rows": (
+                            "snowflake/plan-vs-actuals.md"
+                        )
+                    },
+                ]
+            },
+            {
+                "Jedox": [
+                    "jedox/index.md",
+                    {"Management report export": "jedox/management-report-export.md"},
+                    {"Snowflake to Jedox load": "jedox/snowflake-to-jedox.md"},
+                    {"Automated value emails": "jedox/automated-value-emails.md"},
+                ]
+            },
+            {
+                "VBA and Excel": [
+                    "vba/index.md",
+                    {"Month-close checks": "vba/month-close-checks.md"},
+                ]
+            },
+        ]
+        index = render_file_index(DOCS, nav)
+        files_root = DOCS / "files"
+        for path in files_root.rglob("*"):
+            if path.is_file():
+                relative = path.relative_to(files_root).as_posix()
+                self.assertIn(f"[[download:{relative}", index)
+        self.assertLess(
+            index.index("snowflake/month-end-actuals.md"),
+            index.index("snowflake/plan-vs-actuals.md"),
+        )
+        self.assertLess(
+            index.index("snowflake/plan-vs-actuals.md"),
+            index.index("jedox/management-report-export.md"),
+        )
+        self.assertLess(
+            index.index("jedox/management-report-export.md"),
+            index.index("jedox/snowflake-to-jedox.md"),
+        )
+        self.assertLess(
+            index.index("jedox/snowflake-to-jedox.md"),
+            index.index("jedox/automated-value-emails.md"),
+        )
+        self.assertLess(
+            index.index("jedox/automated-value-emails.md"),
+            index.index("vba/month-close-checks.md"),
+        )
+        plan = index.split("](snowflake/plan-vs-actuals.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("sql/plan_vs_actual.sql", plan)
+        self.assertIn("samples/fact_budget.csv", plan)
+        self.assertIn("samples/fact_actuals.csv", plan)
+        self.assertIn("samples/load_snowflake.sql", plan)
+        self.assertNotIn("email/send_value_emails.groovy", plan)
+        email = index.split("Automated value emails", 1)[1].split("## [", 1)[0]
+        self.assertIn("email/send_value_emails.groovy", email)
+        self.assertIn("email/recipients.csv", email)
+        self.assertIn("email/email-template.html", email)
+        self.assertIn("samples/dim_account.csv", email)
+        load = index.split("](jedox/snowflake-to-jedox.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("samples/fact_actuals.csv", load)
+        self.assertIn("samples/load_snowflake.sql", load)
+        self.assertNotIn("email/send_value_emails.groovy", load)
+        for relative in ("samples/dim_account.csv", "samples/dim_cost_center.csv"):
+            mentions = 0
+            for path in DOCS.rglob("*.md"):
+                if path.name == "downloads.md":
+                    continue
+                mentions += path.read_text(encoding="utf-8").count(f"[[download:{relative}|")
+            self.assertEqual(index.count(relative), mentions)
+            self.assertGreaterEqual(mentions, 3)
+
+    def test_downloads_page_expands_the_file_index(self):
+        class File:
+            src_uri = "downloads.md"
+
+        class Page:
+            file = File()
+            url = "downloads/"
+
+        out = on_page_markdown(
+            "Intro\n\n[[file-index]]\n\nOutro\n",
+            Page(),
+            {"docs_dir": str(DOCS), "nav": None},
+            None,
+        )
+        self.assertNotIn("[[file-index]]", out)
+        self.assertIn('<div class="downloads">', out)
+        self.assertIn('href="../files/email/email-template.html"', out)
+        self.assertIn('href="../files/email/recipients.csv"', out)
+        self.assertIn('href="../files/email/send_value_emails.groovy"', out)
+        self.assertIn('href="../files/sql/plan_vs_actual.sql"', out)
+        self.assertIn("Intro", out)
+        self.assertIn("Outro", out)
+        for path in (DOCS / "files").rglob("*"):
+            if path.is_file():
+                relative = path.relative_to(DOCS / "files").as_posix()
+                self.assertIn(f"files/{relative}", out)
+
+    def test_unlinked_file_fails_the_index(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp)
+            note = docs / "note.md"
+            note.write_text("# Note\n\n[[download:data/a.txt|Download a.txt]]\n", encoding="utf-8")
+            linked = docs / "files" / "data"
+            linked.mkdir(parents=True)
+            (linked / "a.txt").write_text("a", encoding="utf-8")
+            (linked / "b.txt").write_text("b", encoding="utf-8")
+            with self.assertRaises(PluginError) as caught:
+                render_file_index(docs, [{"Note": "note.md"}])
+        self.assertIn("data/b.txt", str(caught.exception))
+        self.assertNotIn("data/a.txt", str(caught.exception))
 
     def test_site_code_is_trimmed_and_a_url_is_rejected(self):
         config = Config(" financedatahub ")

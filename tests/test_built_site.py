@@ -37,6 +37,36 @@ def parse(path: Path) -> AnchorParser:
 SITE_PREFIX = "/finance-data-hub"
 
 
+def _downloads_linked_from_notes() -> list[tuple[str, list[str]]]:
+    """Notes that link a download, in nav order. Independent of the hook."""
+    docs = ROOT / "docs"
+    fence = re.compile(r"(?ms)^(```+)[^\n]*\n.*?^\1[ \t]*$")
+    shortcode = re.compile(r"\[\[download:([^\]|\s]+)")
+    nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+    notes = []
+    for path in docs.rglob("*.md"):
+        src = path.relative_to(docs).as_posix()
+        if src == "downloads.md":
+            continue
+        body = fence.sub("", path.read_text(encoding="utf-8"))
+        files: list[str] = []
+        for match in shortcode.finditer(body):
+            relative = match.group(1).strip()
+            if relative not in files:
+                files.append(relative)
+        if files:
+            if src not in nav:
+                raise AssertionError(f"{src} links a download but is not in the nav")
+            notes.append((nav.index(src), src, files))
+    notes.sort()
+    return [(src, files) for _pos, src, files in notes]
+
+
+def _note_href(src: str) -> str:
+    slug = src[:-3] if src.endswith(".md") else src
+    return f"../{slug}/"
+
+
 def local_target(page: Path, href: str) -> Path | None:
     if href.startswith(("#", "mailto:", "javascript:")):
         return None
@@ -246,6 +276,26 @@ class SnowflakeToJedoxPageTests(unittest.TestCase):
         self.assertIsNotNone(plan)
         self.assertTrue(plan.is_file(), "plan vs actuals link does not resolve")
         self.assertEqual(plan, SITE / "snowflake" / "plan-vs-actuals" / "index.html")
+
+        jedox = (SITE / "jedox" / "index.html").read_text(encoding="utf-8")
+        snowflake = (SITE / "snowflake" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Snowflake to Jedox load", jedox)
+        self.assertIn('href="snowflake-to-jedox/"', jedox)
+        self.assertIn("Snowflake to Jedox load", snowflake)
+        self.assertIn('href="../jedox/snowflake-to-jedox/"', snowflake)
+        for section, href in (
+            (SITE / "jedox" / "index.html", "snowflake-to-jedox/"),
+            (SITE / "snowflake" / "index.html", "../jedox/snowflake-to-jedox/"),
+        ):
+            target = local_target(section, href)
+            self.assertIsNotNone(target, href)
+            self.assertTrue(target.is_file(), href)
+        nav = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Snowflake to Jedox load", nav)
+        self.assertNotIn(
+            "From Snowflake to Jedox: a rerun-safe actuals load with Integrator",
+            nav,
+        )
 
 
 VALUE_EMAIL_DOWNLOADS = (
@@ -553,6 +603,43 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("--md-typeset-a-color: var(--dn-violet", css)
         self.assertNotIn("deep-purple", html)
         self.assertIn('data-md-color-accent="light-blue"', html)
+
+    def test_downloads_page_lists_every_file(self):
+        page = SITE / "downloads" / "index.html"
+        html = page.read_text(encoding="utf-8")
+        start = html.find('<article class="md-content__inner')
+        self.assertGreaterEqual(start, 0)
+        end = html.find("</article>", start)
+        article = html[start:end]
+        self.assertNotIn("[[file-index]]", article)
+
+        disk = sorted(
+            path.relative_to(ROOT / "docs" / "files").as_posix()
+            for path in (ROOT / "docs" / "files").rglob("*")
+            if path.is_file()
+        )
+        self.assertGreaterEqual(len(disk), 12)
+        for relative in disk:
+            self.assertIn(f"files/{relative}", article, relative)
+
+        notes = _downloads_linked_from_notes()
+        self.assertEqual(sorted({rel for _src, files in notes for rel in files}), disk)
+        sections = []
+        for src, files in notes:
+            href = f'href="{_note_href(src)}"'
+            pos = article.find(href)
+            self.assertGreaterEqual(pos, 0, src)
+            sections.append((pos, src, files))
+        sections.sort()
+        for index, (pos, src, files) in enumerate(sections):
+            end_pos = sections[index + 1][0] if index + 1 < len(sections) else len(article)
+            section = article[pos:end_pos]
+            for relative in files:
+                self.assertIn(
+                    f"files/{relative}",
+                    section,
+                    f"{relative} is missing from the {src} group",
+                )
 
     def test_download_events_are_named_per_file_and_the_files_exist(self):
         page = SITE / "downloads" / "index.html"

@@ -46,13 +46,13 @@ Small text files live in the repository and publish with the site. Large binarie
 
 ### Small files (SQL, VBA, CSV, small templates)
 
-Put the file in `docs/files/` and link it with a shortcode. The path is relative to `docs/files/`. The build checks that the file exists.
+Put the file in `docs/files/` and link it from the note with a shortcode. The path is relative to `docs/files/`. The build checks that the file exists.
 
 ```markdown
 [[download:sql/gl_actuals_pnl.sql|Download the SQL script]]
 ```
 
-Use the same shortcode in the article and on [`docs/downloads.md`](docs/downloads.md). The button saves the file and sends a GoatCounter event named after it, for example `download-gl_actuals_pnl.sql`.
+The Downloads page is generated from those shortcodes. Every file under `docs/files/` has to be linked from a note, and the page lists each one under that note. Do not add the button to [`docs/downloads.md`](docs/downloads.md) by hand. The button saves the file and sends a GoatCounter event named after it, for example `download-gl_actuals_pnl.sql`.
 
 From a fenced code block the shortcode is left as-is, so you can show the syntax without creating a button.
 
@@ -103,5 +103,5 @@ A preview on `mkdocs serve` is not counted. GoatCounter ignores localhost.
 | `docs/files/` | Files that download with the site |
 | `docs/stylesheets/extra.css` | Data Night colors, type, and the scroll fade |
 | `mkdocs.yml` | Navigation and the GoatCounter site code |
-| `hooks/site.py` | Turns `[[download:]]` and `[[release:]]` into links |
+| `hooks/site.py` | Turns `[[download:]]` and `[[release:]]` into links, and builds the Downloads page from `docs/files/` |
 | `.github/workflows/pages.yml` | Builds and deploys to GitHub Pages |

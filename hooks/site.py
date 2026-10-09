@@ -3,6 +3,10 @@
 Articles link to files with ``[[download:path|Label]]`` or
 ``[[release:filename|Label]]``. The path after ``download:`` is relative to
 ``docs/files/``. Release links point at the GitHub Release tagged ``files``.
+
+``docs/downloads.md`` includes ``[[file-index]]``. That token becomes one
+group per note, built from the files the note links, so the page lists every
+file under ``docs/files/``.
 """
 
 from __future__ import annotations
@@ -24,6 +28,7 @@ BLOCK_SHORTCODE = re.compile(
     r"\[\[(download|release):([^\]|\s]+)(?:\|([^\]]+))?\]\][ \t]*"
 )
 FENCE = re.compile(r"(?ms)^(```+)[^\n]*\n.*?^\1[ \t]*$")
+FILE_INDEX = "[[file-index]]"
 
 
 def on_config(config):
@@ -81,11 +86,174 @@ def on_page_context(context, page, config, nav):
 
 def on_page_markdown(markdown, page, config, files):
     docs_dir = Path(config["docs_dir"])
+    if page.file.src_uri == "downloads.md":
+        if FILE_INDEX not in markdown:
+            raise PluginError(
+                "docs/downloads.md must include [[file-index]]. "
+                "The Downloads page is generated from the files each note links."
+            )
+        markdown = markdown.replace(
+            FILE_INDEX,
+            render_file_index(docs_dir, config["nav"]).rstrip("\n"),
+        )
     return render_shortcodes(
         markdown,
         page.file.src_uri,
         docs_dir,
         page_url=page.url or "",
+    )
+
+
+def render_file_index(docs_dir: Path, nav) -> str:
+    """Markdown groups for the Downloads page, one group per note.
+
+    A file under ``docs/files/`` that no note links is an error. Otherwise a
+    new file shows up here as soon as its note links it.
+    """
+    notes = _notes_with_downloads(docs_dir)
+    groups = _order_notes(notes, nav)
+    linked = {path for _src, _title, files in groups for path, _label in files}
+    missing = [path for path in _files_under(docs_dir) if path not in linked]
+    if missing:
+        raise PluginError(
+            "Every file in docs/files must be linked from a note with "
+            "[[download:]] so the Downloads page can list it under that note. "
+            "Not linked: " + ", ".join(missing)
+        )
+    if not groups:
+        return ""
+    return "\n\n".join(_group_markdown(title, src, files) for src, title, files in groups) + "\n"
+
+
+def _notes_with_downloads(docs_dir: Path) -> dict[str, tuple[str | None, list[tuple[str, str | None]]]]:
+    notes: dict[str, tuple[str | None, list[tuple[str, str | None]]]] = {}
+    for path in sorted(docs_dir.rglob("*.md")):
+        src = path.relative_to(docs_dir).as_posix()
+        if src == "downloads.md":
+            continue
+        text = path.read_text(encoding="utf-8")
+        files = _unique_downloads(_download_refs(text))
+        if not files:
+            continue
+        for relative, _label in files:
+            resolve_site_file(docs_dir, relative)
+        notes[src] = (_first_heading(text), files)
+    return notes
+
+
+def _download_refs(markdown: str) -> list[tuple[str, str | None]]:
+    found: list[tuple[str, str | None]] = []
+
+    def collect(segment: str) -> str:
+        for match in SHORTCODE.finditer(segment):
+            if match.group(1) != "download":
+                continue
+            relative = posix_target(match.group(2).strip())
+            label = match.group(3).strip() if match.group(3) else None
+            if label == "":
+                label = None
+            if label and any(char in label for char in "|]\r\n"):
+                raise PluginError(
+                    f"Download label cannot contain '|' or ']': {label!r}"
+                )
+            found.append((relative, label))
+        return segment
+
+    _map_outside_fences(markdown, collect)
+    return found
+
+
+def _unique_downloads(
+    refs: list[tuple[str, str | None]],
+) -> list[tuple[str, str | None]]:
+    seen: set[str] = set()
+    unique: list[tuple[str, str | None]] = []
+    for relative, label in refs:
+        if relative in seen:
+            continue
+        seen.add(relative)
+        unique.append((relative, label))
+    return unique
+
+
+def _order_notes(
+    notes: dict[str, tuple[str | None, list[tuple[str, str | None]]]],
+    nav,
+) -> list[tuple[str, str, list[tuple[str, str | None]]]]:
+    titles: dict[str, str] = {}
+    order: list[str] = []
+    for title, src in _nav_pages(nav):
+        if src not in order:
+            order.append(src)
+        if title and src not in titles:
+            titles[src] = title
+    ordered: list[tuple[str, str, list[tuple[str, str | None]]]] = []
+    seen: set[str] = set()
+    for src in order + sorted(src for src in notes if src not in order):
+        if src not in notes or src in seen:
+            continue
+        heading, files = notes[src]
+        ordered.append((src, titles.get(src) or heading or src, files))
+        seen.add(src)
+    return ordered
+
+
+def _nav_pages(nav) -> list[tuple[str | None, str]]:
+    pages: list[tuple[str | None, str]] = []
+
+    def walk(node) -> None:
+        if isinstance(node, str):
+            pages.append((None, node))
+        elif isinstance(node, dict):
+            for key, value in node.items():
+                if isinstance(value, str):
+                    pages.append((str(key), value))
+                else:
+                    walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    if nav:
+        walk(nav)
+    return pages
+
+
+def _first_heading(markdown: str) -> str | None:
+    lines = markdown.splitlines()
+    if lines and lines[0].strip() == "---":
+        for index in range(1, len(lines)):
+            if lines[index].strip() == "---":
+                lines = lines[index + 1 :]
+                break
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:].strip()
+    return None
+
+
+def _group_markdown(
+    title: str,
+    src: str,
+    files: list[tuple[str, str | None]],
+) -> str:
+    lines = [f"## [{escape_label(title)}]({src})", ""]
+    for relative, label in files:
+        if label:
+            lines.append(f"[[download:{relative}|{label}]]")
+        else:
+            lines.append(f"[[download:{relative}]]")
+    return "\n".join(lines)
+
+
+def _files_under(docs_dir: Path) -> list[str]:
+    root = docs_dir / "files"
+    if not root.is_dir():
+        raise PluginError(f"Missing download directory {root}.")
+    return sorted(
+        path.relative_to(root).as_posix()
+        for path in root.rglob("*")
+        if path.is_file()
     )
 
 

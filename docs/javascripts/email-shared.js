@@ -153,6 +153,22 @@
     });
   }
 
+  /* Phone builder: smooth scroll, unless the reader asked for less motion.
+     The margin keeps the sticky site header from covering the target. */
+  function scrollBehavior(reducedMotion) {
+    return reducedMotion ? "auto" : "smooth";
+  }
+
+  function previewScrollMargin(headerHeight) {
+    var height = Number(headerHeight);
+    if (!isFinite(height) || height < 0) height = 0;
+    return Math.round(height) + 12;
+  }
+
+  function returnField(lastEdited, firstField) {
+    return lastEdited || firstField;
+  }
+
   function formatCents(cents) {
     var negative = cents < 0;
     var abs = Math.abs(cents);
@@ -210,6 +226,9 @@
     WORDING_MARKERS: WORDING_MARKERS,
     TEMPLATE_MARKERS: TEMPLATE_MARKERS,
     KNOWN_SCRIPT_MARKERS: KNOWN_SCRIPT_MARKERS,
+    scrollBehavior: scrollBehavior,
+    previewScrollMargin: previewScrollMargin,
+    returnField: returnField,
     escapeHtml: escapeHtml,
     escapeText: escapeText,
     groovyQuote: groovyQuote,

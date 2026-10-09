@@ -731,18 +731,31 @@ test("an unknown API call is a name to check", function () {
 });
 
 test("paste keeps the cursor on line 1", function () {
-  const change = liveLint.pasteChange(0, 0, sources.groovy);
-  assert.equal(change.selection.anchor, 0);
-  assert.equal(change.scrollIntoView, false);
-  assert.equal(change.changes.insert, sources.groovy);
-  const mid = liveLint.pasteChange(10, 12, "hello\nthere");
-  assert.equal(mid.selection.anchor, 10);
-  assert.notEqual(mid.selection.anchor, 10 + "hello\nthere".length);
+  const empty = liveLint.pasteChange(0, 0, sources.groovy, 0);
+  assert.equal(empty.pinTop, true);
+  assert.equal(empty.selection.anchor, 0);
+  assert.equal(empty.selection.head, 0);
+  assert.equal(empty.scrollIntoView, false);
+  assert.equal(empty.changes.insert, sources.groovy);
+  const replaced = liveLint.pasteChange(0, 80, "line one\nline two\n", 80);
+  assert.equal(replaced.pinTop, true);
+  assert.equal(replaced.selection.anchor, 0);
+  assert.equal(liveLint.pasteReplacesAll(0, 80, 80), true);
+  const mid = liveLint.pasteChange(10, 12, "hello\nthere", 40);
+  assert.equal(mid.pinTop, false);
+  assert.equal(mid.scrollIntoView, true);
+  assert.equal(mid.selection.anchor, 10 + "hello\nthere".length);
+  assert.equal(mid.selection.head, mid.selection.anchor);
+  const atStart = liveLint.pasteChange(0, 0, "x", 40);
+  assert.equal(atStart.pinTop, false);
+  assert.equal(atStart.selection.anchor, 1);
   const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
   const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
   const page = fs.readFileSync(path.join(root, "docs/jedox/email-checker.md"), "utf8");
-  assert.match(ui, /liveLint\.pasteChange\(/);
-  assert.match(ui, /scrollTop = 0/);
+  assert.match(ui, /liveLint\.pasteChange\([\s\S]*docLength\)/);
+  assert.match(ui, /if \(change\.pinTop\)/);
+  assert.match(ui, /editorView\.scrollDOM\.scrollTop = 0/);
+  assert.match(ui, /scrollIntoView\(head, \{ y: "nearest" \}\)/);
   assert.doesNotMatch(ui, /EditorView\.lineWrapping/);
   assert.match(ui, /is-line-target/);
   assert.match(ui, /cm-lint-marker/);
@@ -754,6 +767,26 @@ test("paste keeps the cursor on line 1", function () {
   assert.match(css, /white-space: pre;/);
   assert.match(page, /id="email-expand-btn" aria-expanded="false"/);
   assert.match(page, /Expand editor ↕/);
+});
+
+test("phone preview scrolls below the header and returns to the last field", function () {
+  assert.equal(shared.scrollBehavior(true), "auto");
+  assert.equal(shared.scrollBehavior(false), "smooth");
+  assert.equal(shared.previewScrollMargin(48), 60);
+  assert.equal(shared.previewScrollMargin(0), 12);
+  assert.equal(shared.previewScrollMargin(-4), 12);
+  assert.equal(shared.returnField(null, "field-subject"), "field-subject");
+  assert.equal(shared.returnField(undefined, "field-subject"), "field-subject");
+  assert.equal(shared.returnField("field-note", "field-subject"), "field-note");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-builder-ui.js"), "utf8");
+  assert.match(ui, /scrollIntoView\(/);
+  assert.match(ui, /scrollMarginTop/);
+  assert.match(ui, /prefers-reduced-motion: reduce/);
+  assert.match(ui, /max-width: 760px/);
+  assert.match(ui, /lastEdited = fields\[name\]/);
+  assert.match(ui, /shared\.returnField\(lastEdited, fields\.subject\)/);
+  assert.match(ui, /focus\(\{ preventScroll: true \}\)/);
+  assert.match(ui, /getElementById\("tab-preview"\)/);
 });
 
 test("a mistake on line 2051 does not count as a clean script", function () {

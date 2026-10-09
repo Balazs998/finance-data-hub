@@ -95,14 +95,22 @@
     return { state: "issues", text: "Issues (" + issues.length + ")" };
   }
 
-  /* Paste leaves the cursor where the text went in. An empty editor
-     starts at 0, which is line 1, and the view must not follow the end. */
-  function pasteChange(from, to, text) {
+  /* A paste that fills an empty editor, or replaces the whole script,
+     stays on line 1. The editor scroller is reset by the caller.
+     A smaller paste leaves the cursor after the text that went in. */
+  function pasteReplacesAll(from, to, docLength) {
+    return docLength === 0 || (from === 0 && to === docLength);
+  }
+
+  function pasteChange(from, to, text, docLength) {
+    var whole = pasteReplacesAll(from, to, docLength);
+    var cursor = whole ? 0 : from + String(text).length;
     return {
       changes: { from: from, to: to, insert: text },
-      selection: { anchor: from },
-      scrollIntoView: false,
-      userEvent: "input.paste"
+      selection: { anchor: cursor, head: cursor },
+      scrollIntoView: !whole,
+      userEvent: "input.paste",
+      pinTop: whole
     };
   }
 
@@ -120,6 +128,7 @@
     checkedLinesNote: checkedLinesNote,
     cutoffClearText: cutoffClearText,
     statusBar: statusBar,
+    pasteReplacesAll: pasteReplacesAll,
     pasteChange: pasteChange
   };
 });

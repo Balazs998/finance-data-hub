@@ -135,6 +135,7 @@
       pinTopUntil = Date.now() + 700;
       var frames = 0;
       function pin() {
+        if (!pinTopUntil || Date.now() >= pinTopUntil) return;
         if (editorView.state.selection.main.head === 0) {
           editorView.scrollDOM.scrollTop = 0;
           editorView.scrollDOM.scrollLeft = 0;
@@ -430,8 +431,29 @@
               if (!text) return false;
               event.preventDefault();
               var range = editorView.state.selection.main;
-              editorView.dispatch(liveLint.pasteChange(range.from, range.to, text));
-              if (editorView.state.selection.main.head === 0) pinEditorTop(editorView);
+              var docLength = editorView.state.doc.length;
+              var change = liveLint.pasteChange(range.from, range.to, text, docLength);
+              if (change.pinTop) pinTopUntil = Date.now() + 700;
+              else pinTopUntil = 0;
+              editorView.dispatch({
+                changes: change.changes,
+                selection: change.selection,
+                scrollIntoView: change.scrollIntoView,
+                userEvent: change.userEvent
+              });
+              if (change.pinTop) {
+                editorView.scrollDOM.scrollTop = 0;
+                editorView.scrollDOM.scrollLeft = 0;
+                pinEditorTop(editorView);
+              } else {
+                var head = editorView.state.selection.main.head;
+                requestAnimationFrame(function () {
+                  if (pinTopUntil || editorView.state.selection.main.head !== head) return;
+                  editorView.dispatch({
+                    effects: cm.EditorView.scrollIntoView(head, { y: "nearest" })
+                  });
+                });
+              }
               return true;
             }
           }),

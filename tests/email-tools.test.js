@@ -9,6 +9,8 @@ const sources = require("../docs/javascripts/email-sources.js");
 const messages = require("../docs/javascripts/email-check-messages.js");
 const generate = require("../docs/javascripts/email-generate.js");
 const checker = require("../docs/javascripts/email-checker-core.js");
+const completions = require("../docs/javascripts/email-completions.js");
+const liveLint = require("../docs/javascripts/email-live-lint.js");
 
 function problems(script, scriptType) {
   return checker.checkScript(script, { scriptType: scriptType || "job" }).issues
@@ -322,4 +324,73 @@ test("grey Jedox cards are grouped by kind and list every line", function () {
 test("plain setMessage is not an html error", function () {
   const script = "def mailer = API.getMailer()\nboolean testMode = true\nmailer.reset()\nmailer.addRecipient(to)\nmailer.setMessage('Hello')\nmailer.send()\n";
   assert.deepEqual(allIssues(script), []);
+});
+
+test("autocomplete offers Jedox calls and job variables, not deprecated setServer", function () {
+  const labels = completions.suggestions().map(function (item) { return item.label; });
+  const joined = labels.join("\n");
+  ["API.getMailer()", "API.initSource()", "API.getProperty()", "setHtmlMessage()", "setting()", "readFile()"].forEach(function (label) {
+    assert.ok(labels.indexOf(label) >= 0, label);
+  });
+  ["TEST_MODE", "RECIPIENT_TEST", "PERIOD", "VERSION_PLAN", "VERSION_ACTUAL", "SUBJECT_TEMPLATE", "COLOR_VARIANCE", "SOURCE_EXTRACT", "TEMPLATE_FILE", "RECIPIENTS_FILE", "ACCOUNTS_FILE", "COST_CENTERS_FILE"].forEach(function (label) {
+    const item = completions.suggestions().filter(function (row) { return row.label === label; })[0];
+    assert.ok(item, label);
+    assert.equal(item.detail, "job variable");
+  });
+  assert.equal(completions.suggestions().filter(function (row) { return row.label === "API.initSource()"; })[0].detail, "Jedox API");
+  assert.equal(joined.indexOf("setServer"), -1);
+  assert.equal(joined.indexOf("setSMTPServer"), -1);
+  assert.equal(joined.indexOf("setSender"), -1);
+  assert.equal(joined.indexOf("smtp.example.com"), -1);
+  assert.deepEqual(completions.matching("setServer").map(function (item) { return item.label; }), []);
+  assert.deepEqual(completions.matching("setS").map(function (item) { return item.label; }), ["setSubject()"]);
+  assert.ok(completions.matching("set").every(function (item) { return item.label.indexOf("setServer") < 0; }));
+  assert.equal(completions.visible(completions.suggestions()).length, completions.MAX_ROWS);
+  assert.equal(completions.MAX_ROWS, 8);
+});
+
+test("live lint waits 400ms after typing stops", function () {
+  const { mock } = require("node:test");
+  mock.timers.enable({ apis: ["setTimeout"] });
+  try {
+    assert.equal(liveLint.QUIET_MS, 400);
+    assert.equal(liveLint.DROPDOWN_MIN_WIDTH, 640);
+    assert.equal(liveLint.STACK_BELOW, 1100);
+    assert.equal(liveLint.dropdownEnabled(639), false);
+    assert.equal(liveLint.dropdownEnabled(640), true);
+    assert.equal(liveLint.dropdownEnabled(390), false);
+    assert.equal(liveLint.issuesBelowEditor(1099), true);
+    assert.equal(liveLint.issuesBelowEditor(1100), false);
+    assert.equal(liveLint.issuesBelowEditor(1440), false);
+    const runs = [];
+    const live = liveLint.createLiveLint(liveLint.QUIET_MS);
+    live.push(function () { runs.push("first"); });
+    mock.timers.tick(399);
+    assert.deepEqual(runs, []);
+    live.push(function () { runs.push("second"); });
+    mock.timers.tick(399);
+    assert.deepEqual(runs, []);
+    mock.timers.tick(1);
+    assert.deepEqual(runs, ["second"]);
+    assert.equal(live.pending(), false);
+  } finally {
+    mock.timers.reset();
+  }
+});
+
+test("the checker page lints on the quiet period and stacks by width", function () {
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const page = fs.readFileSync(path.join(root, "docs/jedox/email-checker.md"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.match(ui, /delay:\s*liveLint\.QUIET_MS/);
+  assert.match(ui, /maxRenderedOptions:\s*completions\.MAX_ROWS/);
+  assert.match(ui, /dropdownEnabled\(window\.innerWidth\)/);
+  assert.doesNotMatch(page, /Check script/);
+  assert.match(page, /data-placeholder="Paste your Groovy job script here\. Nothing leaves your browser\."/);
+  assert.match(css, /@media screen and \(max-width: 1100px\)/);
+  assert.match(css, /underline dotted #9aa7b4/);
+  const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
+  assert.equal(bundle.indexOf("jsdelivr"), -1);
+  assert.equal(bundle.indexOf("unpkg.com"), -1);
+  assert.equal(bundle.indexOf("esm.sh"), -1);
 });

@@ -17,7 +17,7 @@ Paste your Integrator Groovy script and check it for the usual traps. It runs in
 
 <p class="email-privacy">Everything runs in your browser. Nothing you type or paste is sent anywhere.</p>
 
-The checker looks for nine mistakes we see again and again in Integrator email scripts. Each problem line gets an underline and a card that says what's wrong and how to fix it.
+The checker looks for nine mistakes we see again and again in Integrator email scripts. It checks as you type. Each problem line gets an underline and a card that says what's wrong and how to fix it.
 
 It reads your script as text. It doesn't connect to Jedox, so it can't see your extracts, columns or connections. Names it can't verify get a grey "Check in your Jedox" card.
 
@@ -31,15 +31,8 @@ It reads your script as text. It doesn't connect to Jedox, so it can't see your 
 </div>
 <div class="email-grid email-grid-checker">
 <div class="email-editor-column">
-<div class="email-codebox">
-<div class="email-gutter" id="email-gutter" aria-hidden="true"></div>
-<div class="email-code-main">
-<pre class="email-highlight" id="email-highlight" aria-hidden="true"></pre>
-<textarea id="email-script-input" aria-label="Your Groovy script" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Paste your Groovy job script here. Nothing leaves your browser."></textarea>
-</div>
-</div>
+<div id="email-editor" class="email-editor" data-placeholder="Paste your Groovy job script here. Nothing leaves your browser."></div>
 <div class="email-text-actions">
-<button type="button" class="email-btn email-btn-primary" id="email-check-btn">Check script</button>
 <button type="button" class="email-text-btn" id="email-example-btn">Try an example</button>
 <button type="button" class="email-text-btn" id="email-clear-btn">Clear</button>
 </div>

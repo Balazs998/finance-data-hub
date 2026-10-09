@@ -25,6 +25,9 @@ extra_javascript:
   - javascripts/email-check-messages.js
   - javascripts/email-generate.js
   - javascripts/email-checker-core.js
+  - javascripts/email-completions.js
+  - javascripts/email-live-lint.js
+  - javascripts/codemirror-bundle.js
   - javascripts/email-builder-ui.js
   - javascripts/email-checker-ui.js
 

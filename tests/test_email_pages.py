@@ -60,6 +60,10 @@ class EmailPageTests(unittest.TestCase):
         self.assertIn("Paste your Groovy job script here. Nothing leaves your browser.", html)
         self.assertIn('href="../email-builder/"', html)
         self.assertIn(">Issues</button>", html)
+        self.assertIn("codemirror-bundle.js", html)
+        self.assertNotIn("jsdelivr", html)
+        self.assertNotIn("unpkg.com", html)
+        self.assertNotIn(">Check script<", html)
         self.assertEqual(html.count("data-goatcounter"), 1)
 
     def test_published_scripts_and_styles_are_local(self):

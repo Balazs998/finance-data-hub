@@ -1,4 +1,5 @@
-/* Checker page. The pasted script stays in the browser. */
+/* Checker page. The script stays in the browser. CodeMirror is the
+   self-hosted bundle; linting waits until typing has stopped. */
 (function () {
   function ready(fn) {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
@@ -7,20 +8,25 @@
 
   ready(function () {
     var root = document.getElementById("email-checker");
-    if (!root || !globalThis.EmailChecker || !globalThis.EmailShared || !globalThis.EmailCheckMessages) return;
+    var cm = globalThis.EmailCodeMirror;
+    if (!root || !cm || !globalThis.EmailChecker || !globalThis.EmailShared || !globalThis.EmailCheckMessages || !globalThis.EmailCompletions || !globalThis.EmailLiveLint) return;
 
     var checker = globalThis.EmailChecker;
     var shared = globalThis.EmailShared;
     var copy = globalThis.EmailCheckMessages;
-    var input = document.getElementById("email-script-input");
-    var highlight = document.getElementById("email-highlight");
-    var gutter = document.getElementById("email-gutter");
+    var completions = globalThis.EmailCompletions;
+    var liveLint = globalThis.EmailLiveLint;
+    var host = document.getElementById("email-editor");
     var list = document.getElementById("email-issue-list");
     var pills = document.getElementById("email-pills");
     var banner = document.getElementById("email-banner");
     var sticky = document.getElementById("email-checker-sticky");
     var scriptType = "job";
-    var checkedOnce = false;
+    var sawEdit = false;
+    var lintEpoch = 0;
+    var lintSeen = 0;
+    var completionCompartment = new cm.Compartment();
+    var media = window.matchMedia("(max-width: " + (liveLint.DROPDOWN_MIN_WIDTH - 1) + "px)");
 
     function typeLabel(severity) {
       return copy.labels[severity];
@@ -30,60 +36,25 @@
       return count + " " + (count === 1 ? one : many);
     }
 
-    function renderEditor(text, issues) {
-      var lines = String(text).split("\n");
-      var byLine = {};
-      function issueLines(issue) {
-        if (!issue.items) return [issue.line];
-        var lines = [];
-        issue.items.forEach(function (item) {
-          item.lines.forEach(function (lineNo) {
-            if (lines.indexOf(lineNo) < 0) lines.push(lineNo);
-          });
-        });
-        return lines.length ? lines : [issue.line];
-      }
-      issues.forEach(function (issue) {
-        issueLines(issue).forEach(function (lineNo) {
-          var current = byLine[lineNo];
-          if (!current) byLine[lineNo] = issue;
-          else if (issue.severity === "error") byLine[lineNo] = issue;
-          else if (issue.severity === "warning" && current.severity === "check") byLine[lineNo] = issue;
+    function lineNumbersOf(issue) {
+      if (!issue.items) return [issue.line];
+      var lines = [];
+      issue.items.forEach(function (item) {
+        item.lines.forEach(function (lineNo) {
+          if (lines.indexOf(lineNo) < 0) lines.push(lineNo);
         });
       });
-      var code = "";
-      var gut = "";
-      lines.forEach(function (line, index) {
-        var issue = byLine[index + 1];
-        var kind = issue ? issue.severity : "";
-        var cls = kind ? " is-" + (kind === "check" ? "check" : kind === "warning" ? "warning" : "error") : "";
-        var icon = issue ? issue.icon : "";
-        var label = issue ? typeLabel(issue.severity) : "";
-        code += "<div class=\"email-line" + cls + "\" title=\"" + shared.escapeHtml(label) + "\">" +
-          "<span class=\"email-wavy\">" + (shared.highlightGroovy(line) || " ") + "</span></div>";
-        gut += "<div class=\"email-gline" + cls + "\">" +
-          "<span class=\"email-gicon\" title=\"" + shared.escapeHtml(label) + "\">" + shared.escapeHtml(icon) + "</span>" +
-          "<span class=\"email-gnum\">" + (index + 1) + "</span></div>";
-      });
-      highlight.innerHTML = code;
-      gutter.innerHTML = gut;
-      syncScroll();
+      return lines.length ? lines : [issue.line];
     }
 
     function scrollToLine(lineNo) {
-      var lines = highlight.querySelectorAll(".email-line");
-      var line = lines[lineNo - 1];
-      if (!line || !lines.length) return;
-      var pitch = lines[0].getBoundingClientRect().height || 22.1;
-      input.scrollTop = Math.max(0, (lineNo - 1) * pitch - (input.clientHeight - pitch) / 2);
-      syncScroll();
-    }
-
-    function syncScroll() {
-      var x = -input.scrollLeft;
-      var y = -input.scrollTop;
-      highlight.style.transform = "translate(" + x + "px," + y + "px)";
-      gutter.style.transform = "translateY(" + y + "px)";
+      if (!view || lineNo < 1 || lineNo > view.state.doc.lines) return;
+      var pos = view.state.doc.line(lineNo).from;
+      view.dispatch({
+        selection: { anchor: pos },
+        effects: cm.EditorView.scrollIntoView(pos, { y: "center" })
+      });
+      view.focus();
     }
 
     function card(issue) {
@@ -114,8 +85,8 @@
         article.appendChild(fix);
       }
       if (issue.items && issue.items.length) {
-        var list = document.createElement("ul");
-        list.className = "email-name-list";
+        var names = document.createElement("ul");
+        names.className = "email-name-list";
         issue.items.forEach(function (item) {
           var row = document.createElement("li");
           var where = item.lines.length === 1 ? "line " + item.lines[0] : "lines " + item.lines.join(", ");
@@ -124,9 +95,9 @@
             event.stopPropagation();
             scrollToLine(item.lines[0]);
           });
-          list.appendChild(row);
+          names.appendChild(row);
         });
-        article.appendChild(list);
+        article.appendChild(names);
       }
       if (issue.before) {
         var pre = document.createElement("pre");
@@ -166,7 +137,7 @@
         showBanner(copy.tooLong.replace("{n}", String(result.lineLimit)));
       }
       if (result.empty) {
-        if (checkedOnce) showBanner(copy.empty);
+        if (sawEdit) showBanner(copy.empty);
       } else if (result.notGroovy) {
         showBanner(copy.notGroovy);
       } else if (!errors.length && !warnings.length) {
@@ -185,21 +156,169 @@
       result.issues.forEach(function (issue) { list.appendChild(card(issue)); });
 
       if (sticky) {
-        var open = root.classList.contains("is-panel-open");
         var total = result.issues.length;
-        sticky.textContent = open ? "Back to script" : (total ? "Issues (" + total + ")" : "Issues");
+        sticky.textContent = total ? "Issues (" + total + ")" : "Issues";
       }
     }
 
-    function runCheck() {
-      checkedOnce = true;
-      var result = checker.checkScript(input.value, { scriptType: scriptType });
-      renderEditor(input.value, result.empty ? [] : result.issues);
-      renderIssues(result);
+    function diagnosticsFor(state, result) {
+      if (!result || result.empty || result.notGroovy) return [];
+      var byLine = {};
+      result.issues.forEach(function (issue) {
+        lineNumbersOf(issue).forEach(function (lineNo) {
+          if (!byLine[lineNo]) byLine[lineNo] = [];
+          byLine[lineNo].push(issue);
+        });
+      });
+      var rank = { error: 0, warning: 1, check: 2 };
+      var severityName = { error: "error", warning: "warning", check: "info" };
+      return Object.keys(byLine).map(function (key) {
+        var lineNo = Number(key);
+        if (lineNo < 1 || lineNo > state.doc.lines) return null;
+        var found = byLine[lineNo].slice().sort(function (a, b) {
+          return rank[a.severity] - rank[b.severity];
+        });
+        var line = state.doc.line(lineNo);
+        var skip = line.text.search(/\S/);
+        var from = skip < 0 ? line.from : line.from + skip;
+        var to = line.to > from ? line.to : from;
+        var lead = found[0];
+        return {
+          from: from,
+          to: to,
+          severity: severityName[lead.severity] || "info",
+          message: lead.title.replace(/`/g, ""),
+          renderMessage: function () {
+            var box = document.createElement("div");
+            box.className = "email-hover-stack";
+            found.forEach(function (issue) {
+              var article = document.createElement("article");
+              article.className = "email-issue is-" + (issue.severity === "warning" ? "warning" : issue.severity === "check" ? "check" : "error");
+              var label = document.createElement("p");
+              label.className = "email-issue-label";
+              label.textContent = issue.icon + " " + typeLabel(issue.severity);
+              var title = document.createElement("h3");
+              title.innerHTML = shared.inlineCode(issue.title);
+              var body = document.createElement("p");
+              body.innerHTML = shared.inlineCode(issue.explanation);
+              article.appendChild(label);
+              article.appendChild(title);
+              article.appendChild(body);
+              box.appendChild(article);
+            });
+            return box;
+          }
+        };
+      }).filter(Boolean);
     }
 
-    input.addEventListener("input", runCheck);
-    input.addEventListener("scroll", syncScroll);
+    function lintSource(editorView) {
+      var result = checker.checkScript(editorView.state.doc.toString(), { scriptType: scriptType });
+      renderIssues(result);
+      return diagnosticsFor(editorView.state, result);
+    }
+
+    function completionSource(context) {
+      var word = context.matchBefore(/[A-Za-z_][\w.]*/);
+      if (!word || (word.from === word.to && !context.explicit)) return null;
+      var query = word.text;
+      var items = query ? completions.matching(query) : completions.suggestions();
+      if (!items.length) return null;
+      return {
+        from: word.from,
+        filter: false,
+        options: items.map(function (item) {
+          return { label: item.label, detail: item.detail, apply: item.apply };
+        })
+      };
+    }
+
+    function completionExtension() {
+      if (!liveLint.dropdownEnabled(window.innerWidth)) return [];
+      return cm.autocompletion({
+        override: [completionSource],
+        activateOnTyping: true,
+        maxRenderedOptions: completions.MAX_ROWS,
+        defaultKeymap: true,
+        closeOnBlur: true,
+        icons: false
+      });
+    }
+
+    function focusables() {
+      return Array.prototype.filter.call(document.querySelectorAll("a[href], button, input, textarea, select, [tabindex]"), function (el) {
+        if (el.tabIndex < 0) return false;
+        if (el.closest(".cm-tooltip")) return false;
+        var style = window.getComputedStyle(el);
+        return style.display !== "none" && style.visibility !== "hidden";
+      });
+    }
+
+    function moveFocus(forward) {
+      return function (editorView) {
+        cm.closeCompletion(editorView);
+        var items = focusables();
+        var index = items.indexOf(editorView.contentDOM);
+        var next = items[index + (forward ? 1 : -1)];
+        if (!next) return false;
+        next.focus();
+        return true;
+      };
+    }
+
+    var keys = cm.Prec.highest(cm.keymap.of([
+      { key: "Tab", run: moveFocus(true), shift: moveFocus(false) },
+      { key: "Escape", run: function (editorView) { return cm.closeCompletion(editorView); } }
+    ]));
+
+    var view = new cm.EditorView({
+      parent: host,
+      state: cm.EditorState.create({
+        doc: "",
+        extensions: [
+          cm.EditorView.darkTheme.of(true),
+          cm.EditorView.contentAttributes.of({ "aria-label": "Your Groovy script", spellcheck: "false" }),
+          cm.placeholder(host.getAttribute("data-placeholder") || ""),
+          cm.lineNumbers(),
+          cm.highlightActiveLine(),
+          cm.highlightActiveLineGutter(),
+          cm.drawSelection(),
+          cm.history(),
+          cm.tooltips({ parent: root }),
+          cm.lintGutter(),
+          cm.keymap.of(cm.defaultKeymap.concat(cm.historyKeymap)),
+          keys,
+          completionCompartment.of(completionExtension()),
+          cm.linter(lintSource, {
+            delay: liveLint.QUIET_MS,
+            needsRefresh: function () {
+              if (lintEpoch !== lintSeen) {
+                lintSeen = lintEpoch;
+                return true;
+              }
+              return false;
+            }
+          }),
+          cm.EditorView.updateListener.of(function (update) {
+            if (update.docChanged) sawEdit = true;
+          })
+        ]
+      })
+    });
+
+    function relintNow() {
+      lintEpoch += 1;
+      view.dispatch({ effects: completionCompartment.reconfigure(completionExtension()) });
+      cm.forceLinting(view);
+    }
+
+    function onWidthChange() {
+      view.dispatch({ effects: completionCompartment.reconfigure(completionExtension()) });
+      if (!liveLint.dropdownEnabled(window.innerWidth)) cm.closeCompletion(view);
+    }
+
+    if (media.addEventListener) media.addEventListener("change", onWidthChange);
+    else if (media.addListener) media.addListener(onWidthChange);
 
     root.querySelectorAll(".email-seg-btn").forEach(function (button) {
       button.addEventListener("click", function () {
@@ -209,32 +328,35 @@
           item.classList.toggle("is-on", on);
           item.setAttribute("aria-checked", on ? "true" : "false");
         });
-        runCheck();
+        sawEdit = true;
+        relintNow();
       });
     });
 
-    document.getElementById("email-check-btn").addEventListener("click", function () {
-      runCheck();
-      list.scrollIntoView({ block: "nearest", behavior: "auto" });
-    });
     document.getElementById("email-example-btn").addEventListener("click", function () {
-      input.value = checker.EXAMPLE_SCRIPT;
-      runCheck();
+      sawEdit = true;
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: checker.EXAMPLE_SCRIPT },
+        selection: { anchor: 0 }
+      });
+      view.focus();
     });
     document.getElementById("email-clear-btn").addEventListener("click", function () {
-      input.value = "";
-      runCheck();
+      sawEdit = true;
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: "" }
+      });
+      view.focus();
     });
 
     if (sticky) {
       sticky.addEventListener("click", function () {
-        var open = root.classList.toggle("is-panel-open");
-        sticky.setAttribute("aria-expanded", open ? "true" : "false");
-        runCheck();
+        var panel = document.getElementById("email-panel");
+        if (panel) panel.scrollIntoView({ block: "start", behavior: "auto" });
+        sticky.setAttribute("aria-expanded", "true");
       });
     }
 
-    renderEditor("", []);
     renderIssues({ empty: true, notGroovy: false, truncated: false, lineLimit: checker.MAX_LINES, issues: [] });
   });
 })();

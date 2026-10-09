@@ -55,6 +55,12 @@
   grid-template-columns: minmax(0, 1fr) minmax(260px, 380px);
 }
 
+@media screen and (max-width: 1100px) {
+  .email-grid-checker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .email-card {
   background: var(--dn-surface);
   border: 1px solid var(--dn-border);
@@ -554,12 +560,21 @@
   box-shadow: inset 3px 0 #fbbf24;
 }
 
-.email-line.is-error .email-wavy {
+.email-line.is-error .email-wavy,
+#email-checker .cm-lintRange-error {
+  background-image: none;
   text-decoration: underline wavy #f87171;
 }
 
-.email-line.is-warning .email-wavy {
+.email-line.is-warning .email-wavy,
+#email-checker .cm-lintRange-warning {
+  background-image: none;
   text-decoration: underline wavy #fbbf24;
+}
+
+#email-checker .cm-lintRange-info {
+  background-image: none;
+  text-decoration: underline dotted #9aa7b4;
 }
 
 .md-typeset .email-app .email-code-main textarea {
@@ -735,6 +750,173 @@
   margin-top: 28px;
 }
 
+#email-checker .email-editor,
+#email-checker .cm-editor {
+  background: #18222e;
+  border-radius: 8px;
+}
+
+#email-checker .cm-editor {
+  min-height: 420px;
+  color: var(--dn-text);
+}
+
+#email-checker .cm-scroller {
+  overflow: visible;
+  min-height: 420px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-content {
+  padding: 20px 16px 20px 20px;
+  caret-color: #e6edf3;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-line {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-gutters {
+  background: #18222e;
+  border-right: 1px solid #243241;
+  min-width: 48px;
+  color: #8b98a5;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 14px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+#email-checker .cm-lineNumbers .cm-gutterElement {
+  color: #8b98a5;
+  text-align: right;
+  padding: 0 12px 0 8px;
+  min-width: 36px;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-gutter-lint {
+  width: 16px;
+}
+
+#email-checker .cm-gutter-lint .cm-gutterElement {
+  padding-left: 2px;
+  padding-right: 0;
+}
+
+#email-checker .cm-lint-marker {
+  width: auto;
+  height: auto;
+  content: none;
+  font-family: Inter, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: calc(1.7 * 14px);
+}
+
+#email-checker .cm-lint-marker-error {
+  content: "✕";
+  color: #f87171;
+}
+
+#email-checker .cm-lint-marker-warning {
+  content: "!";
+  color: #fbbf24;
+}
+
+#email-checker .cm-lint-marker-info {
+  content: "?";
+  color: #8b98a5;
+}
+
+#email-checker .cm-activeLine,
+#email-checker .cm-activeLineGutter {
+  background-color: rgba(56, 189, 248, 0.06);
+}
+
+#email-checker .cm-editor.cm-focused {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+#email-checker .cm-placeholder {
+  color: var(--dn-text-faint);
+}
+
+#email-checker .cm-tooltip.cm-tooltip-autocomplete {
+  background: #18222e;
+  border: 1px solid #2b3a4a;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+#email-checker .cm-tooltip-autocomplete ul {
+  max-height: 256px;
+  min-width: 280px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+#email-checker .cm-tooltip-autocomplete ul li {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: var(--dn-text);
+}
+
+#email-checker .cm-tooltip-autocomplete ul li[aria-selected] {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--dn-text);
+  box-shadow: inset 2px 0 #38bdf8;
+}
+
+#email-checker .cm-completionLabel {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+#email-checker .cm-completionDetail {
+  margin-left: auto;
+  padding-left: 16px;
+  color: var(--dn-text-muted);
+  font-family: Inter, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+}
+
+#email-checker .cm-tooltip.cm-tooltip-hover,
+#email-checker .cm-tooltip.cm-tooltip-lint {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+#email-checker .email-hover-stack .email-issue {
+  max-width: 360px;
+  margin: 0;
+}
+
+#email-checker .cm-diagnostic {
+  padding: 0;
+  margin: 0;
+}
+
+@media screen and (max-width: 760px) {
+  #email-checker .cm-editor,
+  #email-checker .cm-scroller {
+    min-height: 240px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .email-app *,
   .email-app *::before,
@@ -752,12 +934,25 @@
     grid-template-columns: 1fr;
   }
 
-  .email-app:not(.is-panel-open) .email-panel {
+  #email-checker .cm-editor,
+  #email-checker .cm-content,
+  #email-checker .cm-line,
+  #email-checker .cm-gutters {
+    font-size: 13px;
+  }
+
+  #email-checker .cm-content,
+  #email-checker .cm-line,
+  #email-checker .cm-gutterElement {
+    line-height: calc(1.7 * 13px);
+  }
+
+  #email-builder:not(.is-panel-open) .email-panel {
     display: none;
   }
 
-  .email-app.is-panel-open .email-form,
-  .email-app.is-panel-open .email-editor-column {
+  #email-builder.is-panel-open .email-form,
+  #email-builder.is-panel-open .email-editor-column {
     display: none;
   }
 

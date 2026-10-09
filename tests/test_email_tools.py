@@ -40,11 +40,25 @@ class EmailToolTests(unittest.TestCase):
         self.assertIn("Groovy job", checker)
         self.assertIn("Groovy function", checker)
         self.assertEqual(builder.count("email-var-tag"), 8)
-        self.assertNotIn("Greeting <span class=\"email-var-tag\">", builder)
-        self.assertNotIn("Intro <span class=\"email-var-tag\">", builder)
-        self.assertNotIn("Note under the table <span class=\"email-var-tag\">", builder)
-        self.assertNotIn("Footer <span class=\"email-var-tag\">", builder)
-        self.assertIn("Fields tagged job variable are only fallbacks. If your job already sets them, update or delete them there.", builder)
+        for snippet in (
+            "Subject <span class=\"email-var-tag\">job variable</span>",
+            "Period <span class=\"email-var-tag\">job variable</span>",
+            "Plan version <span class=\"email-var-tag\">job variable</span>",
+            "Actual version <span class=\"email-var-tag\">job variable</span>",
+            "Test mode: send everything to one address <span class=\"email-var-tag\">job variable</span>",
+            "Test address <span class=\"email-var-tag\">job variable</span>",
+            "Highlight unfavorable variances <span class=\"email-var-tag\">job variable</span>",
+            "Extract name <span class=\"email-var-tag\">job variable</span>",
+        ):
+            self.assertIn(snippet, builder)
+        for label in ("Greeting", "Intro", "Note under the table", "Footer"):
+            self.assertNotIn(label + " <span class=\"email-var-tag\">", builder)
+        self.assertIn(
+            "Fields tagged <strong>job variable</strong> are only defaults. "
+            "If your Integrator job already sets that variable, the job's value wins, "
+            "so change it in the job instead.",
+            builder,
+        )
         self.assertIn('class="email-fallback-icon" aria-hidden="true">i</span>', builder)
         css = (ROOT / "docs/stylesheets/email-tool.css").read_text(encoding="utf-8")
         self.assertIn("underline wavy #f87171", css)

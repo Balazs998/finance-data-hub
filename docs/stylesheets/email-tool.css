@@ -86,8 +86,15 @@
   vertical-align: middle;
 }
 
+.email-switch-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.4;
+  text-align: left;
+}
+
 .email-switch .email-var-tag {
-  margin-left: 0;
+  margin-left: 8px;
 }
 
 .email-fallback-note {
@@ -263,7 +270,9 @@
 .md-typeset .email-app button.email-switch {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
   width: 100%;
   margin-top: 16px;
   padding: 0;
@@ -278,6 +287,7 @@
 .email-switch-track {
   width: 38px;
   height: 22px;
+  margin-left: auto;
   border-radius: 11px;
   background: #2a3847;
   position: relative;

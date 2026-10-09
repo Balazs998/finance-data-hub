@@ -82,9 +82,8 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-field-msg" id="msg-footer" role="status"></p>
 
 <button type="button" class="email-switch is-on" id="test-mode" role="switch" aria-checked="true">
+<span class="email-switch-copy">Test mode: send everything to one address <span class="email-var-tag">job variable</span></span>
 <span class="email-switch-track" aria-hidden="true"></span>
-<span>Test mode: send everything to one address</span>
-<span class="email-var-tag">job variable</span>
 </button>
 <p class="email-help" id="test-mode-help-on">Every email goes to the test address. The subject starts with <code>[TEST for owner.cc4010@example.com]</code>, so you can see who it was meant for.</p>
 <p class="email-help" id="test-mode-help-off" hidden>The script is the same either way. It only changes the default you download. We recommend keeping it on and switching <code>TEST_MODE</code> to <code>false</code> in Jedox for one run when you're ready.</p>
@@ -112,9 +111,8 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-field-msg" id="msg-versionActual" role="status"></p>
 
 <button type="button" class="email-switch is-on" id="color-variance" role="switch" aria-checked="true">
+<span class="email-switch-copy">Highlight unfavorable variances <span class="email-var-tag">job variable</span></span>
 <span class="email-switch-track" aria-hidden="true"></span>
-<span>Highlight unfavorable variances</span>
-<span class="email-var-tag">job variable</span>
 </button>
 <p class="email-help">Colors a variance when it's bad news for that account type. Becomes <code>COLOR_VARIANCE</code>.</p>
 
@@ -149,7 +147,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 </div>
 <aside class="email-fallback-note">
 <span class="email-fallback-icon" aria-hidden="true">i</span>
-<p>Fields tagged job variable are only fallbacks. If your job already sets them, update or delete them there.</p>
+<p>Fields tagged <strong>job variable</strong> are only defaults. If your Integrator job already sets that variable, the job's value wins, so change it in the job instead.</p>
 </aside>
 <div class="email-actions">
 <button type="button" class="email-btn email-btn-primary" id="email-download">Download script + template</button>

@@ -25,8 +25,26 @@ class EmailPageTests(unittest.TestCase):
         self.assertIn("Next: run it in Jedox in test mode first", html)
         self.assertIn('value="{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}"', html)
         self.assertIn("Sample data only.", html)
-        self.assertIn("Fields tagged job variable are only fallbacks. If your job already sets them, update or delete them there.", html)
+        self.assertIn(
+            "Fields tagged <strong>job variable</strong> are only defaults. "
+            "If your Integrator job already sets that variable, the job's value wins, "
+            "so change it in the job instead.",
+            html,
+        )
         self.assertEqual(html.count("email-var-tag"), 8)
+        for snippet in (
+            "Subject <span class=\"email-var-tag\">job variable</span>",
+            "Period <span class=\"email-var-tag\">job variable</span>",
+            "Plan version <span class=\"email-var-tag\">job variable</span>",
+            "Actual version <span class=\"email-var-tag\">job variable</span>",
+            "Test mode: send everything to one address <span class=\"email-var-tag\">job variable</span>",
+            "Test address <span class=\"email-var-tag\">job variable</span>",
+            "Highlight unfavorable variances <span class=\"email-var-tag\">job variable</span>",
+            "Extract name <span class=\"email-var-tag\">job variable</span>",
+        ):
+            self.assertIn(snippet, html)
+        for label in ("Greeting", "Intro", "Note under the table", "Footer"):
+            self.assertNotIn(label + " <span class=\"email-var-tag\">", html)
         self.assertIn('aria-hidden="true">i</span>', html)
         self.assertIn('href="../email-checker/"', html)
         self.assertIn(">Preview</button>", html)

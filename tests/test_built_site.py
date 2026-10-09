@@ -704,10 +704,12 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("md-content__button", about)
         self.assertIn("/edit/main/docs/about.md", about)
 
-    def test_home_topic_cards_use_three_columns_on_desktop(self):
+    def test_home_sections_use_three_columns_on_desktop(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
-        self.assertIn('class="grid cards topic-cards"', home)
+        self.assertIn('class="home-path"', home)
+        self.assertIn('class="home-who"', home)
+        self.assertNotIn("topic-cards", home)
         self.assertIn("@media screen and (min-width: 45em)", css)
         self.assertIn("grid-template-columns: repeat(3, minmax(0, 1fr));", css)
 
@@ -718,9 +720,11 @@ class BuiltSiteTests(unittest.TestCase):
         )
         for html in (home, article):
             self.assertNotIn("headerlink", html)
-        self.assertIn('<h1 id="finance-data-hub">', home)
-        self.assertIn('<h2 id="where-to-start">', home)
-        self.assertIn('href="#where-to-start"', home)
+        self.assertIn('<h1 id="build-the-fpa-pack-without-the-manual-work">', home)
+        self.assertIn('<h2 id="follow-the-data-step-by-step">', home)
+        self.assertIn('id="latest-posts"', home)
+        self.assertIn('id="why-it-matters"', home)
+        self.assertNotIn('id="where-to-start"', home)
         self.assertIn('<h1 id="month-end-actuals">', article)
         self.assertIn('href="#grain"', article)
 

@@ -283,10 +283,15 @@ test("zip download contains the script and the template", function () {
 test("grey Jedox cards are grouped by kind and list every line", function () {
   const published = checker.checkScript(sources.groovy, { scriptType: "job" });
   const checks = published.issues.filter(function (issue) { return issue.severity === "check"; });
-  assert.deepEqual(checks.map(function (issue) { return issue.kind; }), ["variable", "connection", "column"]);
-  assert.equal(checks.length, 3);
+  assert.deepEqual(checks.map(function (issue) { return issue.kind; }), ["connection", "column"]);
+  assert.equal(checks.length, 2);
   const names = checks.reduce(function (sum, issue) { return sum + issue.items.length; }, 0);
-  assert.equal(names, 16);
+  assert.equal(names, 8);
+  shared.KNOWN_JOB_VARIABLES.forEach(function (name) {
+    assert.equal(checks.some(function (issue) {
+      return issue.items.some(function (item) { return item.name === name; });
+    }), false, name);
+  });
 
   function linesFor(kind, name) {
     const card = checks.filter(function (issue) { return issue.kind === kind; })[0];
@@ -299,14 +304,6 @@ test("grey Jedox cards are grouped by kind and list every line", function () {
     assert.ok(index >= 0, needle);
     return index + 1;
   }
-  assert.deepEqual(linesFor("variable", "TEST_MODE"), [lineOf("setting('TEST_MODE'")]);
-  assert.deepEqual(linesFor("variable", "RECIPIENT_TEST"), [lineOf("setting('RECIPIENT_TEST'")]);
-  assert.deepEqual(linesFor("variable", "PERIOD"), [lineOf("setting('PERIOD'")]);
-  assert.deepEqual(linesFor("variable", "VERSION_PLAN"), [lineOf("setting('VERSION_PLAN'")]);
-  assert.deepEqual(linesFor("variable", "VERSION_ACTUAL"), [lineOf("setting('VERSION_ACTUAL'")]);
-  assert.deepEqual(linesFor("variable", "SUBJECT_TEMPLATE"), [lineOf("setting('SUBJECT_TEMPLATE'")]);
-  assert.deepEqual(linesFor("variable", "COLOR_VARIANCE"), [lineOf("setting('COLOR_VARIANCE'")]);
-  assert.deepEqual(linesFor("variable", "SOURCE_EXTRACT"), [lineOf("setting('SOURCE_EXTRACT'")]);
   assert.deepEqual(linesFor("connection", "EmailTemplate"), [lineOf("readFile('EmailTemplate')")]);
   assert.deepEqual(linesFor("connection", "EmailRecipients"), [lineOf("readFile('EmailRecipients')")]);
   assert.deepEqual(linesFor("connection", "Accounts"), [lineOf("readFile('Accounts')")]);
@@ -315,9 +312,8 @@ test("grey Jedox cards are grouped by kind and list every line", function () {
   assert.deepEqual(linesFor("column", "Account"), [lineOf("getColumnString('Account')")]);
   assert.deepEqual(linesFor("column", "Version"), [lineOf("getColumnString('Version')")]);
   assert.deepEqual(linesFor("column", "#Value"), [lineOf("getColumnValue('#Value')")]);
-  assert.equal(checks[0].explanation, "8 job variables to check in your Jedox. This script reads them with `API.getProperty()`. Make sure each one exists in the job, or that the default in the script is what you want.");
-  assert.equal(checks[1].explanation, "4 file connections to check in your Jedox. Each name must match a File connection in the project. A relative path is read from the local files folder.");
-  assert.equal(checks[2].explanation, "4 column names to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't documented, so check it especially.");
+  assert.equal(checks[0].explanation, "4 file connections to check in your Jedox. Each name must match a File connection in the project. A relative path is read from the local files folder.");
+  assert.equal(checks[1].explanation, "4 column names to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't documented, so check it especially.");
 
   const mixed = [
     "def src = API.initSource('PnL_BudgetActual')",
@@ -326,8 +322,8 @@ test("grey Jedox cards are grouped by kind and list every line", function () {
     "rows << src.getColumnString('Account')",
     "rows << src.getColumnString('CostCenter')",
     "readFile('EmailTemplate')",
-    "setting('TEST_MODE', 'true')",
-    "setting('TEST_MODE', 'false')",
+    "setting('CUSTOM_FLAG', 'true')",
+    "setting('CUSTOM_FLAG', 'false')",
     "def mailer = API.getMailer()",
     "boolean testMode = true",
     "mailer.reset()",
@@ -345,10 +341,52 @@ test("grey Jedox cards are grouped by kind and list every line", function () {
     { name: "Account", lines: [4] }
   ]);
   assert.deepEqual(grouped.filter(function (issue) { return issue.kind === "variable"; })[0].items, [
-    { name: "TEST_MODE", lines: [7, 8] }
+    { name: "CUSTOM_FLAG", lines: [7, 8] }
   ]);
   assert.equal(grouped.filter(function (issue) { return issue.kind === "variable"; })[0].explanation, "1 job variable to check in your Jedox. This script reads them with `API.getProperty()`. Make sure each one exists in the job, or that the default in the script is what you want.");
   assert.equal(grouped.filter(function (issue) { return issue.kind === "connection"; })[0].explanation, "1 file connection to check in your Jedox. Each name must match a File connection in the project. A relative path is read from the local files folder.");
+});
+
+test("the builder's eight job variables are known names", function () {
+  const builder = fs.readFileSync(path.join(root, "docs/jedox/email-builder.md"), "utf8");
+  assert.equal((builder.match(/email-var-tag/g) || []).length, 8);
+  assert.deepEqual(shared.KNOWN_JOB_VARIABLES, [
+    "TEST_MODE",
+    "RECIPIENT_TEST",
+    "PERIOD",
+    "VERSION_PLAN",
+    "VERSION_ACTUAL",
+    "SUBJECT_TEMPLATE",
+    "COLOR_VARIANCE",
+    "SOURCE_EXTRACT"
+  ]);
+  shared.KNOWN_JOB_VARIABLES.forEach(function (name) {
+    assert.ok(builder.indexOf(name) >= 0, name);
+    assert.deepEqual(checker.checkScript("API.getProperty('" + name + "')", { scriptType: "job" }).issues, [], name);
+    assert.deepEqual(checker.checkScript("def mailer = API.getMailer()\nsetting('" + name + "', 'x')", { scriptType: "job" }).issues, [], name);
+  });
+  const unknown = checker.checkScript("API.getProperty('TEMPLATE_FILE')\nAPI.getProperty('PERIOD')", { scriptType: "job" });
+  assert.deepEqual(unknown.issues.map(function (issue) { return issue.kind + ":" + issue.items[0].name; }), ["variable:TEMPLATE_FILE"]);
+  assert.deepEqual(liveLint.statusBar(unknown), {
+    state: "names",
+    text: "? No errors or warnings. 1 name to check in your Jedox, listed below."
+  });
+  assert.deepEqual(liveLint.statusBar(checker.checkScript("API.getProperty('PERIOD')\nsetting('TEST_MODE', 'true')", { scriptType: "job" })), {
+    state: "clear",
+    text: "✓ No problems found"
+  });
+});
+
+test("copy tells you it worked on the button, then restores the label", function () {
+  assert.equal(generate.MESSAGES.copied, "Copied ✓");
+  assert.equal(generate.MESSAGES.copyFailed, "Copy failed. Select the text and press Ctrl+C.");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-builder-ui.js"), "utf8");
+  const page = fs.readFileSync(path.join(root, "docs/jedox/email-builder.md"), "utf8");
+  assert.match(ui, /copyBtn\.textContent = gen\.MESSAGES\.copied/);
+  assert.match(ui, /copyBtn\.textContent = copyLabel/);
+  assert.match(ui, /setTimeout\(function \(\) \{[\s\S]*copyBtn\.textContent = copyLabel;[\s\S]*\}, 2000\)/);
+  assert.match(ui, /status\.textContent = gen\.MESSAGES\.copyFailed/);
+  assert.match(page, /id="email-status" role="status" aria-live="polite"/);
 });
 
 test("plain setMessage is not an html error", function () {
@@ -513,13 +551,16 @@ test("the issues bar has four states", function () {
   assert.deepEqual(liveLint.statusBar({ empty: true, issues: [] }), { state: "hidden", text: "" });
   assert.deepEqual(liveLint.statusBar({ empty: false, notGroovy: true, issues: [] }), { state: "hidden", text: "" });
   assert.deepEqual(liveLint.statusBar({ empty: false, issues: [] }), { state: "clear", text: "✓ No problems found" });
-  const oneName = checker.checkScript("API.getProperty('PERIOD')", { scriptType: "job" });
+  const knownOnly = checker.checkScript("API.getProperty('PERIOD')", { scriptType: "job" });
+  assert.deepEqual(knownOnly.issues, []);
+  assert.deepEqual(liveLint.statusBar(knownOnly), { state: "clear", text: "✓ No problems found" });
+  const oneName = checker.checkScript("API.getProperty('NOT_A_JOB_VARIABLE')", { scriptType: "job" });
   assert.deepEqual(oneName.issues.map(function (issue) { return issue.severity; }), ["check"]);
   assert.deepEqual(liveLint.statusBar(oneName), {
     state: "names",
     text: "? No errors or warnings. 1 name to check in your Jedox, listed below."
   });
-  const twoNames = checker.checkScript("API.getProperty('PERIOD')\nAPI.getProperty('TEST_MODE')", { scriptType: "job" });
+  const twoNames = checker.checkScript("API.getProperty('NOT_A_JOB_VARIABLE')\nAPI.getProperty('ALSO_UNKNOWN')", { scriptType: "job" });
   assert.deepEqual(liveLint.statusBar(twoNames), {
     state: "names",
     text: "? No errors or warnings. 2 names to check in your Jedox, listed below."
@@ -563,6 +604,9 @@ test("the issues bar has four states", function () {
   assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*border: 1px solid #8B98A5;/);
   assert.match(css, /#email-checker \.email-sticky\[hidden\] \{\s*display: none !important;/);
   assert.match(css, /min-height: 48px;/);
+  assert.match(css, /#email-checker \.email-how > summary::before \{[^}]*content: none;/);
+  assert.match(css, /#email-checker \.email-how > summary::before \{[^}]*display: none;/);
+  assert.match(css, /#email-checker \.email-how > summary::after \{[^}]*border-right: 2px solid currentColor;/);
 });
 
 test("the live editor uses the Web Designer syntax colours", function () {

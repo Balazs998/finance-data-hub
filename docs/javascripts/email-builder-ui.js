@@ -230,11 +230,24 @@
       status.textContent = gen.MESSAGES.downloaded;
     });
 
+    var copyLabel = copyBtn.textContent;
+    var copyTimer = null;
     copyBtn.addEventListener("click", function () {
       if (!lastGood || copyBtn.disabled) return;
       var text = lastGood.script;
-      function copied() { status.textContent = gen.MESSAGES.copied; }
+      function copied() {
+        status.textContent = gen.MESSAGES.copied;
+        copyBtn.textContent = gen.MESSAGES.copied;
+        if (copyTimer) clearTimeout(copyTimer);
+        copyTimer = setTimeout(function () {
+          copyTimer = null;
+          copyBtn.textContent = copyLabel;
+        }, 2000);
+      }
       function failed() {
+        if (copyTimer) clearTimeout(copyTimer);
+        copyTimer = null;
+        copyBtn.textContent = copyLabel;
         status.textContent = gen.MESSAGES.copyFailed;
         root.querySelector('.email-tab[data-tab="script"]').click();
       }

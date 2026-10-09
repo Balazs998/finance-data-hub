@@ -16,6 +16,19 @@
     "}": "&#125;"
   };
 
+  /* The eight names the builder tags as a job variable. The value-email
+     post defines these, so the checker treats them as known. */
+  var KNOWN_JOB_VARIABLES = [
+    "TEST_MODE",
+    "RECIPIENT_TEST",
+    "PERIOD",
+    "VERSION_PLAN",
+    "VERSION_ACTUAL",
+    "SUBJECT_TEMPLATE",
+    "COLOR_VARIANCE",
+    "SOURCE_EXTRACT"
+  ];
+
   var WORDING_MARKERS = {
     COST_CENTER: true,
     COST_CENTER_NAME: true,
@@ -183,6 +196,7 @@
     highlightGroovy: highlightGroovy,
     inlineCode: inlineCode,
     HTML_ESCAPES: HTML_ESCAPES,
+    KNOWN_JOB_VARIABLES: KNOWN_JOB_VARIABLES,
     WORDING_MARKERS: WORDING_MARKERS,
     TEMPLATE_MARKERS: TEMPLATE_MARKERS,
     KNOWN_SCRIPT_MARKERS: KNOWN_SCRIPT_MARKERS,

@@ -26,6 +26,7 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 <div class="email-grid email-grid-checker">
 <div class="email-editor-column">
 <div id="email-editor" class="email-editor" data-placeholder="Paste or type your Groovy script here."></div>
+<button type="button" class="email-text-btn email-expand" id="email-expand-btn" aria-expanded="false">Expand editor ↕</button>
 <div class="email-text-actions">
 <button type="button" class="email-text-btn" id="email-example-btn">Try an example</button>
 <button type="button" class="email-text-btn" id="email-clear-btn">Clear</button>

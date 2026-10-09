@@ -23,10 +23,16 @@
     var sticky = document.getElementById("email-checker-sticky");
     var statusLive = document.getElementById("email-status-live");
     var how = document.getElementById("email-how");
+    var expandBtn = document.getElementById("email-expand-btn");
     var scriptType = "job";
     var sawEdit = false;
     var lintEpoch = 0;
     var lintSeen = 0;
+    var lastCursorLine = 1;
+    var skipCardReveal = false;
+    var pinTopUntil = 0;
+    var highlightLineNo = 0;
+    var highlightUntil = 0;
     var completionCompartment = new cm.Compartment();
     var media = window.matchMedia("(max-width: " + (liveLint.DROPDOWN_MIN_WIDTH - 1) + "px)");
 
@@ -66,14 +72,77 @@
       return lines.length ? lines : [issue.line];
     }
 
+    function paintHighlight(editorView) {
+      editorView.dom.querySelectorAll(".cm-line.is-line-target").forEach(function (el) {
+        el.classList.remove("is-line-target");
+      });
+      if (!highlightLineNo || Date.now() > highlightUntil) return;
+      if (highlightLineNo < 1 || highlightLineNo > editorView.state.doc.lines) return;
+      var line = editorView.state.doc.line(highlightLineNo);
+      var found = editorView.domAtPos(line.from);
+      var node = found.node;
+      var el = node.nodeType === 1 ? node : node.parentElement;
+      var row = el && (el.classList.contains("cm-line") ? el : el.closest(".cm-line"));
+      if (row) row.classList.add("is-line-target");
+    }
+
+    function highlightLine(editorView, lineNo) {
+      highlightLineNo = lineNo;
+      highlightUntil = Date.now() + 1500;
+      paintHighlight(editorView);
+      requestAnimationFrame(function () { paintHighlight(editorView); });
+      window.setTimeout(function () {
+        if (Date.now() < highlightUntil) return;
+        highlightLineNo = 0;
+        paintHighlight(editorView);
+      }, 1500);
+    }
+
+    function revealCard(lineNo) {
+      var match = null;
+      list.querySelectorAll(".email-issue[data-lines]").forEach(function (article) {
+        if (match) return;
+        var lines = article.getAttribute("data-lines").split(",");
+        if (lines.indexOf(String(lineNo)) >= 0) match = article;
+      });
+      if (match) match.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }
+
+    function lineFromMarker(editorView, marker) {
+      var gutter = marker.closest(".cm-gutterElement");
+      var box = (gutter || marker).getBoundingClientRect();
+      var content = editorView.contentDOM.getBoundingClientRect();
+      var pos = editorView.posAtCoords({ x: content.left + 8, y: box.top + Math.min(8, box.height / 2) });
+      if (pos == null) return 0;
+      return editorView.state.doc.lineAt(pos).number;
+    }
+
     function scrollToLine(lineNo) {
       if (!view || lineNo < 1 || lineNo > view.state.doc.lines) return;
       var pos = view.state.doc.line(lineNo).from;
+      skipCardReveal = true;
       view.dispatch({
         selection: { anchor: pos },
         effects: cm.EditorView.scrollIntoView(pos, { y: "center" })
       });
+      lastCursorLine = lineNo;
+      skipCardReveal = false;
+      highlightLine(view, lineNo);
       view.focus();
+    }
+
+    function pinEditorTop(editorView) {
+      pinTopUntil = Date.now() + 700;
+      var frames = 0;
+      function pin() {
+        if (editorView.state.selection.main.head === 0) {
+          editorView.scrollDOM.scrollTop = 0;
+          editorView.scrollDOM.scrollLeft = 0;
+        }
+        frames += 1;
+        if (frames < 10 && Date.now() < pinTopUntil) requestAnimationFrame(pin);
+      }
+      pin();
     }
 
     function card(issue) {
@@ -95,6 +164,7 @@
       title.innerHTML = shared.inlineCode(issue.title);
       var body = document.createElement("p");
       body.innerHTML = shared.inlineCode(issue.explanation);
+      article.setAttribute("data-lines", lineNumbersOf(issue).join(","));
       article.appendChild(label);
       article.appendChild(title);
       article.appendChild(body);
@@ -147,7 +217,8 @@
       }
       if (errors.length) pill("email-pill-error", countText(errors.length, "error", "errors"));
       if (warnings.length) pill("email-pill-warning", countText(warnings.length, "warning", "warnings"));
-      if (checks.length) pill("email-pill-check", countText(checks.length, "check", "checks"));
+      var namePill = liveLint.checkPillText(result);
+      if (namePill) pill("email-pill-check", namePill);
 
       function showBanner(text) {
         banner.innerHTML = text ? shared.inlineCode(text) : "";
@@ -314,7 +385,6 @@
         doc: "",
         extensions: [
           cm.EditorView.darkTheme.of(true),
-          cm.EditorView.lineWrapping,
           cm.groovy(),
           cm.EditorView.contentAttributes.of({ "aria-label": "Your Groovy script", spellcheck: "false" }),
           cm.placeholder(host.getAttribute("data-placeholder") || ""),
@@ -338,13 +408,57 @@
               return false;
             }
           }),
+          cm.EditorView.domEventHandlers({
+            paste: function (event, editorView) {
+              var data = event.clipboardData;
+              if (!data) return false;
+              var text = data.getData("text/plain");
+              if (!text) return false;
+              event.preventDefault();
+              var range = editorView.state.selection.main;
+              editorView.dispatch(liveLint.pasteChange(range.from, range.to, text));
+              if (editorView.state.selection.main.head === 0) pinEditorTop(editorView);
+              return true;
+            }
+          }),
           cm.EditorView.updateListener.of(function (update) {
             if (update.docChanged) sawEdit = true;
             labelGutterMarkers(update.view);
+            if (pinTopUntil && Date.now() < pinTopUntil && update.view.state.selection.main.head === 0) {
+              if (update.view.scrollDOM.scrollTop !== 0) update.view.scrollDOM.scrollTop = 0;
+            }
+            if (highlightLineNo) paintHighlight(update.view);
+            if (!update.selectionSet) return;
+            var lineNo = update.state.doc.lineAt(update.state.selection.main.head).number;
+            if (skipCardReveal) {
+              lastCursorLine = lineNo;
+              return;
+            }
+            if (lineNo !== lastCursorLine) {
+              lastCursorLine = lineNo;
+              revealCard(lineNo);
+            }
           })
         ]
       })
     });
+
+    view.dom.addEventListener("click", function (event) {
+      var marker = event.target.closest ? event.target.closest(".cm-lint-marker") : null;
+      if (!marker || !view.dom.contains(marker)) return;
+      var lineNo = lineFromMarker(view, marker);
+      if (!lineNo) return;
+      scrollToLine(lineNo);
+      revealCard(lineNo);
+    });
+
+    if (expandBtn) {
+      expandBtn.addEventListener("click", function () {
+        var open = root.classList.toggle("is-editor-expanded");
+        expandBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        expandBtn.textContent = open ? "Collapse editor ↕" : "Expand editor ↕";
+      });
+    }
 
     function relintNow() {
       lintEpoch += 1;

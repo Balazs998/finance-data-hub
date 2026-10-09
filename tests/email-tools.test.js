@@ -532,7 +532,8 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.match(css, /@media screen and \(max-width: 1100px\)/);
   assert.match(css, /underline dotted #9aa7b4/);
   assert.match(css, /#email-checker \.cm-content:focus-visible \{\s*outline: none;/);
-  assert.match(css, /@media screen and \(min-width: 1100px\) \{\s*#email-checker \.email-editor-column \{\s*position: sticky;\s*top: 72px;/);
+  assert.match(css, /@media screen and \(min-width: 1100px\) \{\s*#email-checker \.email-grid-checker \{\s*grid-template-columns: minmax\(0, 1\.7fr\) minmax\(320px, 1fr\);/);
+  assert.doesNotMatch(css, /#email-checker \.email-editor-column \{\s*position: sticky;/);
   assert.match(css, /#email-checker \.cm-lint-marker-error \{\s*color: #f87171;/);
   assert.match(css, /#email-checker \.cm-lint-marker-warning \{\s*color: #fbbf24;/);
   assert.match(ui, /mark = "✕"/);
@@ -607,6 +608,74 @@ test("the issues bar has four states", function () {
   assert.match(css, /#email-checker \.email-how > summary::before \{[^}]*content: none;/);
   assert.match(css, /#email-checker \.email-how > summary::before \{[^}]*display: none;/);
   assert.match(css, /#email-checker \.email-how > summary::after \{[^}]*border-right: 2px solid currentColor;/);
+});
+
+test("a long script counts eight names in the bar and the pill", function () {
+  assert.equal(sources.groovy.replace(/\n$/, "").split("\n").length, 393);
+  const published = checker.checkScript(sources.groovy, { scriptType: "job" });
+  assert.equal(published.issues.every(function (issue) { return issue.severity === "check"; }), true);
+  assert.equal(liveLint.nameCount(published.issues), 8);
+  assert.equal(liveLint.checkPillText(published), "8 names to check");
+  const bar = liveLint.statusBar(published);
+  assert.equal(bar.state, "names");
+  assert.ok(bar.text.indexOf(liveLint.checkPillText(published)) >= 0, bar.text);
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  assert.match(ui, /liveLint\.checkPillText\(result\)/);
+});
+
+test("an unknown API call is a name to check", function () {
+  const unknown = checker.checkScript("def m = API.getM", { scriptType: "job" });
+  assert.equal(unknown.issues.length, 1);
+  assert.equal(unknown.issues[0].severity, "check");
+  assert.equal(unknown.issues[0].kind, "call");
+  assert.equal(unknown.issues[0].items[0].name, "API.getM");
+  assert.equal(liveLint.statusBar(unknown).state, "names");
+  assert.equal(liveLint.checkPillText(unknown), "1 name to check");
+  assert.ok(liveLint.statusBar(unknown).text.indexOf("1 name to check") >= 0);
+  const known = checker.checkScript("def m = API.getMailer()", { scriptType: "job" });
+  assert.deepEqual(known.issues, []);
+  assert.equal(liveLint.statusBar(known).state, "clear");
+  const commented = checker.checkScript("def m = API.getMailer()\n// API.getM\nString s = 'API.getNope'", { scriptType: "job" });
+  assert.deepEqual(commented.issues, []);
+  const deprecated = checker.checkScript("def src = API.getSource('X')", { scriptType: "job" });
+  assert.ok(deprecated.issues.some(function (issue) { return issue.rule === "EM07"; }));
+  assert.equal(deprecated.issues.some(function (issue) { return issue.kind === "call"; }), false);
+  assert.notEqual(liveLint.statusBar(deprecated).state, "clear");
+  const members = completions.CANDIDATES.map(function (label) {
+    var match = /^API\.([A-Za-z_][\w]*)/.exec(label);
+    return match ? match[1] : "";
+  }).filter(Boolean);
+  assert.deepEqual(members.slice().sort(), shared.DOCUMENTED_API_MEMBERS.slice().sort());
+  members.forEach(function (member) {
+    const result = checker.checkScript("def x = API." + member + "()", { scriptType: "job" });
+    assert.equal(result.issues.some(function (issue) { return issue.kind === "call"; }), false, member);
+  });
+});
+
+test("paste keeps the cursor on line 1", function () {
+  const change = liveLint.pasteChange(0, 0, sources.groovy);
+  assert.equal(change.selection.anchor, 0);
+  assert.equal(change.scrollIntoView, false);
+  assert.equal(change.changes.insert, sources.groovy);
+  const mid = liveLint.pasteChange(10, 12, "hello\nthere");
+  assert.equal(mid.selection.anchor, 10);
+  assert.notEqual(mid.selection.anchor, 10 + "hello\nthere".length);
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  const page = fs.readFileSync(path.join(root, "docs/jedox/email-checker.md"), "utf8");
+  assert.match(ui, /liveLint\.pasteChange\(/);
+  assert.match(ui, /scrollTop = 0/);
+  assert.doesNotMatch(ui, /EditorView\.lineWrapping/);
+  assert.match(ui, /is-line-target/);
+  assert.match(ui, /cm-lint-marker/);
+  assert.match(ui, /revealCard\(/);
+  assert.match(css, /max-height: calc\(100vh - 160px\)/);
+  assert.match(css, /max-height: 60vh/);
+  assert.match(css, /max-height: 50vh/);
+  assert.match(css, /overscroll-behavior: auto/);
+  assert.match(css, /white-space: pre;/);
+  assert.match(page, /id="email-expand-btn" aria-expanded="false"/);
+  assert.match(page, /Expand editor ↕/);
 });
 
 test("the live editor uses the Web Designer syntax colours", function () {

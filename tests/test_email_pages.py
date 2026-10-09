@@ -71,6 +71,8 @@ class EmailPageTests(unittest.TestCase):
         self.assertIn("<details", html)
         self.assertIn("How it works", html)
         self.assertIn('id="email-checker-sticky"', html)
+        self.assertIn('id="email-expand-btn" aria-expanded="false"', html)
+        self.assertIn("Expand editor ↕", html)
         self.assertIn('id="email-status-live"', html)
         self.assertIn('aria-live="polite"', html)
         self.assertIn('href="../email-builder/"', html)

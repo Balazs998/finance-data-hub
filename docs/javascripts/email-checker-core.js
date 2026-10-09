@@ -16,6 +16,10 @@
   shared.KNOWN_JOB_VARIABLES.forEach(function (name) {
     knownJobVariables[name] = true;
   });
+  var documentedApi = {};
+  shared.DOCUMENTED_API_MEMBERS.forEach(function (name) {
+    documentedApi[name] = true;
+  });
 
   var MAX_LINES = 2000;
 
@@ -386,6 +390,19 @@
     return rest;
   }
 
+  function checkUnknownApi(lines, issues) {
+    var re = /\bAPI\.([A-Za-z_][\w]*)/g;
+    lines.forEach(function (raw, index) {
+      var code = codeOnly(raw);
+      re.lastIndex = 0;
+      var match;
+      while ((match = re.exec(code))) {
+        if (documentedApi[match[1]]) continue;
+        push(issues, checkIssue("call", index + 1, "API." + match[1]));
+      }
+    });
+  }
+
   function checkNames(lines, issues) {
     var patterns = [
       { kind: "extract", re: /API\.(?:initSource|getSource)\s*\(\s*(['"])([^'"]+)\1/g },
@@ -429,6 +446,7 @@
     checkGetSource(lines, issues);
     checkNull(lines, issues);
     checkMailer(lines, issues, scriptType);
+    checkUnknownApi(lines, issues);
     checkNames(lines, issues);
     issues = groupNameChecks(issues);
     var rank = { error: 0, warning: 1, check: 2 };

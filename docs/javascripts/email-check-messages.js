@@ -37,6 +37,9 @@
       if (kind === "connection") {
         return (one ? "1 file connection" : n + " file connections") + " to check in your Jedox. Each name must match a File connection in the project. A relative path is read from the local files folder.";
       }
+      if (kind === "call") {
+        return (one ? "1 API call" : n + " API calls") + " to check in your Jedox. The checker doesn't recognise this call. Compare it with the documented Integrator API.";
+      }
       return n + " names to check in your Jedox.";
     },
     checks: {
@@ -44,11 +47,13 @@
       column: "Column `'{name}'` can't be verified here. Run the extract's preview and check the column is called exactly this. The value column's name isn't documented, so check `'#Value'` too.",
       connection: "Connection `'{name}'` can't be verified here. Check that a File connection with exactly this name exists in your project.",
       variable: "Job variable `'{name}'` can't be verified here. Check it's defined on the job, or that the script has a safe default for it.",
+      call: "API call `'{name}'` isn't one the checker knows. Compare it with the documented Integrator API.",
       short: {
         extract: "Extract name `'{name}'` can't be verified here.",
         column: "Column `'{name}'` can't be verified here.",
         connection: "Connection `'{name}'` can't be verified here.",
-        variable: "Job variable `'{name}'` can't be verified here."
+        variable: "Job variable `'{name}'` can't be verified here.",
+        call: "API call `'{name}'` isn't one the checker knows."
       }
     },
     rules: {

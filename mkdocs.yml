@@ -76,7 +76,7 @@ nav:
   - Jedox:
       - jedox/index.md
       - Management report export: jedox/management-report-export.md
-      - Automated value emails from Jedox Integrator with a generic Groovy template: jedox/automated-value-emails.md
+      - Automated value emails: jedox/automated-value-emails.md
   - VBA and Excel:
       - vba/index.md
       - Month-close checks: vba/month-close-checks.md

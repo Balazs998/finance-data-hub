@@ -6,6 +6,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
   {{ super() }}
+  {% if social_image_url %}
+  <meta property="og:title" content="{{ social_title }}">
+  <meta property="og:description" content="{{ social_description }}">
+  <meta property="og:image" content="{{ social_image_url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ social_title }}">
+  <meta name="twitter:description" content="{{ social_description }}">
+  <meta name="twitter:image" content="{{ social_image_url }}">
+  {% endif %}
   {% if config.extra.goatcounter_code %}
   <script data-goatcounter="https://{{ config.extra.goatcounter_code }}.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>

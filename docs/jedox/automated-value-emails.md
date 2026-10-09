@@ -1,6 +1,7 @@
 ---
 title: "Automated value emails from Jedox Integrator with a generic Groovy template"
 description: "Send every cost center owner their own Budget vs. Actual table from a Jedox cube, with one Groovy job, an HTML template file and a test mode that's on by default."
+social_image: automated-value-emails.png
 ---
 
 # Automated value emails from Jedox Integrator with a generic Groovy template
@@ -101,7 +102,7 @@ Create a **Cube Slice extract** named `PnL_BudgetActual` on the cube `PnL`, with
 
 Use filter mode `onlyBases`, so you get base cells and no consolidated totals. Run the extract's preview and check it shows no empty rows. A cost center with no values for the month should then get no email.
 
-The output has one column per dimension plus a value column. Run the extract's preview once and check the column names match the ones in the script (`Version`, `Period`, `CostCenter`, `Account`, and `#Value` for the value). The value column's name isn't documented, so if your preview shows a different name, change it in the script.
+The output has one column per dimension plus a value column. Run the extract's preview once and check the column names match the ones in the script (`Version`, `Period`, `CostCenter`, `Account`, and `#Value` for the value). The value column's name isn't documented. If your preview shows a different name, change `'#Value'` in `src.getColumnValue('#Value')` in `send_value_emails.groovy`. It's on line 362, or search the script for `#Value`. The dimension column names are read on the lines just above it.
 
 ## 6. The script, part 1: the builder
 
@@ -287,8 +288,8 @@ You can also test the builder without Jedox. Copy part 1 into a Groovy script, f
 
 ## 9. What one email looks like
 
-<figure>
-  <a href="../03-email-preview.png"><img src="../03-email-preview.png" alt="Sample email for cost center CC4010 for 2026-03, comparing Budget and Actual by account, with unfavorable variances highlighted." width="680" height="680" loading="lazy"></a>
+<figure class="email-preview">
+  <a href="../03-email-preview.png"><img src="../03-email-preview.png" alt="Sample email for cost center CC4010 for 2026-03, comparing Budget and Actual by account, with unfavorable variances highlighted." width="608" height="638" loading="lazy"></a>
 </figure>
 
 For CC4010 (HR) in March 2026, the sample data gives five expense accounts. The total row shows a Budget of 91,302.32 against an Actual of 97,002.53, so expenses are 5,700.21 over plan. Most of that is Travel: 43,387.67 actual against 36,520.71 budget, a variance of 6,866.96. Salaries is also slightly over, by 193.06. Travel, Salaries and the total are highlighted, because more expense than planned is unfavorable. IT & Software, Consulting and Rent & Facilities came in under budget, so their negative variances stay in the normal color.

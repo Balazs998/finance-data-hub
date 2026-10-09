@@ -134,6 +134,29 @@ class PlanVsActualsPageTests(unittest.TestCase):
             resolved.append(relative)
         self.assertEqual(len(resolved), 6)
 
+        start = html.find('<div class="downloads">')
+        self.assertGreaterEqual(start, 0)
+        end = html.find("</div>", start)
+        cluster = html[start:end]
+        self.assertEqual(cluster.count("md-button download"), 6)
+        self.assertIn("grid-template-columns: minmax(0, 1fr);", source_css)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr));", source_css)
+        self.assertIn("gap: 0.75rem;", source_css)
+        self.assertIn("margin-top: 1rem;", source_css)
+        self.assertIn("border: 1px solid #2a3847;", source_css)
+        self.assertIn("border-color: #38bdf8;", source_css)
+        self.assertIn("outline: 2px solid #38bdf8;", source_css)
+        base_rule, desktop_rule = source_css.split(".md-typeset .downloads {")[1:]
+        self.assertIn(
+            "grid-template-columns: minmax(0, 1fr);",
+            base_rule.split("}", 1)[0],
+        )
+        self.assertIn("repeat(2, minmax(0, 1fr))", desktop_rule.split("}", 1)[0])
+        self.assertLess(
+            source_css.find("@media screen and (min-width: 45em)"),
+            source_css.find("repeat(2, minmax(0, 1fr))"),
+        )
+
         actuals = (SITE / "files" / "samples" / "fact_actuals.csv").read_text(encoding="utf-8")
         self.assertEqual(len(actuals.splitlines()) - 1, 610)
 
@@ -172,8 +195,14 @@ class ValueEmailsPageTests(unittest.TestCase):
         self.assertNotIn("test_builder", html)
         self.assertNotIn("test-output", html)
         self.assertIn(f'alt="{PREVIEW_ALT}"', html)
-        self.assertIn('width="680"', html)
-        self.assertIn('height="680"', html)
+        source_css_preview = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
+        self.assertIn('class="email-preview"', html)
+        self.assertIn('width="608"', html)
+        self.assertIn('height="638"', html)
+        self.assertIn("max-width: 420px;", source_css_preview)
+        self.assertIn("width: 100%;", source_css_preview)
+        self.assertIn("height: auto;", source_css_preview)
+        self.assertIn("margin: 1.2em auto;", source_css_preview)
 
         srcs = re.findall(r'<img\b[^>]*\bsrc="([^"]*03-email-preview\.png)"', html)
         self.assertEqual(srcs, ["../03-email-preview.png"])
@@ -182,8 +211,8 @@ class ValueEmailsPageTests(unittest.TestCase):
         self.assertTrue(image.is_file(), f"preview image missing: {srcs[0]}")
         png = image.read_bytes()
         self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
-        self.assertEqual(int.from_bytes(png[16:20], "big"), 680)
-        self.assertEqual(int.from_bytes(png[20:24], "big"), 680)
+        self.assertEqual(int.from_bytes(png[16:20], "big"), 608)
+        self.assertEqual(int.from_bytes(png[20:24], "big"), 638)
 
         parser = parse(page)
         preview_links = [href for href in parser.hrefs if href.endswith("03-email-preview.png")]
@@ -241,6 +270,143 @@ class ValueEmailsPageTests(unittest.TestCase):
                 break
         else:
             self.fail("home page does not link to the value emails article")
+
+
+SOCIAL_BASE = "https://balazs998.github.io/finance-data-hub/assets/social/"
+SOCIAL_PAGES = {
+    "index.html": "home.png",
+    "snowflake/plan-vs-actuals/index.html": "plan-vs-actuals.png",
+    "jedox/automated-value-emails/index.html": "automated-value-emails.png",
+    "about/index.html": "home.png",
+    "snowflake/month-end-actuals/index.html": "home.png",
+}
+SOCIAL_FILES = (
+    "home.png",
+    "plan-vs-actuals.png",
+    "automated-value-emails.png",
+    "snowflake-to-jedox.png",
+)
+
+
+def meta_contents(html: str, attr: str, key: str) -> list[str]:
+    found = []
+    for match in re.finditer(r"<meta\b[^>]*>", html):
+        tag = match.group(0)
+        if f'{attr}="{key}"' not in tag:
+            continue
+        content = re.search(r'\bcontent="([^"]*)"', tag)
+        found.append(content.group(1) if content else "")
+    return found
+
+
+class SocialPreviewTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if not (SITE / "index.html").is_file():
+            raise AssertionError("site/index.html is missing. Run mkdocs build first.")
+
+    def test_og_and_twitter_images_are_absolute(self):
+        for relative, image in SOCIAL_PAGES.items():
+            html = (SITE / relative).read_text(encoding="utf-8")
+            url = SOCIAL_BASE + image
+            self.assertEqual(meta_contents(html, "property", "og:image"), [url], relative)
+            self.assertEqual(meta_contents(html, "name", "twitter:image"), [url], relative)
+            self.assertEqual(
+                meta_contents(html, "name", "twitter:card"),
+                ["summary_large_image"],
+                relative,
+            )
+            titles = meta_contents(html, "property", "og:title")
+            descriptions = meta_contents(html, "property", "og:description")
+            self.assertEqual(len(titles), 1, relative)
+            self.assertTrue(titles[0].strip(), relative)
+            self.assertEqual(len(descriptions), 1, relative)
+            self.assertTrue(descriptions[0].strip(), relative)
+            self.assertEqual(meta_contents(html, "name", "twitter:title"), titles, relative)
+            self.assertEqual(
+                meta_contents(html, "name", "twitter:description"),
+                descriptions,
+                relative,
+            )
+
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        self.assertEqual(
+            meta_contents(home, "property", "og:title"),
+            ["Finance Data Hub"],
+        )
+        self.assertIn(
+            "Practical notes on Snowflake, Jedox, and Excel VBA",
+            meta_contents(home, "property", "og:description")[0],
+        )
+        article = (SITE / "snowflake" / "plan-vs-actuals" / "index.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(
+            meta_contents(article, "property", "og:title"),
+            [
+                "Plan vs. actuals in Snowflake SQL, without losing rows - Finance Data Hub"
+            ],
+        )
+        self.assertIn("FULL OUTER JOIN", meta_contents(article, "property", "og:description")[0])
+        email = (SITE / "jedox" / "automated-value-emails" / "index.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(
+            meta_contents(email, "property", "og:title"),
+            [
+                "Automated value emails from Jedox Integrator with a generic Groovy template"
+                " - Finance Data Hub"
+            ],
+        )
+
+        for name in SOCIAL_FILES:
+            path = SITE / "assets" / "social" / name
+            self.assertTrue(path.is_file(), name)
+            png = path.read_bytes()
+            self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"), name)
+            self.assertEqual(int.from_bytes(png[16:20], "big"), 1200, name)
+            self.assertEqual(int.from_bytes(png[20:24], "big"), 630, name)
+
+
+class DownloadAttributeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if not (SITE / "index.html").is_file():
+            raise AssertionError("site/index.html is missing. Run mkdocs build first.")
+
+    def test_every_download_shortcode_link_has_a_download_attribute(self):
+        found_template = False
+        checked = 0
+        for page in SITE.rglob("*.html"):
+            parser = _DownloadLinkParser()
+            parser.feed(page.read_text(encoding="utf-8"))
+            for attrs in parser.links:
+                href = attrs.get("href", "")
+                if "files/" not in href and "releases/download/" not in href:
+                    continue
+                filename = href.rstrip("/").rsplit("/", 1)[-1]
+                self.assertIn("download", attrs, f"{page} {href}")
+                self.assertEqual(attrs["download"], filename, href)
+                checked += 1
+                if filename == "email-template.html":
+                    found_template = True
+                    self.assertEqual(attrs["download"], "email-template.html")
+        self.assertGreaterEqual(checked, 8)
+        self.assertTrue(found_template, "email-template.html download link was not built")
+
+
+class _DownloadLinkParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "a":
+            return
+        found = dict(attrs)
+        classes = found.get("class", "").split()
+        if "download" in classes:
+            self.links.append(found)
 
 
 class BuiltSiteTests(unittest.TestCase):

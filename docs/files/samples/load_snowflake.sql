@@ -1,5 +1,5 @@
 -- Synthetic sample data for Finance Data Hub tutorials
-USE ROLE SYSADMIN;  -- so SYSADMIN owns FDH_DEMO, as the launch post assumes
+USE ROLE SYSADMIN; -- so SYSADMIN owns FDH_DEMO, as the launch post assumes
 CREATE DATABASE IF NOT EXISTS FDH_DEMO;
 CREATE SCHEMA IF NOT EXISTS FDH_DEMO.SAMPLE;
 USE SCHEMA FDH_DEMO.SAMPLE;
@@ -14,11 +14,11 @@ CREATE OR REPLACE STAGE SAMPLE_STAGE FILE_FORMAT = CSV_HDR;
 
 -- Run from SnowSQL or Snowflake CLI in the folder that holds the CSVs:
 -- PUT file://dim_cost_center.csv @SAMPLE_STAGE AUTO_COMPRESS=TRUE;
--- PUT file://dim_account.csv     @SAMPLE_STAGE AUTO_COMPRESS=TRUE;
--- PUT file://fact_actuals.csv    @SAMPLE_STAGE AUTO_COMPRESS=TRUE;
--- PUT file://fact_budget.csv     @SAMPLE_STAGE AUTO_COMPRESS=TRUE;
+-- PUT file://dim_account.csv @SAMPLE_STAGE AUTO_COMPRESS=TRUE;
+-- PUT file://fact_actuals.csv @SAMPLE_STAGE AUTO_COMPRESS=TRUE;
+-- PUT file://fact_budget.csv @SAMPLE_STAGE AUTO_COMPRESS=TRUE;
 
 COPY INTO DIM_COST_CENTER FROM @SAMPLE_STAGE/dim_cost_center.csv.gz;
-COPY INTO DIM_ACCOUNT     FROM @SAMPLE_STAGE/dim_account.csv.gz;
-COPY INTO FACT_ACTUALS    FROM @SAMPLE_STAGE/fact_actuals.csv.gz;
-COPY INTO FACT_BUDGET     FROM @SAMPLE_STAGE/fact_budget.csv.gz;
+COPY INTO DIM_ACCOUNT FROM @SAMPLE_STAGE/dim_account.csv.gz;
+COPY INTO FACT_ACTUALS FROM @SAMPLE_STAGE/fact_actuals.csv.gz;
+COPY INTO FACT_BUDGET FROM @SAMPLE_STAGE/fact_budget.csv.gz;

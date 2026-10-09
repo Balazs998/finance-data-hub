@@ -616,10 +616,7 @@
   color: var(--dn-text-faint);
 }
 
-/* Previous checker colours, all AA on the #18222e editor.
-   Keywords #A78BFA (5.90:1), strings #A3E635 (10.66:1), comments #96A8BA (6.58:1).
-   Numbers #FBBF24 (9.62:1) and calls #38BDF8 (7.50:1) are palette accents the
-   old highlighter left unstyled. Colour only, so lint underlines stay put. */
+/* Shared with the builder preview. The live checker overrides these below. */
 .tok-key {
   color: var(--dn-violet-text);
 }
@@ -630,14 +627,6 @@
 
 .tok-cmt {
   color: var(--dn-text-faint);
-}
-
-.tok-num {
-  color: #fbbf24;
-}
-
-.tok-fn {
-  color: var(--dn-link);
 }
 
 .email-pills {
@@ -875,7 +864,7 @@
 
 #email-checker .cm-editor {
   min-height: 420px;
-  color: var(--dn-text);
+  color: #e6edf3;
 }
 
 #email-checker .cm-scroller {
@@ -890,6 +879,7 @@
 
 #email-checker .cm-content {
   padding: 20px 16px 20px 20px;
+  color: #e6edf3;
   caret-color: #e6edf3;
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 14px;
@@ -903,9 +893,33 @@
 
 #email-checker .cm-line {
   padding: 0;
+  color: #e6edf3;
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 14px;
   line-height: calc(1.7 * 14px);
+}
+
+/* Web Designer syntax colours. These beat the shared .tok-* rules.
+   Colour and italic only, so red and amber stay on the lint underlines. */
+#email-checker .tok-key {
+  color: #a78bfa;
+}
+
+#email-checker .tok-fn {
+  color: #38bdf8;
+}
+
+#email-checker .tok-str {
+  color: #a3e635;
+}
+
+#email-checker .tok-num {
+  color: #f0abfc;
+}
+
+#email-checker .tok-cmt {
+  color: #8b98a5;
+  font-style: italic;
 }
 
 #email-checker .cm-gutters {

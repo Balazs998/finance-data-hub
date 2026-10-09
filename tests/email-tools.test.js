@@ -530,19 +530,21 @@ test("the issues bar has three states", function () {
   assert.match(css, /min-height: 48px;/);
 });
 
-test("the live editor highlights Groovy with the previous checker colours", function () {
+test("the live editor uses the Web Designer syntax colours", function () {
   const entry = fs.readFileSync(path.join(root, "tools/codemirror/entry.js"), "utf8");
   const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
   const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
   assert.match(entry, /@codemirror\/legacy-modes\/mode\/groovy/);
   assert.match(entry, /StreamLanguage\.define/);
   assert.match(ui, /cm\.groovy\(\)/);
-  assert.match(css, /\.tok-key \{[^}]*color: var\(--dn-violet-text\);/);
-  assert.match(css, /\.tok-str \{[^}]*color: var\(--chart-3\);/);
-  assert.match(css, /\.tok-cmt \{[^}]*color: var\(--dn-text-faint\);/);
-  assert.match(css, /\.tok-num \{[^}]*color: #fbbf24;/);
-  assert.match(css, /\.tok-fn \{[^}]*color: var\(--dn-link\);/);
-  assert.doesNotMatch(css, /\.tok-(?:key|str|cmt|num|fn) \{[^}]*text-decoration/);
+  assert.match(css, /#email-checker \.tok-key \{[^}]*color: #a78bfa;/);
+  assert.match(css, /#email-checker \.tok-fn \{[^}]*color: #38bdf8;/);
+  assert.match(css, /#email-checker \.tok-str \{[^}]*color: #a3e635;/);
+  assert.match(css, /#email-checker \.tok-num \{[^}]*color: #f0abfc;/);
+  assert.match(css, /#email-checker \.tok-cmt \{[^}]*color: #8b98a5;[^}]*font-style: italic;/);
+  assert.match(css, /#email-checker \.cm-line \{[^}]*color: #e6edf3;/);
+  assert.doesNotMatch(css, /#email-checker \.tok-(?:key|fn|str|num|cmt) \{[^}]*(#f87171|#fbbf24)/i);
+  assert.doesNotMatch(css, /#email-checker \.tok-(?:key|str|cmt|num|fn) \{[^}]*text-decoration/);
 });
 
 test("the CodeMirror bundle keeps the MIT banner", function () {

@@ -96,14 +96,14 @@ class ContrastTests(unittest.TestCase):
         self.assertEqual(failures, [])
 
     def test_checker_token_colours_meet_aa_on_the_editor(self):
-        palette = tokens()
         editor = "18222e"
         pairs = {
-            "keyword": palette["violet-text"],
-            "string": palette["3"],
-            "comment": palette["text-faint"],
-            "number": "fbbf24",
-            "call": palette["link"],
+            "keyword": "a78bfa",
+            "call": "38bdf8",
+            "string": "a3e635",
+            "number": "f0abfc",
+            "comment": "8b98a5",
+            "plain": "e6edf3",
         }
         failures = []
         for name, ink in pairs.items():

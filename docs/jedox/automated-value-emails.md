@@ -309,6 +309,16 @@ For CC4010 (HR) in March 2026, the sample data gives five expense accounts. The 
 | Copy a manager on every email | Add `mailer.addCcRecipient(...)` after `addRecipient` in part 2 |
 | Send for real | `TEST_MODE` = `false` for that run |
 
+### Sending by something other than cost center
+
+This job splits the emails by cost center, because in most FP&A teams the cost center owner is the person who answers for the numbers. You can split by another dimension of the same cube instead, such as country, ledger or a KPI. Three changes do it:
+
+1. In the Jedox block, read that dimension's column instead of `CostCenter`.
+2. In `recipients.csv`, keep the `cost_center` header, but fill that column with the new dimension's elements. The script finds the column by its header name.
+3. Point `COST_CENTERS_FILE` at a file with display names for the new elements, using the same `cost_center` and `cost_center_name` headers. Otherwise the names show up blank.
+
+Keep the `{{COST_CENTER}}` marker names as they are, because the script stops on any marker it doesn't know. Only change the words around them in the `TEXT` block, for example `'Country {{COST_CENTER}}'`. Test it in test mode before you switch it on.
+
 ## Wrap-up
 
 One extract, one Groovy job and three small files replace a monthly copy-and-paste routine. Three habits keep it safe: a template with `{{...}}` markers kept outside the script, values that are escaped and filled in one literal pass, and a test mode that's on until you deliberately turn it off.

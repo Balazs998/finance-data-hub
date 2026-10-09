@@ -319,6 +319,7 @@
         extensions: [
           cm.EditorView.darkTheme.of(true),
           cm.EditorView.lineWrapping,
+          cm.groovy(),
           cm.EditorView.contentAttributes.of({ "aria-label": "Your Groovy script", spellcheck: "false" }),
           cm.placeholder(host.getAttribute("data-placeholder") || ""),
           cm.lineNumbers(),

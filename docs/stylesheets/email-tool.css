@@ -616,6 +616,10 @@
   color: var(--dn-text-faint);
 }
 
+/* Previous checker colours, all AA on the #18222e editor.
+   Keywords #A78BFA (5.90:1), strings #A3E635 (10.66:1), comments #96A8BA (6.58:1).
+   Numbers #FBBF24 (9.62:1) and calls #38BDF8 (7.50:1) are palette accents the
+   old highlighter left unstyled. Colour only, so lint underlines stay put. */
 .tok-key {
   color: var(--dn-violet-text);
 }
@@ -626,6 +630,14 @@
 
 .tok-cmt {
   color: var(--dn-text-faint);
+}
+
+.tok-num {
+  color: #fbbf24;
+}
+
+.tok-fn {
+  color: var(--dn-link);
 }
 
 .email-pills {

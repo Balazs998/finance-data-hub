@@ -164,11 +164,41 @@ test("each checker rule flags exactly one line", function () {
     EM05: 3,
     EM06: 5,
     EM07: 1,
-    EM08: 2
+    EM08: 1
   };
   Object.keys(cases).forEach(function (rule) {
     assert.deepEqual(allIssues(cases[rule], "job"), ["error:".concat(rule, "@", expectedLine[rule]).replace("error:EM03", "warning:EM03").replace("error:EM04", "warning:EM04").replace("error:EM05", "warning:EM05").replace("error:EM07", "warning:EM07")], rule);
   });
+});
+
+test("initSource without a later null check is an error on the assignment", function () {
+  function em08(script) {
+    return checker.checkScript(script, { scriptType: "job" }).issues.filter(function (issue) {
+      return issue.rule === "EM08";
+    });
+  }
+  const alone = em08("def src = API.initSource('X')");
+  assert.equal(alone.length, 1);
+  assert.equal(alone[0].severity, "error");
+  assert.equal(alone[0].line, 1);
+  assert.match(alone[0].title, /No null check/);
+  assert.equal(em08("def src = API.initSource('X')\nif (src == null) throw new IllegalStateException('missing')").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nif (src != null) src.nextRow()").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nif (null == src) return").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nif (null != src) src.nextRow()").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nsrc?.nextRow()").length, 0);
+  assert.equal(em08("def src = API.initSource('X'); if (src == null) return").length, 0);
+  const used = em08("def src = API.initSource(extractName)\nwhile (src.nextRow()) {}");
+  assert.equal(used.length, 1);
+  assert.equal(used[0].line, 1);
+  const bare = em08("API.initSource('X')");
+  assert.equal(bare.length, 1);
+  assert.equal(bare[0].line, 1);
+  const commented = em08("def src = API.initSource('X')\n// if (src == null) return\nString note = \"src != null\"");
+  assert.equal(commented.length, 1);
+  assert.equal(commented[0].line, 1);
+  const second = em08("def src = API.initSource('X')\nsrc?.close()\ndef other = API.initSource('Y')");
+  assert.deepEqual(second.map(function (issue) { return issue.line; }), [3]);
 });
 
 test("test mode off by default is its own warning", function () {
@@ -200,7 +230,7 @@ test("getMailer is an error only when the script is a Groovy function", function
 test("the example script matches the nine-check severities", function () {
   const job = checker.checkScript(checker.EXAMPLE_SCRIPT, { scriptType: "job" });
   assert.deepEqual(job.issues.map(function (issue) { return issue.rule + "@" + issue.line; }), [
-    "EM08@2",
+    "EM08@1",
     "EM06@8",
     "EM04@6",
     "EM05@7",
@@ -500,6 +530,21 @@ test("the issues bar has three states", function () {
   assert.match(css, /min-height: 48px;/);
 });
 
+test("the live editor highlights Groovy with the previous checker colours", function () {
+  const entry = fs.readFileSync(path.join(root, "tools/codemirror/entry.js"), "utf8");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.match(entry, /@codemirror\/legacy-modes\/mode\/groovy/);
+  assert.match(entry, /StreamLanguage\.define/);
+  assert.match(ui, /cm\.groovy\(\)/);
+  assert.match(css, /\.tok-key \{[^}]*color: var\(--dn-violet-text\);/);
+  assert.match(css, /\.tok-str \{[^}]*color: var\(--chart-3\);/);
+  assert.match(css, /\.tok-cmt \{[^}]*color: var\(--dn-text-faint\);/);
+  assert.match(css, /\.tok-num \{[^}]*color: #fbbf24;/);
+  assert.match(css, /\.tok-fn \{[^}]*color: var\(--dn-link\);/);
+  assert.doesNotMatch(css, /\.tok-(?:key|str|cmt|num|fn) \{[^}]*text-decoration/);
+});
+
 test("the CodeMirror bundle keeps the MIT banner", function () {
   const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
   const license = fs.readFileSync(path.join(root, "docs/javascripts/LICENSE-codemirror.txt"), "utf8");
@@ -510,6 +555,7 @@ test("the CodeMirror bundle keeps the MIT banner", function () {
     "@codemirror/autocomplete",
     "@codemirror/commands",
     "@codemirror/language",
+    "@codemirror/legacy-modes",
     "@codemirror/lint",
     "@codemirror/state",
     "@codemirror/view",
@@ -533,5 +579,7 @@ test("the CodeMirror bundle keeps the MIT banner", function () {
   });
   const code = bundle.slice(bundle.indexOf("*/\n") + 3);
   assert.ok(code.length > 1000);
-  assert.equal(code.indexOf("/*"), -1);
+  const commentAt = code.indexOf("/*");
+  assert.equal(code.slice(commentAt - 1, commentAt + 3), '"/*"', "the only /* after the banner is the Groovy block-comment delimiter");
+  assert.equal(code.indexOf("/*", commentAt + 2), -1);
 });

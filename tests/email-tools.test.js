@@ -164,11 +164,41 @@ test("each checker rule flags exactly one line", function () {
     EM05: 3,
     EM06: 5,
     EM07: 1,
-    EM08: 2
+    EM08: 1
   };
   Object.keys(cases).forEach(function (rule) {
     assert.deepEqual(allIssues(cases[rule], "job"), ["error:".concat(rule, "@", expectedLine[rule]).replace("error:EM03", "warning:EM03").replace("error:EM04", "warning:EM04").replace("error:EM05", "warning:EM05").replace("error:EM07", "warning:EM07")], rule);
   });
+});
+
+test("initSource without a later null check is an error on the assignment", function () {
+  function em08(script) {
+    return checker.checkScript(script, { scriptType: "job" }).issues.filter(function (issue) {
+      return issue.rule === "EM08";
+    });
+  }
+  const alone = em08("def src = API.initSource('X')");
+  assert.equal(alone.length, 1);
+  assert.equal(alone[0].severity, "error");
+  assert.equal(alone[0].line, 1);
+  assert.match(alone[0].title, /No null check/);
+  assert.equal(em08("def src = API.initSource('X')\nif (src == null) throw new IllegalStateException('missing')").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nif (src != null) src.nextRow()").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nif (null == src) return").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nif (null != src) src.nextRow()").length, 0);
+  assert.equal(em08("def src = API.initSource('X')\nsrc?.nextRow()").length, 0);
+  assert.equal(em08("def src = API.initSource('X'); if (src == null) return").length, 0);
+  const used = em08("def src = API.initSource(extractName)\nwhile (src.nextRow()) {}");
+  assert.equal(used.length, 1);
+  assert.equal(used[0].line, 1);
+  const bare = em08("API.initSource('X')");
+  assert.equal(bare.length, 1);
+  assert.equal(bare[0].line, 1);
+  const commented = em08("def src = API.initSource('X')\n// if (src == null) return\nString note = \"src != null\"");
+  assert.equal(commented.length, 1);
+  assert.equal(commented[0].line, 1);
+  const second = em08("def src = API.initSource('X')\nsrc?.close()\ndef other = API.initSource('Y')");
+  assert.deepEqual(second.map(function (issue) { return issue.line; }), [3]);
 });
 
 test("test mode off by default is its own warning", function () {
@@ -200,7 +230,7 @@ test("getMailer is an error only when the script is a Groovy function", function
 test("the example script matches the nine-check severities", function () {
   const job = checker.checkScript(checker.EXAMPLE_SCRIPT, { scriptType: "job" });
   assert.deepEqual(job.issues.map(function (issue) { return issue.rule + "@" + issue.line; }), [
-    "EM08@2",
+    "EM08@1",
     "EM06@8",
     "EM04@6",
     "EM05@7",
@@ -453,8 +483,14 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.match(ui, /maxRenderedOptions:\s*completions\.MAX_ROWS/);
   assert.match(ui, /dropdownEnabled\(window\.innerWidth\)/);
   assert.doesNotMatch(page, /Check script/);
-  assert.match(page, /data-placeholder="Paste or type your Groovy script here\. Nothing leaves your browser\."/);
-  assert.match(page, /It checks as you type\. As you type, it also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
+  assert.match(page, /data-placeholder="Paste or type your Groovy script here\."/);
+  assert.doesNotMatch(page, /Nothing leaves your browser\."/);
+  assert.match(page, /It checks as you type\. It also suggests documented Jedox calls, plus the helper functions and job variables from the Automated value emails script\./);
+  assert.doesNotMatch(page, /As you type, it also suggests/);
+  const leadAt = page.indexOf("Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.");
+  const editorAt = page.indexOf('id="email-editor"');
+  const howAt = page.indexOf("<details");
+  assert.ok(leadAt >= 0 && leadAt < editorAt && editorAt < howAt);
   assert.match(css, /@media screen and \(max-width: 1100px\)/);
   assert.match(css, /underline dotted #9aa7b4/);
   assert.match(css, /#email-checker \.cm-content:focus-visible \{\s*outline: none;/);
@@ -473,6 +509,79 @@ test("the checker page lints on the quiet period and stacks by width", function 
   assert.equal(bundle.indexOf("esm.sh"), -1);
 });
 
+test("the issues bar has four states", function () {
+  assert.deepEqual(liveLint.statusBar({ empty: true, issues: [] }), { state: "hidden", text: "" });
+  assert.deepEqual(liveLint.statusBar({ empty: false, notGroovy: true, issues: [] }), { state: "hidden", text: "" });
+  assert.deepEqual(liveLint.statusBar({ empty: false, issues: [] }), { state: "clear", text: "✓ No problems found" });
+  const oneName = checker.checkScript("API.getProperty('PERIOD')", { scriptType: "job" });
+  assert.deepEqual(oneName.issues.map(function (issue) { return issue.severity; }), ["check"]);
+  assert.deepEqual(liveLint.statusBar(oneName), {
+    state: "names",
+    text: "? No errors or warnings. 1 name to check in your Jedox, listed below."
+  });
+  const twoNames = checker.checkScript("API.getProperty('PERIOD')\nAPI.getProperty('TEST_MODE')", { scriptType: "job" });
+  assert.deepEqual(liveLint.statusBar(twoNames), {
+    state: "names",
+    text: "? No errors or warnings. 2 names to check in your Jedox, listed below."
+  });
+  const threeNames = liveLint.statusBar({
+    empty: false,
+    issues: [
+      { severity: "check", items: [{ name: "PERIOD" }] },
+      { severity: "check", items: [{ name: "PnL" }, { name: "Other" }] }
+    ]
+  });
+  assert.equal(threeNames.state, "names");
+  assert.equal(threeNames.text, "? No errors or warnings. 3 names to check in your Jedox, listed below.");
+  assert.deepEqual(liveLint.statusBar({
+    empty: false,
+    issues: [{ severity: "error", rule: "EM01" }, { severity: "check", rule: "NAME", items: [{ name: "PERIOD" }] }]
+  }), {
+    state: "issues",
+    text: "Issues (2)"
+  });
+  assert.deepEqual(liveLint.statusBar({ empty: false, issues: [{ rule: "EM01" }, { rule: "EM04" }] }), {
+    state: "issues",
+    text: "Issues (2)"
+  });
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const messages = fs.readFileSync(path.join(root, "docs/javascripts/email-check-messages.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.equal(ui.indexOf("withChecks"), -1);
+  assert.equal(ui.indexOf("There are still"), -1);
+  assert.equal(messages.indexOf("There are still"), -1);
+  assert.match(ui, /!errors\.length && !warnings\.length && !checks\.length/);
+  assert.match(ui, /is-names/);
+  assert.equal(liveLint.howDetailsOpen(639), false);
+  assert.equal(liveLint.howDetailsOpen(640), true);
+  assert.equal(liveLint.howDetailsOpen(1440), true);
+  assert.match(ui, /aria-live="polite"|statusLive/);
+  assert.match(ui, /liveLint\.statusBar\(result\)/);
+  assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*color: #A3E635;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-clear \{[^}]*border: 1px solid #A3E635;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*color: #8B98A5;/);
+  assert.match(css, /#email-checker \.email-sticky\.is-names \{[^}]*border: 1px solid #8B98A5;/);
+  assert.match(css, /#email-checker \.email-sticky\[hidden\] \{\s*display: none !important;/);
+  assert.match(css, /min-height: 48px;/);
+});
+
+test("the live editor uses the Web Designer syntax colours", function () {
+  const entry = fs.readFileSync(path.join(root, "tools/codemirror/entry.js"), "utf8");
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-checker-ui.js"), "utf8");
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  assert.match(entry, /@codemirror\/legacy-modes\/mode\/groovy/);
+  assert.match(entry, /StreamLanguage\.define/);
+  assert.match(ui, /cm\.groovy\(\)/);
+  assert.match(css, /#email-checker \.tok-key \{[^}]*color: #a78bfa;/);
+  assert.match(css, /#email-checker \.tok-fn \{[^}]*color: #38bdf8;/);
+  assert.match(css, /#email-checker \.tok-str \{[^}]*color: #a3e635;/);
+  assert.match(css, /#email-checker \.tok-num \{[^}]*color: #f0abfc;/);
+  assert.match(css, /#email-checker \.tok-cmt \{[^}]*color: #8b98a5;[^}]*font-style: italic;/);
+  assert.match(css, /#email-checker \.cm-line \{[^}]*color: #e6edf3;/);
+  assert.doesNotMatch(css, /#email-checker \.tok-(?:key|fn|str|num|cmt) \{[^}]*(#f87171|#fbbf24)/i);
+  assert.doesNotMatch(css, /#email-checker \.tok-(?:key|str|cmt|num|fn) \{[^}]*text-decoration/);
+});
+
 test("the CodeMirror bundle keeps the MIT banner", function () {
   const bundle = fs.readFileSync(path.join(root, "docs/javascripts/codemirror-bundle.js"), "utf8");
   const license = fs.readFileSync(path.join(root, "docs/javascripts/LICENSE-codemirror.txt"), "utf8");
@@ -483,6 +592,7 @@ test("the CodeMirror bundle keeps the MIT banner", function () {
     "@codemirror/autocomplete",
     "@codemirror/commands",
     "@codemirror/language",
+    "@codemirror/legacy-modes",
     "@codemirror/lint",
     "@codemirror/state",
     "@codemirror/view",
@@ -506,5 +616,7 @@ test("the CodeMirror bundle keeps the MIT banner", function () {
   });
   const code = bundle.slice(bundle.indexOf("*/\n") + 3);
   assert.ok(code.length > 1000);
-  assert.equal(code.indexOf("/*"), -1);
+  const commentAt = code.indexOf("/*");
+  assert.equal(code.slice(commentAt - 1, commentAt + 3), '"/*"', "the only /* after the banner is the Groovy block-comment delimiter");
+  assert.equal(code.indexOf("/*", commentAt + 2), -1);
 });

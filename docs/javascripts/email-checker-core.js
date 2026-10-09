@@ -301,16 +301,16 @@
         return;
       }
       var name = assigned[1];
-      var checked = new RegExp("\\b" + name + "\\s*==\\s*null|null\\s*==\\s*" + name + "\\b|\\b" + name + "\\s*!=\\s*null|null\\s*!=\\s*" + name + "\\b");
-      if (checked.test(code)) return;
-      for (var j = index + 1; j < lines.length && j < index + 30; j++) {
-        var next = codeOnly(lines[j]);
-        if (checked.test(next)) return;
-        if (new RegExp("\\b" + name + "\\s*\\.").test(next)) {
-          push(issues, ruleIssue("EM08", j + 1));
-          return;
-        }
+      var guard = new RegExp(
+        "\\b" + name + "\\s*==\\s*null|null\\s*==\\s*" + name + "\\b|" +
+        "\\b" + name + "\\s*!=\\s*null|null\\s*!=\\s*" + name + "\\b|" +
+        "\\b" + name + "\\s*\\?\\."
+      );
+      if (guard.test(code)) return;
+      for (var j = index + 1; j < lines.length; j++) {
+        if (guard.test(codeOnly(lines[j]))) return;
       }
+      push(issues, ruleIssue("EM08", index + 1));
     });
   }
 

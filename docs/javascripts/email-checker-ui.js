@@ -21,6 +21,8 @@
     var pills = document.getElementById("email-pills");
     var banner = document.getElementById("email-banner");
     var sticky = document.getElementById("email-checker-sticky");
+    var statusLive = document.getElementById("email-status-live");
+    var how = document.getElementById("email-how");
     var scriptType = "job";
     var sawEdit = false;
     var lintEpoch = 0;
@@ -157,25 +159,29 @@
         if (sawEdit) showBanner(copy.empty);
       } else if (result.notGroovy) {
         showBanner(copy.notGroovy);
-      } else if (!errors.length && !warnings.length) {
+      } else if (!errors.length && !warnings.length && !checks.length) {
         var heading = document.createElement("h3");
         heading.textContent = copy.noProblems.heading;
         var note = document.createElement("p");
-        var nameCount = checks.reduce(function (sum, issue) {
-          return sum + (issue.items ? issue.items.length : 1);
-        }, 0);
-        note.textContent = checks.length
-          ? copy.noProblems.withChecks.replace("{n}", String(nameCount))
-          : copy.noProblems.text;
+        note.textContent = copy.noProblems.text;
         list.appendChild(heading);
         list.appendChild(note);
       }
       result.issues.forEach(function (issue) { list.appendChild(card(issue)); });
+      applyStatus(result);
+    }
 
-      if (sticky) {
-        var total = result.issues.length;
-        sticky.textContent = total ? "Issues (" + total + ")" : "Issues";
-      }
+    function applyStatus(result) {
+      if (!sticky) return;
+      var bar = liveLint.statusBar(result);
+      sticky.classList.toggle("is-clear", bar.state === "clear");
+      sticky.classList.toggle("is-names", bar.state === "names");
+      sticky.classList.toggle("is-issues", bar.state === "issues");
+      sticky.hidden = bar.state === "hidden";
+      sticky.textContent = bar.text;
+      if (bar.state === "issues") sticky.setAttribute("aria-expanded", "false");
+      else sticky.removeAttribute("aria-expanded");
+      if (statusLive && statusLive.textContent !== bar.text) statusLive.textContent = bar.text;
     }
 
     function diagnosticsFor(state, result) {
@@ -309,6 +315,7 @@
         extensions: [
           cm.EditorView.darkTheme.of(true),
           cm.EditorView.lineWrapping,
+          cm.groovy(),
           cm.EditorView.contentAttributes.of({ "aria-label": "Your Groovy script", spellcheck: "false" }),
           cm.placeholder(host.getAttribute("data-placeholder") || ""),
           cm.lineNumbers(),
@@ -352,6 +359,14 @@
 
     if (media.addEventListener) media.addEventListener("change", onWidthChange);
     else if (media.addListener) media.addListener(onWidthChange);
+
+    var howMedia = window.matchMedia("(max-width: " + (liveLint.DROPDOWN_MIN_WIDTH - 1) + "px)");
+    function syncHow() {
+      if (how) how.open = liveLint.howDetailsOpen(window.innerWidth);
+    }
+    syncHow();
+    if (howMedia.addEventListener) howMedia.addEventListener("change", syncHow);
+    else if (howMedia.addListener) howMedia.addListener(syncHow);
 
     root.querySelectorAll(".email-seg-btn").forEach(function (button) {
       button.addEventListener("click", function () {

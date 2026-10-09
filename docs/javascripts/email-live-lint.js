@@ -46,12 +46,43 @@
     return width < STACK_BELOW;
   }
 
+  function howDetailsOpen(width) {
+    return width >= DROPDOWN_MIN_WIDTH;
+  }
+
+  function isNameCheck(issue) {
+    return issue.severity === "check" || issue.rule === "NAME";
+  }
+
+  function nameTotal(issues) {
+    return issues.reduce(function (sum, issue) {
+      return sum + (issue.items && issue.items.length ? issue.items.length : 1);
+    }, 0);
+  }
+
+  function statusBar(result) {
+    var issues = result && result.issues ? result.issues : [];
+    if (!result || result.empty || result.notGroovy) return { state: "hidden", text: "" };
+    if (!issues.length) return { state: "clear", text: "✓ No problems found" };
+    if (issues.every(isNameCheck)) {
+      var count = nameTotal(issues);
+      var names = count === 1 ? "1 name" : count + " names";
+      return {
+        state: "names",
+        text: "? No errors or warnings. " + names + " to check in your Jedox, listed below."
+      };
+    }
+    return { state: "issues", text: "Issues (" + issues.length + ")" };
+  }
+
   return {
     QUIET_MS: QUIET_MS,
     STACK_BELOW: STACK_BELOW,
     DROPDOWN_MIN_WIDTH: DROPDOWN_MIN_WIDTH,
     createLiveLint: createLiveLint,
     dropdownEnabled: dropdownEnabled,
-    issuesBelowEditor: issuesBelowEditor
+    issuesBelowEditor: issuesBelowEditor,
+    howDetailsOpen: howDetailsOpen,
+    statusBar: statusBar
   };
 });

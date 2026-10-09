@@ -95,6 +95,23 @@ class ContrastTests(unittest.TestCase):
                 failures.append(f"{ink} on {ground}: {ratio:.2f}")
         self.assertEqual(failures, [])
 
+    def test_checker_token_colours_meet_aa_on_the_editor(self):
+        editor = "18222e"
+        pairs = {
+            "keyword": "a78bfa",
+            "call": "38bdf8",
+            "string": "a3e635",
+            "number": "f0abfc",
+            "comment": "8b98a5",
+            "plain": "e6edf3",
+        }
+        failures = []
+        for name, ink in pairs.items():
+            ratio = contrast(ink, editor)
+            if ratio < 4.5:
+                failures.append(f"{name} on editor: {ratio:.2f}")
+        self.assertEqual(failures, [])
+
     def test_chart_violet_is_not_a_text_color(self):
         css = CSS.read_text()
         self.assertEqual(tokens()["violet"], "8b7cf6")

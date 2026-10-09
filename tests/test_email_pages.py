@@ -52,19 +52,26 @@ class EmailPageTests(unittest.TestCase):
 
     def test_checker_page_uses_the_signed_off_text(self):
         html = self.checker.read_text(encoding="utf-8")
-        self.assertIn("Check your Jedox email script: Groovy checker", html)
-        self.assertIn("Paste your Integrator Groovy script", html)
+        self.assertIn("Check your email script", html)
+        self.assertIn("Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.", html)
+        self.assertEqual(html.lower().count("nothing leaves your browser"), 1)
+        self.assertNotIn("runs in your browser", html.lower())
+        self.assertNotIn("Everything runs in your browser", html)
         self.assertIn("Groovy job", html)
         self.assertIn("Groovy function", html)
         self.assertIn("the script will fail or send the wrong thing.", html)
-        self.assertIn("Paste or type your Groovy script here. Nothing leaves your browser.", html)
+        self.assertIn('data-placeholder="Paste or type your Groovy script here."', html)
         self.assertIn(
-            "It checks as you type. As you type, it also suggests documented Jedox calls, "
+            "It checks as you type. It also suggests documented Jedox calls, "
             "plus the helper functions and job variables from the Automated value emails script.",
             html,
         )
+        self.assertIn("<details", html)
+        self.assertIn("How it works", html)
+        self.assertIn('id="email-checker-sticky"', html)
+        self.assertIn('id="email-status-live"', html)
+        self.assertIn('aria-live="polite"', html)
         self.assertIn('href="../email-builder/"', html)
-        self.assertIn(">Issues</button>", html)
         self.assertIn("codemirror-bundle.js", html)
         self.assertNotIn("jsdelivr", html)
         self.assertNotIn("unpkg.com", html)

@@ -616,6 +616,7 @@
   color: var(--dn-text-faint);
 }
 
+/* Shared with the builder preview. The live checker overrides these below. */
 .tok-key {
   color: var(--dn-violet-text);
 }
@@ -766,6 +767,102 @@
   display: none;
 }
 
+.email-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+#email-checker .email-how {
+  grid-column: 1 / -1;
+  margin: 0;
+  border: 1px solid var(--dn-border);
+  border-radius: 10px;
+  background: #111b26;
+  color: var(--dn-text);
+}
+
+#email-checker .email-how summary {
+  padding: 12px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#email-checker .email-how-body {
+  padding: 0 14px 12px;
+}
+
+#email-checker .email-how-body p {
+  margin: 0 0 8px;
+  color: var(--dn-text-muted);
+  font-size: 13px;
+}
+
+#email-checker .email-sticky {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  margin: 0 0 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-align: center;
+}
+
+#email-checker .email-sticky[hidden] {
+  display: none !important;
+}
+
+#email-checker .email-sticky.is-clear,
+#email-checker .email-sticky.is-names,
+#email-checker .email-sticky.is-issues {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#email-checker .email-sticky.is-clear {
+  color: #A3E635;
+  border: 1px solid #A3E635;
+  background: rgba(163, 230, 53, 0.12);
+}
+
+#email-checker .email-sticky.is-names {
+  height: 48px;
+  color: #8B98A5;
+  border: 1px solid #8B98A5;
+  background: rgba(139, 152, 165, 0.12);
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 15px;
+}
+
+#email-checker .email-sticky.is-issues {
+  color: #0f1720;
+  border: 0;
+  background: #38bdf8;
+}
+
+@media screen and (max-width: 639px) {
+  #email-checker .email-editor-column {
+    order: 1;
+  }
+
+  #email-checker .email-how {
+    order: 2;
+  }
+
+  #email-checker .email-panel {
+    order: 3;
+  }
+}
+
 .email-next {
   margin-top: 28px;
 }
@@ -778,7 +875,7 @@
 
 #email-checker .cm-editor {
   min-height: 420px;
-  color: var(--dn-text);
+  color: #e6edf3;
 }
 
 #email-checker .cm-scroller {
@@ -793,6 +890,7 @@
 
 #email-checker .cm-content {
   padding: 20px 16px 20px 20px;
+  color: #e6edf3;
   caret-color: #e6edf3;
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 14px;
@@ -806,9 +904,33 @@
 
 #email-checker .cm-line {
   padding: 0;
+  color: #e6edf3;
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 14px;
   line-height: calc(1.7 * 14px);
+}
+
+/* Web Designer syntax colours. These beat the shared .tok-* rules.
+   Colour and italic only, so red and amber stay on the lint underlines. */
+#email-checker .tok-key {
+  color: #a78bfa;
+}
+
+#email-checker .tok-fn {
+  color: #38bdf8;
+}
+
+#email-checker .tok-str {
+  color: #a3e635;
+}
+
+#email-checker .tok-num {
+  color: #f0abfc;
+}
+
+#email-checker .tok-cmt {
+  color: #8b98a5;
+  font-style: italic;
 }
 
 #email-checker .cm-gutters {
@@ -983,7 +1105,7 @@
     display: none;
   }
 
-  .email-sticky {
+  #email-builder .email-sticky {
     display: block;
     position: fixed;
     left: 0;
@@ -998,6 +1120,31 @@
     color: #0f1720;
     font-weight: 700;
     padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  }
+
+  #email-checker .email-sticky.is-clear,
+  #email-checker .email-sticky.is-names,
+  #email-checker .email-sticky.is-issues {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    width: auto;
+    margin: 0;
+    border-radius: 0;
+    min-height: 48px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  #email-checker .email-sticky.is-issues {
+    border-top: 1px solid var(--dn-border);
+  }
+
+  #email-checker .email-sticky.is-names {
+    height: auto;
+    min-height: 48px;
+    padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
   }
 
   .email-app,

@@ -90,6 +90,36 @@ test("turning variance color and test mode off changes the preview and the scrip
   assert.match(result.script, /setting\('RECIPIENT_TEST', 'test\.recipient@example\.com'\)/);
 });
 
+test("defaults generate the same script as the download", function () {
+  const result = generate.generate();
+  assert.equal(result.ok, true);
+  assert.equal(result.script, sources.groovy);
+  assert.equal(result.preview.subject, "[TEST for owner.cc4010@example.com] CC4010 Actual vs Budget, 2026-03");
+  assert.match(result.preview.html, /Sample data only\./);
+});
+
+test("period must be a zero-padded YYYY-MM", function () {
+  const bad = generate.generate({ period: "2026-3" });
+  assert.equal(bad.ok, false);
+  assert.equal(bad.script, null);
+  assert.equal(bad.errors[0].field, "period");
+  assert.equal(bad.errors[0].message, "Use YYYY-MM, like 2026-03.");
+  assert.equal(bad.downloadNote, "Fix the period to download.");
+  assert.equal(generate.generate({ period: "2026-13" }).ok, false);
+  assert.equal(generate.generate({ period: "2026-03" }).ok, true);
+  assert.equal(generate.generate({ period: "" }).ok, true);
+});
+
+test("subject is capped at 150 characters", function () {
+  const ok = generate.generate({ subject: "A".repeat(150) });
+  assert.equal(ok.ok, true);
+  const tooLong = generate.generate({ subject: "A".repeat(151) });
+  assert.equal(tooLong.ok, false);
+  assert.equal(tooLong.script, null);
+  assert.equal(tooLong.errors[0].message, "Keep the subject to 150 characters.");
+  assert.equal(tooLong.downloadNote, "Fix the subject to download.");
+});
+
 test("entity wording keeps the cost_center marker", function () {
   const result = generate.generate({ dimension: "entity" });
   assert.match(result.script, /TITLE : 'Entity \{\{COST_CENTER\}\} \{\{COST_CENTER_NAME\}\}',/);

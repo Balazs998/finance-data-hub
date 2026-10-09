@@ -37,8 +37,8 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-help">Pick the dimension whose owners get their own email. It has to be a real dimension of your cube, not an attribute or a consolidation above it.</p>
 <p class="email-help" id="dimension-note" hidden>In the script and in <code>recipients.csv</code>, this is still called <code>cost_center</code> and <code>{{COST_CENTER}}</code>. Only the words around it change, so the tested code stays the same.</p>
 
-<label for="field-subject">Subject</label>
-<input id="field-subject" type="text" value="{{COST_CENTER}} actuals for {{PERIOD}}" aria-describedby="help-subject msg-subject" spellcheck="false" autocomplete="off">
+<label for="field-subject">Subject <span class="email-var-tag">job variable</span></label>
+<input id="field-subject" type="text" value="{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}" aria-describedby="help-subject msg-subject" spellcheck="false" autocomplete="off">
 <p class="email-help" id="help-subject">Becomes the <code>SUBJECT_TEMPLATE</code> job variable. Use the markers below for values that change per email.</p>
 <p class="email-field-msg" id="msg-subject" role="status"></p>
 
@@ -72,7 +72,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-help">These four columns are fixed in this version. Variance is Actual minus Budget.</p>
 
 <label for="field-note">Note under the table</label>
-<input id="field-note" type="text" value="Variance is {{VERSION_ACTUAL}} minus {{VERSION_PLAN}}. Highlighted variances are unfavorable for that account type." aria-describedby="help-note msg-note" spellcheck="false" autocomplete="off">
+<input id="field-note" type="text" value="Variance is {{VERSION_ACTUAL}} minus {{VERSION_PLAN}}. Highlighted variances are unfavorable for that account type. Sample data only." aria-describedby="help-note msg-note" spellcheck="false" autocomplete="off">
 <p class="email-help" id="help-note">A short line that explains the numbers. Leave it empty to skip it.</p>
 <p class="email-field-msg" id="msg-note" role="status"></p>
 
@@ -82,41 +82,41 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-field-msg" id="msg-footer" role="status"></p>
 
 <button type="button" class="email-switch is-on" id="test-mode" role="switch" aria-checked="true">
+<span class="email-switch-copy">Test mode: send everything <span class="email-switch-tail">to one address <span class="email-var-tag">job variable</span></span></span>
 <span class="email-switch-track" aria-hidden="true"></span>
-<span>Test mode: send everything to one address</span>
 </button>
 <p class="email-help" id="test-mode-help-on">Every email goes to the test address. The subject starts with <code>[TEST for owner.cc4010@example.com]</code>, so you can see who it was meant for.</p>
 <p class="email-help" id="test-mode-help-off" hidden>The script is the same either way. It only changes the default you download. We recommend keeping it on and switching <code>TEST_MODE</code> to <code>false</code> in Jedox for one run when you're ready.</p>
 
-<label for="field-test-address">Test address</label>
+<label for="field-test-address">Test address <span class="email-var-tag">job variable</span></label>
 <input id="field-test-address" type="text" inputmode="email" value="test.recipient@example.com" aria-describedby="help-test-address msg-testAddress" autocomplete="off" spellcheck="false">
 <p class="email-help" id="help-test-address">Becomes the <code>RECIPIENT_TEST</code> job variable. Use your own mailbox when you run it in Jedox.</p>
 <p class="email-field-msg" id="msg-testAddress" role="status"></p>
 
 <details class="email-more">
 <summary>More settings</summary>
-<label for="field-period">Period</label>
+<label for="field-period">Period <span class="email-var-tag">job variable</span></label>
 <input id="field-period" type="text" value="2026-03" aria-describedby="help-period msg-period" autocomplete="off" spellcheck="false">
 <p class="email-help" id="help-period">The month to report, as a Period element, for example <code>2026-03</code>. Becomes <code>PERIOD</code>.</p>
 <p class="email-field-msg" id="msg-period" role="status"></p>
 
-<label for="field-version-plan">Plan version</label>
+<label for="field-version-plan">Plan version <span class="email-var-tag">job variable</span></label>
 <input id="field-version-plan" type="text" value="Budget" aria-describedby="help-version-plan msg-versionPlan" autocomplete="off" spellcheck="false">
 <p class="email-help" id="help-version-plan">The version you compare against, for example <code>Budget</code> or <code>Forecast</code>. Becomes <code>VERSION_PLAN</code>.</p>
 <p class="email-field-msg" id="msg-versionPlan" role="status"></p>
 
-<label for="field-version-actual">Actual version</label>
+<label for="field-version-actual">Actual version <span class="email-var-tag">job variable</span></label>
 <input id="field-version-actual" type="text" value="Actual" aria-describedby="help-version-actual msg-versionActual" autocomplete="off" spellcheck="false">
 <p class="email-help" id="help-version-actual">Usually <code>Actual</code>. Becomes <code>VERSION_ACTUAL</code>.</p>
 <p class="email-field-msg" id="msg-versionActual" role="status"></p>
 
 <button type="button" class="email-switch is-on" id="color-variance" role="switch" aria-checked="true">
+<span class="email-switch-copy">Highlight unfavorable <span class="email-switch-tail">variances <span class="email-var-tag">job variable</span></span></span>
 <span class="email-switch-track" aria-hidden="true"></span>
-<span>Highlight unfavorable variances</span>
 </button>
 <p class="email-help">Colors a variance when it's bad news for that account type. Becomes <code>COLOR_VARIANCE</code>.</p>
 
-<label for="field-extract">Extract name</label>
+<label for="field-extract">Extract name <span class="email-var-tag">job variable</span></label>
 <input id="field-extract" type="text" value="PnL_BudgetActual" aria-describedby="help-extract msg-extractName" autocomplete="off" spellcheck="false">
 <p class="email-help" id="help-extract">The name of your Cube Slice extract. Becomes <code>SOURCE_EXTRACT</code>.</p>
 <p class="email-field-msg" id="msg-extractName" role="status"></p>
@@ -145,6 +145,10 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-caption">This is <code>email-template.html</code>. Put it in the local files folder. Keep all 12 <code>{{...}}</code> markers.</p>
 <pre class="email-template-view" id="email-template-view"></pre>
 </div>
+<aside class="email-fallback-note">
+<span class="email-fallback-icon" aria-hidden="true">i</span>
+<p>Fields tagged <strong>job variable</strong> are only defaults. If your Integrator job already sets that variable, the job's value wins, so change it in the job instead.</p>
+</aside>
 <div class="email-actions">
 <button type="button" class="email-btn email-btn-primary" id="email-download">Download script + template</button>
 <button type="button" class="email-btn" id="email-copy">Copy script</button>

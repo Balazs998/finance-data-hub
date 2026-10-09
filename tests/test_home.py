@@ -138,7 +138,7 @@ class HomePageTests(unittest.TestCase):
             "left join",
             "full join",
             "✓ no rows lost",
-            "Rows kept by each join. Only the full join keeps all 701.",
+            "Rows kept by each join. Only the full join keeps all&nbsp;701.",
             "Oct 9, 2026",
         ):
             self.assertIn(text, self.html)

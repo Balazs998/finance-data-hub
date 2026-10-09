@@ -130,7 +130,7 @@ hide:
 <p><strong class="home-join--left">696</strong><span>left join</span></p>
 <p><strong class="home-join--full">701</strong><span>full join</span><span class="home-join__kept">✓ no rows lost</span></p>
 </div>
-<p class="home-why__note">Rows kept by each join. Only the full join keeps all 701.</p>
+<p class="home-why__note">Rows kept by each join. Only the full join keeps all&nbsp;701.</p>
 </a>
 </div>
 </div>

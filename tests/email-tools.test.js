@@ -775,9 +775,23 @@ test("phone preview scrolls below the header and returns to the last field", fun
   assert.equal(shared.previewScrollMargin(48), 60);
   assert.equal(shared.previewScrollMargin(0), 12);
   assert.equal(shared.previewScrollMargin(-4), 12);
+  assert.equal(shared.labelScrollMargin(48), "calc(48px + 16px)");
+  assert.equal(shared.labelScrollMargin(48.4), "calc(48px + 16px)");
+  assert.equal(shared.labelScrollMargin(0), "calc(0px + 16px)");
+  assert.equal(shared.labelScrollMargin(-4), "calc(0px + 16px)");
   assert.equal(shared.returnField(null, "field-subject"), "field-subject");
   assert.equal(shared.returnField(undefined, "field-subject"), "field-subject");
   assert.equal(shared.returnField("field-note", "field-subject"), "field-note");
+  const periodLabel = { tagName: "LABEL" };
+  const periodDoc = {
+    querySelector: function (selector) {
+      return selector === 'label[for="field-period"]' ? periodLabel : null;
+    }
+  };
+  const periodField = { id: "field-period", ownerDocument: periodDoc };
+  assert.equal(shared.fieldLabel(periodField), periodLabel);
+  assert.equal(shared.fieldLabel({ id: "field-missing", ownerDocument: periodDoc }).id, "field-missing");
+  assert.equal(shared.fieldLabel(null), null);
   const ui = fs.readFileSync(path.join(root, "docs/javascripts/email-builder-ui.js"), "utf8");
   assert.match(ui, /scrollIntoView\(/);
   assert.match(ui, /scrollMarginTop/);
@@ -785,6 +799,9 @@ test("phone preview scrolls below the header and returns to the last field", fun
   assert.match(ui, /max-width: 760px/);
   assert.match(ui, /lastEdited = fields\[name\]/);
   assert.match(ui, /shared\.returnField\(lastEdited, fields\.subject\)/);
+  assert.match(ui, /shared\.fieldLabel\(field\)/);
+  assert.match(ui, /shared\.labelScrollMargin\(headerOffset\(\)\)/);
+  assert.match(ui, /shared\.previewScrollMargin\(headerOffset\(\)\)/);
   assert.match(ui, /focus\(\{ preventScroll: true \}\)/);
   assert.match(ui, /getElementById\("tab-preview"\)/);
 });

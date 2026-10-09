@@ -298,11 +298,11 @@
       return header.getBoundingClientRect().height;
     }
 
-    function scrollToTarget(el) {
+    function scrollToTarget(el, margin) {
       if (!el) return;
       var details = el.closest && el.closest("details");
       if (details && !details.open) details.open = true;
-      el.style.scrollMarginTop = shared.previewScrollMargin(headerOffset()) + "px";
+      if (margin) el.style.scrollMarginTop = margin;
       el.scrollIntoView({
         block: "start",
         inline: "nearest",
@@ -328,11 +328,14 @@
         if (open) fitSoon();
         if (!phoneQuery.matches) return;
         var panel = document.getElementById("email-panel");
-        var backTo = shared.returnField(lastEdited, fields.subject);
-        var target = open ? panel : backTo;
-        var focusEl = open ? document.getElementById("tab-preview") : backTo;
+        var field = shared.returnField(lastEdited, fields.subject);
+        var target = open ? panel : shared.fieldLabel(field);
+        var focusEl = open ? document.getElementById("tab-preview") : field;
+        var margin = open
+          ? shared.previewScrollMargin(headerOffset()) + "px"
+          : shared.labelScrollMargin(headerOffset());
         requestAnimationFrame(function () {
-          scrollToTarget(target);
+          scrollToTarget(target, margin);
           focusTarget(focusEl);
         });
       });

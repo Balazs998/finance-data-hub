@@ -15,3 +15,7 @@ The next note pulls monthly actuals from Snowflake into a planning cube. A servi
 The last note sends every cost center owner their own Budget vs. Actual table from one Integrator job. Recipients and the email layout live in files, and test mode stays on until you turn it off.
 
 [Automated value emails](automated-value-emails.md){ .md-button }
+
+The same job can be filled in from the browser. The builder writes the tested script with your wording, and the checker looks for the usual traps. Both stay on your machine.
+
+[Create your own email](email-builder.md){ .md-button }

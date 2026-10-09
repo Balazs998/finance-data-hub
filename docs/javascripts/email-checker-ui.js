@@ -257,11 +257,25 @@
     function moveFocus(forward) {
       return function (editorView) {
         cm.closeCompletion(editorView);
-        var items = focusables();
-        var index = items.indexOf(editorView.contentDOM);
-        var next = items[index + (forward ? 1 : -1)];
-        if (!next) return false;
-        next.focus();
+        var items = focusables().filter(function (el) {
+          return !editorView.dom.contains(el);
+        });
+        var found = null;
+        if (forward) {
+          items.some(function (el) {
+            if (editorView.dom.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
+              found = el;
+              return true;
+            }
+            return false;
+          });
+        } else {
+          items.forEach(function (el) {
+            if (editorView.dom.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING) found = el;
+          });
+        }
+        if (!found) return false;
+        found.focus();
         return true;
       };
     }
@@ -277,6 +291,7 @@
         doc: "",
         extensions: [
           cm.EditorView.darkTheme.of(true),
+          cm.EditorView.lineWrapping,
           cm.EditorView.contentAttributes.of({ "aria-label": "Your Groovy script", spellcheck: "false" }),
           cm.placeholder(host.getAttribute("data-placeholder") || ""),
           cm.lineNumbers(),

@@ -268,21 +268,38 @@
   margin-top: 0.75rem;
 }
 
-/* Home. Header, content, and footer share one wider measure so the
-   split hero can stand next to the three mascots. */
+/* Home. With the sidebar hidden, the page measure is the content width. */
 body:has(.home) .md-grid {
-  max-width: 90rem;
+  max-width: 1200px;
+}
+
+/* Tabs stay in the header on the home page, including on a phone,
+   because that page does not render the sidebar. The list can scroll
+   sideways so the last label is not cut off. */
+body:has(.home) .md-tabs {
+  display: block;
+}
+
+body:has(.home) .md-tabs__list {
+  contain: none;
+  width: max-content;
+  min-width: 100%;
+}
+
+body:has(.home) .md-sidebar,
+body:has(.home) .md-header__button[for="__drawer"] {
+  display: none !important;
 }
 
 .md-typeset .hero {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   align-items: center;
-  gap: 12px 20px;
+  gap: 20px;
   background: #0d1a2b;
   border: 1px solid var(--dn-border);
   border-radius: 16px;
-  padding: 28px 8px 12px 40px;
+  padding: 8px 8px 8px 40px;
   margin: 0;
   overflow: hidden;
 }
@@ -386,8 +403,8 @@ body:has(.home) .md-grid {
   outline-offset: 2px;
 }
 
-/* Poses: Snowflake laptop (tablet), Jedox presenting, VBA pointing.
-   Height follows the art column so the row stays inside the hero. */
+/* Standing trio: Snowflake pointing, Jedox thumbs-up, VBA pointing.
+   Height follows the art column so the three fill the right half. */
 .md-typeset .home-art {
   position: relative;
   display: flex;
@@ -422,18 +439,6 @@ body:has(.home) .md-grid {
   background: radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, transparent 65%);
 }
 
-.md-typeset .home-art::after {
-  content: "";
-  position: absolute;
-  inset: 6% 4% 8%;
-  background-image:
-    linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(circle at 50% 58%, #000 20%, transparent 72%);
-  pointer-events: none;
-}
-
 .md-typeset .home-mascot {
   position: relative;
   z-index: 1;
@@ -445,7 +450,7 @@ body:has(.home) .md-grid {
   position: relative;
   z-index: 1;
   display: block;
-  height: min(320px, calc(100cqw / 2.62));
+  height: calc(100cqw / 1.7);
   width: auto;
   max-width: none;
 }

@@ -3,6 +3,7 @@
 hide_actions: true
 social_image: home.png
 hide:
+  - navigation
   - toc
 ---
 
@@ -22,14 +23,14 @@ hide:
 <div class="home-art">
 <figure class="home-mascot">
 <picture>
-<source srcset="assets/mascots/snowflake/laptop.webp" type="image/webp">
-<img src="assets/mascots/snowflake/laptop.png" width="509" height="691" alt="Snowflake mascot in a blue hoodie, working on a laptop">
+<source srcset="assets/mascots/snowflake/pointing.webp" type="image/webp">
+<img src="assets/mascots/snowflake/pointing.png" width="426" height="721" alt="Snowflake mascot in a blue hoodie, pointing ahead">
 </picture>
 </figure>
 <figure class="home-mascot">
 <picture>
-<source srcset="assets/mascots/jedox/presenting.webp" type="image/webp">
-<img src="assets/mascots/jedox/presenting.png" width="727" height="684" alt="Jedox mascot in a purple blazer, presenting a chart">
+<source srcset="assets/mascots/jedox/thumbsup.webp" type="image/webp">
+<img src="assets/mascots/jedox/thumbsup.png" width="294" height="734" alt="Jedox mascot in a purple blazer, giving a thumbs-up">
 </picture>
 </figure>
 <figure class="home-mascot">

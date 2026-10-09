@@ -42,6 +42,7 @@ theme:
     primary: black
     accent: light blue
   features:
+    - navigation.tabs
     - navigation.sections
     - navigation.expand
     - navigation.indexes
@@ -92,7 +93,7 @@ nav:
       - Create your own email:
           - Builder: jedox/email-builder.md
           - Check your email script: jedox/email-checker.md
-  - VBA and Excel:
+  - VBA:
       - vba/index.md
       - Month-close checks: vba/month-close-checks.md
   - Downloads: downloads.md

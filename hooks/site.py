@@ -16,6 +16,8 @@ import html
 import os
 import posixpath
 import re
+import subprocess
+from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
 from mkdocs.exceptions import PluginError
@@ -40,6 +42,43 @@ SAMPLE_DATA_FILES = (
     "samples/fact_budget.csv",
     "samples/load_snowflake.sql",
 )
+
+
+_ASSET_VERSION = ""
+_VERSIONED_ASSET = re.compile(
+    r'((?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool)\.css|javascripts/[^"?]+\.js))"'
+)
+
+
+def asset_version() -> str:
+    """Query string so a deploy never reuses a visitor's cached CSS or JS."""
+    global _ASSET_VERSION
+    if _ASSET_VERSION:
+        return _ASSET_VERSION
+    forced = os.environ.get("FDH_ASSET_VERSION", "").strip()
+    if forced:
+        cleaned = re.sub(r"[^A-Za-z0-9._-]", "", forced)[:40]
+        _ASSET_VERSION = cleaned or "build"
+        return _ASSET_VERSION
+    root = Path(__file__).resolve().parents[1]
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=root,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        out = ""
+    if not re.fullmatch(r"[0-9a-f]+", out):
+        out = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    _ASSET_VERSION = out
+    return out
+
+
+def on_post_page(output, page, config):
+    version = asset_version()
+    return _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
 
 
 def on_config(config):

@@ -135,7 +135,7 @@ class PlanVsActualsPageTests(unittest.TestCase):
         self.assertIn("--diagram-min-width: 600px;", source_css)
         self.assertIn("min-width: var(--diagram-min-width);", source_css)
         self.assertNotIn("min-width: 1000px;", source_css)
-        self.assertNotIn("width: 1200px;", source_css)
+        self.assertNotRegex(source_css, r"(?<![-])width: 1200px;")
         desktop_css = source_css.split("@media screen and (min-width: 60em)", 1)[1]
         self.assertIn("overflow: visible;", desktop_css)
         self.assertIn("width: 100%;", desktop_css)
@@ -702,6 +702,28 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("download-gl_actuals_pnl.sql", article)
         self.assertIn("DIM_ACCOUNT", article)
         self.assertNotIn("lorem ipsum", article.lower())
+
+    def test_home_hides_the_sidebar_and_other_pages_keep_tabs(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
+        plan = (SITE / "snowflake" / "plan-vs-actuals" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('data-md-type="navigation" hidden', home)
+        self.assertIn('data-md-type="toc" hidden', home)
+        self.assertIn('class="md-tabs"', home)
+        tabs = home.split('class="md-tabs"', 1)[1].split("</nav>", 1)[0]
+        for label in ("Snowflake", "Jedox", "VBA", "Downloads"):
+            self.assertIn(label, tabs)
+        self.assertIn("md-search", home)
+        for page in (about, plan):
+            self.assertIn("md-sidebar--primary", page)
+            self.assertIn('class="md-tabs"', page)
+            self.assertIn("md-search", page)
+        versioned = re.compile(
+            r'(?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool)\.css|javascripts/reveal\.js)\?v=[0-9a-f]+"'
+        )
+        self.assertGreaterEqual(len(versioned.findall(home)), 3)
+        self.assertGreaterEqual(len(versioned.findall(plan)), 3)
+        self.assertNotIn("gc.zgo.at/count.js?v=", home)
 
     def test_home_page_hides_edit_icon_but_other_pages_keep_it(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

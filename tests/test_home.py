@@ -14,19 +14,19 @@ EXPECTED_FILES = (
     "jedox/head-presenting.webp",
     "jedox/head-thumbsup.png",
     "jedox/head-thumbsup.webp",
-    "jedox/presenting.png",
-    "jedox/presenting.webp",
+    "jedox/thumbsup.png",
+    "jedox/thumbsup.webp",
     "snowflake/head.png",
     "snowflake/head.webp",
-    "snowflake/laptop.png",
-    "snowflake/laptop.webp",
+    "snowflake/pointing.png",
+    "snowflake/pointing.webp",
     "vba/pointing.png",
     "vba/pointing.webp",
 )
 
 HERO_ALTS = (
-    "Snowflake mascot in a blue hoodie, working on a laptop",
-    "Jedox mascot in a purple blazer, presenting a chart",
+    "Snowflake mascot in a blue hoodie, pointing ahead",
+    "Jedox mascot in a purple blazer, giving a thumbs-up",
     "VBA mascot in a green jacket, pointing ahead",
 )
 
@@ -245,6 +245,9 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("width: 100%;", block)
         self.assertIn("gap: 12px;", self.css)
         self.assertIn("flex-wrap: nowrap;", self.css)
+        self.assertIn("max-width: 1200px;", self.css)
+        self.assertIn("grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);", self.css)
+        self.assertNotIn("max-width: 90rem;", self.css)
         self.assertIn("overflow-x: auto;", block)
         self.assertIn("-webkit-overflow-scrolling: touch;", block)
         self.assertIn("min-width: 240px;", block)

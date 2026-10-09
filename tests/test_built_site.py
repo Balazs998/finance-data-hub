@@ -142,6 +142,34 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("DIM_ACCOUNT", article)
         self.assertNotIn("lorem ipsum", article.lower())
 
+    def test_home_page_hides_edit_icon_but_other_pages_keep_it(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("md-content__button", home)
+        self.assertNotIn("/edit/main/docs/index.md", home)
+        self.assertIn("md-content__button", about)
+        self.assertIn("/edit/main/docs/about.md", about)
+
+    def test_home_topic_cards_use_three_columns_on_desktop(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
+        self.assertIn('class="grid cards topic-cards"', home)
+        self.assertIn("@media screen and (min-width: 45em)", css)
+        self.assertIn("grid-template-columns: repeat(3, minmax(0, 1fr));", css)
+
+    def test_heading_permalinks_are_absent_but_ids_remain(self):
+        home = (SITE / "index.html").read_text(encoding="utf-8")
+        article = (SITE / "snowflake" / "month-end-actuals" / "index.html").read_text(
+            encoding="utf-8"
+        )
+        for html in (home, article):
+            self.assertNotIn("headerlink", html)
+        self.assertIn('<h1 id="finance-data-hub">', home)
+        self.assertIn('<h2 id="where-to-start">', home)
+        self.assertIn('href="#where-to-start"', home)
+        self.assertIn('<h1 id="month-end-actuals">', article)
+        self.assertIn('href="#grain"', article)
+
 
 if __name__ == "__main__":
     unittest.main()

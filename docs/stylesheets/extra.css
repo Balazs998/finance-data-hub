@@ -218,6 +218,13 @@
   box-shadow: none;
 }
 
+/* Home topic cards: three equal columns from 45em (720px) up, stacked below. */
+@media screen and (min-width: 45em) {
+  .md-typeset .grid.cards.topic-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .md-typeset .grid.cards a.md-button.download {
   display: inline-block;
   margin-top: 0.75rem;

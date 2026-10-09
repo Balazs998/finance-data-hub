@@ -33,9 +33,23 @@
     function renderEditor(text, issues) {
       var lines = String(text).split("\n");
       var byLine = {};
+      function issueLines(issue) {
+        if (!issue.items) return [issue.line];
+        var lines = [];
+        issue.items.forEach(function (item) {
+          item.lines.forEach(function (lineNo) {
+            if (lines.indexOf(lineNo) < 0) lines.push(lineNo);
+          });
+        });
+        return lines.length ? lines : [issue.line];
+      }
       issues.forEach(function (issue) {
-        if (!byLine[issue.line]) byLine[issue.line] = issue;
-        else if (issue.severity === "error") byLine[issue.line] = issue;
+        issueLines(issue).forEach(function (lineNo) {
+          var current = byLine[lineNo];
+          if (!current) byLine[lineNo] = issue;
+          else if (issue.severity === "error") byLine[lineNo] = issue;
+          else if (issue.severity === "warning" && current.severity === "check") byLine[lineNo] = issue;
+        });
       });
       var code = "";
       var gut = "";
@@ -56,6 +70,15 @@
       syncScroll();
     }
 
+    function scrollToLine(lineNo) {
+      var lines = highlight.querySelectorAll(".email-line");
+      var line = lines[lineNo - 1];
+      if (!line || !lines.length) return;
+      var pitch = lines[0].getBoundingClientRect().height || 22.1;
+      input.scrollTop = Math.max(0, (lineNo - 1) * pitch - (input.clientHeight - pitch) / 2);
+      syncScroll();
+    }
+
     function syncScroll() {
       var x = -input.scrollLeft;
       var y = -input.scrollTop;
@@ -68,7 +91,16 @@
       article.className = "email-issue is-" + (issue.severity === "warning" ? "warning" : issue.severity === "check" ? "check" : "error");
       var label = document.createElement("p");
       label.className = "email-issue-label";
-      label.textContent = issue.icon + " " + typeLabel(issue.severity) + " · line " + issue.line;
+      var listedLines = [];
+      if (issue.items) {
+        issue.items.forEach(function (item) {
+          item.lines.forEach(function (lineNo) {
+            if (listedLines.indexOf(lineNo) < 0) listedLines.push(lineNo);
+          });
+        });
+      }
+      label.textContent = issue.icon + " " + typeLabel(issue.severity) +
+        (listedLines.length === 1 ? " · line " + listedLines[0] : listedLines.length ? "" : " · line " + issue.line);
       var title = document.createElement("h3");
       title.innerHTML = shared.inlineCode(issue.title);
       var body = document.createElement("p");
@@ -81,6 +113,21 @@
         fix.innerHTML = "<strong>Fix: </strong>" + shared.inlineCode(issue.fix);
         article.appendChild(fix);
       }
+      if (issue.items && issue.items.length) {
+        var list = document.createElement("ul");
+        list.className = "email-name-list";
+        issue.items.forEach(function (item) {
+          var row = document.createElement("li");
+          var where = item.lines.length === 1 ? "line " + item.lines[0] : "lines " + item.lines.join(", ");
+          row.innerHTML = "<code>" + shared.escapeHtml(item.name) + "</code> · " + shared.escapeHtml(where);
+          row.addEventListener("click", function (event) {
+            event.stopPropagation();
+            scrollToLine(item.lines[0]);
+          });
+          list.appendChild(row);
+        });
+        article.appendChild(list);
+      }
       if (issue.before) {
         var pre = document.createElement("pre");
         var code = document.createElement("code");
@@ -89,12 +136,7 @@
         article.appendChild(pre);
       }
       article.addEventListener("click", function () {
-        var lines = highlight.querySelectorAll(".email-line");
-        var line = lines[issue.line - 1];
-        if (!line) return;
-        var pitch = lines[0].getBoundingClientRect().height || 22.1;
-        input.scrollTop = Math.max(0, (issue.line - 1) * pitch - (input.clientHeight - pitch) / 2);
-        syncScroll();
+        scrollToLine(issue.line);
       });
       return article;
     }
@@ -115,7 +157,7 @@
       }
       if (errors.length) pill("email-pill-error", countText(errors.length, "error", "errors"));
       if (warnings.length) pill("email-pill-warning", countText(warnings.length, "warning", "warnings"));
-      if (checks.length) pill("email-pill-check", countText(checks.length, "to check", "to check"));
+      if (checks.length) pill("email-pill-check", countText(checks.length, "check", "checks"));
 
       function showBanner(text) {
         banner.innerHTML = text ? shared.inlineCode(text) : "";
@@ -131,8 +173,11 @@
         var heading = document.createElement("h3");
         heading.textContent = copy.noProblems.heading;
         var note = document.createElement("p");
+        var nameCount = checks.reduce(function (sum, issue) {
+          return sum + (issue.items ? issue.items.length : 1);
+        }, 0);
         note.textContent = checks.length
-          ? copy.noProblems.withChecks.replace("{n}", String(checks.length))
+          ? copy.noProblems.withChecks.replace("{n}", String(nameCount))
           : copy.noProblems.text;
         list.appendChild(heading);
         list.appendChild(note);

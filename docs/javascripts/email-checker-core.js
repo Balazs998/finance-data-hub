@@ -21,7 +21,7 @@
     "    rows << [cc: src.getColumnString('CostCenter')]",
     "}",
     "def mail = API.getMailer()",
-    "mail.setServer('smtp.example.com')",
+    "mail.setServer('smtp.example.com', 'user', 'secret')",
     "mail.addRecipient('owner.cc4010@example.com')",
     "mail.setMessage(html)",
     "mail.send()",
@@ -333,6 +333,55 @@
     });
   }
 
+  function groupNameChecks(issues) {
+    var rest = [];
+    var buckets = {};
+    var order = [];
+    issues.forEach(function (issue) {
+      if (issue.rule !== "NAME") {
+        rest.push(issue);
+        return;
+      }
+      if (!buckets[issue.kind]) {
+        buckets[issue.kind] = [];
+        order.push(issue.kind);
+      }
+      buckets[issue.kind].push(issue);
+    });
+    order.forEach(function (kind) {
+      var byName = [];
+      var index = {};
+      buckets[kind].forEach(function (issue) {
+        if (!Object.prototype.hasOwnProperty.call(index, issue.name)) {
+          index[issue.name] = byName.length;
+          byName.push({ name: issue.name, lines: [] });
+        }
+        var lines = byName[index[issue.name]].lines;
+        if (lines.indexOf(issue.line) < 0) lines.push(issue.line);
+      });
+      byName.forEach(function (item) {
+        item.lines.sort(function (a, b) { return a - b; });
+      });
+      var first = byName[0].lines[0];
+      rest.push({
+        rule: "NAME",
+        severity: "check",
+        line: first,
+        kind: kind,
+        name: byName[0].name,
+        items: byName,
+        title: messages.checkTitle,
+        explanation: messages.nameGroup(kind, byName.length),
+        fix: "",
+        before: "",
+        after: "",
+        icon: messages.icons.check,
+        label: messages.labels.check
+      });
+    });
+    return rest;
+  }
+
   function checkNames(lines, issues) {
     var patterns = [
       { kind: "extract", re: /API\.(?:initSource|getSource)\s*\(\s*(['"])([^'"]+)\1/g },
@@ -376,6 +425,7 @@
     checkNull(lines, issues);
     checkMailer(lines, issues, scriptType);
     checkNames(lines, issues);
+    issues = groupNameChecks(issues);
     var rank = { error: 0, warning: 1, check: 2 };
     issues.sort(function (a, b) {
       if (rank[a.severity] !== rank[b.severity]) return rank[a.severity] - rank[b.severity];

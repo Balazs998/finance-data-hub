@@ -595,6 +595,23 @@
   border-left: 3px solid #9aa7b4;
 }
 
+.md-typeset .email-app .email-name-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.md-typeset .email-app .email-name-list li {
+  margin: 0 0 4px;
+  color: var(--dn-text);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+}
+
+.md-typeset .email-app .email-name-list code {
+  font-family: inherit;
+}
+
 .email-issue-label {
   float: right;
   margin: 0 0 4px 8px;

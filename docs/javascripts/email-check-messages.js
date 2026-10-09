@@ -23,6 +23,23 @@
       withChecks: "No errors or warnings. There are still {n} names to check in your Jedox. They're listed below."
     },
     checkTitle: "Check in your Jedox",
+    nameGroup: function (kind, count) {
+      var n = String(count);
+      var one = count === 1;
+      if (kind === "variable") {
+        return (one ? "1 job variable" : n + " job variables") + " to check in your Jedox. This script reads them with `API.getProperty()`. Make sure each one exists in the job, or that the default in the script is what you want.";
+      }
+      if (kind === "extract") {
+        return (one ? "1 extract" : n + " extracts") + " to check in your Jedox. Make sure an extract with this exact name is in the project.";
+      }
+      if (kind === "column") {
+        return (one ? "1 column name" : n + " column names") + " to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't documented, so check it especially.";
+      }
+      if (kind === "connection") {
+        return (one ? "1 file connection" : n + " file connections") + " to check in your Jedox. Each name must match a File connection in the project. A relative path is read from the local files folder.";
+      }
+      return n + " names to check in your Jedox.";
+    },
     checks: {
       extract: "Extract name `'{name}'` can't be verified here. Check that a Cube Slice extract with exactly this name exists in your project.",
       column: "Column `'{name}'` can't be verified here. Run the extract's preview and check the column is called exactly this. The value column's name isn't documented, so check `'#Value'` too.",

@@ -58,22 +58,13 @@ From a fenced code block the shortcode is left as-is, so you can show the syntax
 
 ### Large files (Excel workbooks, Jedox exports, zip archives)
 
-Upload those to the GitHub Release tagged `files`. Do not commit them.
-
-1. On GitHub, open **Releases**.
-2. The first time, create a release with the tag `files` and the title `Downloadable files`. After that, edit the same release.
-3. Upload the asset. The file name is the name visitors download.
-4. Link it from Markdown:
+Put the file under `docs/files/` and link it from the note. `[[release:]]` is the same kind of link as `[[download:]]`: the path is relative to `docs/files/`, and the button stays on this site.
 
 ```markdown
-[[release:close-model.xlsm|Download the close model]]
+[[release:vba/close-model.xlsm|Download the close model]]
 ```
 
-That points at:
-
-`https://github.com/Balazs998/finance-data-hub/releases/download/files/close-model.xlsm`
-
-To replace a file, delete the old asset and upload the new one with the same name. The link does not change.
+That serves `docs/files/vba/close-model.xlsm`. The Downloads page lists it with the other files from that note.
 
 ## Analytics
 
@@ -92,8 +83,6 @@ A preview on `mkdocs serve` is not counted. GoatCounter ignores localhost.
 
 - **Per file, with country:** <https://financedatahub.goatcounter.com>
   Open **Events**. Each file is one event, named `download-` plus the file name. Open the event for the count and the countries. Article traffic and countries are on the main dashboard.
-- **GitHub's count for Release assets:** <https://github.com/Balazs998/finance-data-hub/releases>
-  The number beside each asset is GitHub's download count. It has no country, and it does not include files stored under `docs/files/`.
 
 ## Repository layout
 

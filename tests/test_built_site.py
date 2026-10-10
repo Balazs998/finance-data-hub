@@ -744,10 +744,21 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("edit_uri:", config)
         self.assertNotIn("content.action.edit", config)
         self.assertNotIn("content.action.view", config)
-        # Release URLs are built from the repo constant in hooks/site.py.
         hook = (ROOT / "hooks" / "site.py").read_text(encoding="utf-8")
-        self.assertIn('REPO = "Balazs998/finance-data-hub"', hook)
+        self.assertNotIn("github.com", hook)
+        self.assertNotIn("Balazs998/", hook)
         self.assertNotIn("repo_url", hook)
+        about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Balazs, a finance data scientist, writes and maintains it.", about)
+        self.assertNotIn("open an issue", about)
+        for page in SITE.rglob("*"):
+            if page.suffix.lower() not in {".html", ".json", ".xml"}:
+                continue
+            if "assets/javascripts" in page.as_posix():
+                continue
+            text = page.read_text(encoding="utf-8", errors="ignore")
+            self.assertNotIn("github.com", text, page.relative_to(SITE).as_posix())
+            self.assertNotIn("Balazs998/", text, page.relative_to(SITE).as_posix())
         checker = pages[2].read_text(encoding="utf-8")
         self.assertIn("email-checker", checker.lower())
         downloads = (SITE / "downloads" / "index.html").read_text(encoding="utf-8")

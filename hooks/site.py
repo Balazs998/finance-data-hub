@@ -1,8 +1,8 @@
 """Download shortcodes and the GoatCounter site-code check.
 
 Articles link to files with ``[[download:path|Label]]`` or
-``[[release:filename|Label]]``. The path after ``download:`` is relative to
-``docs/files/``. Release links point at the GitHub Release tagged ``files``.
+``[[release:path|Label]]``. The path is relative to ``docs/files/``. Both
+shortcodes serve that file from this site. A download never points at GitHub.
 
 ``docs/downloads.md`` includes ``[[file-index]]``. That token becomes a
 "Sample data" group with the shared sample files, then one group per note with
@@ -23,8 +23,6 @@ from pathlib import Path, PurePosixPath
 from mkdocs.exceptions import PluginError
 from mkdocs.utils import get_relative_url
 
-REPO = "Balazs998/finance-data-hub"
-RELEASE_TAG = "files"
 CODE_PATTERN = re.compile(r"[A-Za-z0-9-]+")
 SHORTCODE = re.compile(r"\[\[(download|release):([^\]|\s]+)(?:\|([^\]]+))?\]\]")
 BLOCK_SHORTCODE = re.compile(
@@ -166,7 +164,8 @@ def render_file_index(docs_dir: Path, nav) -> str:
     if missing:
         raise PluginError(
             "Every file in docs/files must be linked from a note with "
-            "[[download:]] so the Downloads page can list it under that note. "
+            "[[download:]] or [[release:]] so the Downloads page can list it "
+            "under that note. "
             "Not linked: " + ", ".join(missing)
         )
     if not groups:
@@ -235,7 +234,7 @@ def _download_refs(markdown: str) -> list[tuple[str, str | None]]:
 
     def collect(segment: str) -> str:
         for match in SHORTCODE.finditer(segment):
-            if match.group(1) != "download":
+            if match.group(1) not in {"download", "release"}:
                 continue
             relative = posix_target(match.group(2).strip())
             label = match.group(3).strip() if match.group(3) else None
@@ -465,25 +464,18 @@ def build_link(
     as_html: bool = False,
     page_url: str | None = None,
 ) -> str:
-    if kind == "download":
-        path = resolve_site_file(docs_dir, target)
-        site_path = f"files/{posix_target(target)}"
-        # Markdown links are rewritten by MkDocs from the source file. Raw HTML
-        # is not, and a page is served as a directory (…/page/index.html), so an
-        # HTML href has to be relative to that directory URL.
-        if as_html and page_url is not None:
-            href = get_relative_url(site_path, page_url)
-        else:
-            href = relative_href(src_uri, site_path)
-        filename = path.name
-    elif kind == "release":
-        filename = release_filename(target)
-        href = (
-            f"https://github.com/{REPO}/releases/download/"
-            f"{RELEASE_TAG}/{filename}"
-        )
-    else:
+    if kind not in {"download", "release"}:
         raise PluginError(f"Unknown download shortcode [[{kind}:...]].")
+    path = resolve_site_file(docs_dir, target)
+    site_path = f"files/{posix_target(target)}"
+    # Markdown links are rewritten by MkDocs from the source file. Raw HTML
+    # is not, and a page is served as a directory (…/page/index.html), so an
+    # HTML href has to be relative to that directory URL.
+    if as_html and page_url is not None:
+        href = get_relative_url(site_path, page_url)
+    else:
+        href = relative_href(src_uri, site_path)
+    filename = path.name
 
     text = label or f"Download {filename}"
     event = event_name(filename)
@@ -534,7 +526,7 @@ def resolve_site_file(docs_dir: Path, target: str) -> Path:
     if not candidate.is_file():
         raise PluginError(
             f"Download file docs/files/{relative} does not exist. "
-            "Put the file there, or use [[release:filename]] for a GitHub Release asset."
+            "Put the file under docs/files/ and link it with [[download:]] or [[release:]]."
         )
     return candidate
 
@@ -548,17 +540,6 @@ def posix_target(target: str) -> str:
     if any(part in {"", ".", ".."} for part in path.parts):
         raise PluginError(f"Download path must stay inside docs/files: {target}")
     return str(path)
-
-
-def release_filename(target: str) -> str:
-    if "/" in target or "\\" in target or target in {".", ".."} or not target.strip():
-        raise PluginError(
-            "A release shortcode takes the asset file name only, "
-            f"for example [[release:close-model.xlsm]]. Got: {target}"
-        )
-    if any(char in target for char in '"<>'):
-        raise PluginError(f"Release file name contains a character that breaks the link: {target}")
-    return target
 
 
 def escape_label(label: str) -> str:

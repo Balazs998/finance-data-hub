@@ -209,6 +209,7 @@ class DownloadShortcodeTests(unittest.TestCase):
         # The load note links only sample files, so it gets no group of its own.
         self.assertNotIn("## [Snowflake to Jedox load]", index)
         relational = index.split("## [Relational extracts](jedox/relational-extracts.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("relational/v_fact_actuals.sql", relational)
         self.assertIn("relational/relational_extract_actuals.sql", relational)
         self.assertIn("relational/v_jedox_actuals_by_group.sql", relational)
         self.assertIn("relational/query_history_lookup.sql", relational)
@@ -222,7 +223,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 15)
+        self.assertEqual(len(disk), 16)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

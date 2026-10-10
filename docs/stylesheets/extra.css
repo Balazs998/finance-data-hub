@@ -875,10 +875,43 @@ html.js .reveal.reveal-wait.is-visible {
 .md-typeset .diagram-frame {
   position: relative;
   margin: 1.2em 0;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* A table uses the same swipe panel. Material's inner wrap must not
+   scroll on its own, or the fade and chevron never see the scroll. */
+.md-typeset .diagram-scroll .md-typeset__scrollwrap {
+  overflow: visible;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.md-typeset .diagram-scroll .md-typeset__table,
+.md-typeset .diagram-scroll table:not([class]) {
+  width: max-content;
+  min-width: 100%;
+}
+
+.md-typeset .diagram-scroll:has(table) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.md-typeset .diagram-scroll th,
+.md-typeset .diagram-scroll td {
+  white-space: nowrap;
 }
 
 .md-typeset .diagram-frame .diagram-scroll {
   margin: 0;
+}
+
+.md-typeset .diagram-frame > p:has(.diagram-chevron) {
+  margin: 0;
+  height: 0;
+  line-height: 0;
 }
 
 /* The fade sits on the wrapper, not the scroller, so it stays at the
@@ -943,6 +976,10 @@ html.js .reveal.reveal-wait.is-visible {
 
   .md-typeset .diagram-scroll {
     overflow: visible;
+  }
+
+  .md-typeset .diagram-scroll:has(table) {
+    overflow-x: auto;
   }
 
   .md-typeset .diagram-scroll img {

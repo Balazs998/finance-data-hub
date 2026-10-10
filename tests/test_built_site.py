@@ -819,6 +819,7 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIsNotNone(diagram)
         self.assertTrue(diagram.is_file())
         for relative in (
+            "relational/v_fact_actuals.sql",
             "relational/relational_extract_actuals.sql",
             "relational/v_jedox_actuals_by_group.sql",
             "relational/query_history_lookup.sql",

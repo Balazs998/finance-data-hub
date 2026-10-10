@@ -349,7 +349,7 @@ parseCsv(readFile('Accounts')).each { r -> accounts[r.account] = [name: r.accoun
 Map<String, String> ccNames = [:]
 parseCsv(readFile('CostCenters')).each { r -> ccNames[r.cost_center] = r.cost_center_name }
 
-// Read the Cube Slice extract.
+// Read the Cube extract.
 // Column names assume one column per dimension, named
 // like the dimension, plus the value column. Check them in the extract's preview.
 List<Map> rows = []

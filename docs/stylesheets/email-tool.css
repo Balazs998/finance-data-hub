@@ -775,6 +775,11 @@
   display: none;
 }
 
+.email-bar-space {
+  height: 0;
+  overflow: hidden;
+}
+
 .email-sr {
   position: absolute;
   width: 1px;
@@ -1229,9 +1234,42 @@
     padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
   }
 
-  .email-app,
+  #email-checker.email-app,
   .md-content__inner:has(.email-app) {
     padding-bottom: 72px;
+  }
+
+  #email-builder .email-bar-space {
+    height: 64px;
+  }
+
+  #email-builder .email-frame-wrap,
+  #email-builder .email-frame-wrap iframe {
+    min-height: 640px;
+  }
+
+  /* Loaded Inter height of the builder lead, so the fallback font
+     does not grow it and push the next paragraph down. */
+  .md-content__inner:has(#email-builder) > .email-lead {
+    min-height: 68px;
+  }
+}
+
+@media screen and (max-width: 627px) {
+  .md-content__inner:has(#email-builder) > .email-lead {
+    min-height: 102px;
+  }
+}
+
+@media screen and (max-width: 415px) {
+  .md-content__inner:has(#email-builder) > .email-lead {
+    min-height: 135px;
+  }
+}
+
+@media screen and (max-width: 331px) {
+  .md-content__inner:has(#email-builder) > .email-lead {
+    min-height: 169px;
   }
 }
 

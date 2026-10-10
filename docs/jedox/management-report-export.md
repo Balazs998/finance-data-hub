@@ -37,10 +37,10 @@ Use a stored view to check the layout on screen:
 - Account, entity, and cost center use a stored subset.
 - The account name is the alias. The element name stays the code. In the sample, that code is `4000` and the name is `Net revenue`.
 
-The scheduled file is an Integrator Cube extract. A Cube extract cannot run a saved report view. What carries over are the stored subsets: choose them in the extract's subset filter, and turn on Base elements only. That is what keeps the consolidated parent out of the file. A manual paste from the Excel add-in drifts the first time someone inserts a column.
+The scheduled file is an Integrator Cube extract. A Cube extract reads the cube with its own filters, not a saved report view. What carries over are the stored subsets: choose them in the extract's subset filter, and turn on Base elements only. That is what keeps the consolidated parent out of the file. A manual paste from the Excel add-in drifts the first time someone inserts a column.
 
 The sample exports `4000` as `account_code` and `Net revenue` as `account_name`. The [Snowflake actuals extract](../snowflake/month-end-actuals.md) uses the same split: a stable code, a readable name, and revenue as a positive amount.
 
 ## Number format
 
-A European locale that writes 1250000 as `1.250.000` gives Excel text, or a date, depending on the machine that opens the file. Set the extract to a plain number. Format it in the pack.
+A European locale that writes 1250000 as `1.250.000` gives Excel text, or a date, depending on the machine that opens the file. Check in your Integrator how the file load writes numbers, and keep the file free of thousands separators. Format it in the pack.

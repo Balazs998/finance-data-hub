@@ -116,7 +116,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 
 <label for="field-extract">Extract name <span class="email-var-tag">job variable</span></label>
 <input id="field-extract" type="text" value="PnL_BudgetActual" aria-describedby="help-extract msg-extractName" autocomplete="off" spellcheck="false">
-<p class="email-help" id="help-extract">The name of your Cube Slice extract. Becomes <code>SOURCE_EXTRACT</code>.</p>
+<p class="email-help" id="help-extract">The name of your Cube extract. Becomes <code>SOURCE_EXTRACT</code>.</p>
 <p class="email-field-msg" id="msg-extractName" role="status"></p>
 </details>
 </div>
@@ -157,6 +157,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 </div>
 </form>
 <button type="button" class="email-sticky" id="email-builder-sticky" aria-expanded="false">Preview</button>
+<div class="email-bar-space" aria-hidden="true"></div>
 <noscript><p>This page needs JavaScript. The builder still runs only in your browser.</p></noscript>
 </div>
 
@@ -165,7 +166,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 ## Next: run it in Jedox in test mode first
 
 1. Put `email-template.html`, `recipients.csv`, `dim_account.csv` and `dim_cost_center.csv` in the local files folder. Create the four File connections: `EmailTemplate`, `EmailRecipients`, `Accounts` and `CostCenters`.
-2. Create the Cube Slice extract and run its preview. Check that the column names match the script, including the value column `#Value`.
+2. Create the Cube extract with **Base elements only** turned on and empty cells set to `excludeEmpty`, then run its preview. Check that the column names match the script. The value column's name isn't stated in the Cube extract docs, so check it in the preview; the script expects `#Value`.
 3. Create a Groovy job, paste the script and add the job variables. Leave `TEST_MODE` set to `true`.
 4. Run the job. Every email goes to your test address. Open them in Outlook, in web mail and on a phone.
 5. When they look right, set `TEST_MODE` to `false` for that one run only, not in the variable's default.

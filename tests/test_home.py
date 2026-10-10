@@ -18,10 +18,12 @@ EXPECTED_FILES = (
     "snowflake/head.webp",
     "trio-full.png",
     "trio-full.webp",
+    "trio-group.png",
+    "trio-group.webp",
 )
 
 HERO_ALTS = (
-    "Snowflake mascot with a tablet, Jedox mascot with a clipboard, and VBA mascot pointing outward",
+    "Three mascots standing together: Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, and VBA in a green cardigan, waving",
 )
 
 HOME_LINKS = {
@@ -195,8 +197,9 @@ class HomePageTests(unittest.TestCase):
         pictures = re.findall(r"<picture>\s*(.*?)</picture>", self.html, re.S)
         self.assertGreaterEqual(len(pictures), 5)
         hero = self.html.split('class="hero"', 1)[1].split('class="reveal"', 1)[0]
-        self.assertIn("assets/mascots/trio-full.webp", hero)
-        self.assertIn("assets/mascots/trio-full.png", hero)
+        self.assertIn("assets/mascots/trio-group.webp", hero)
+        self.assertIn("assets/mascots/trio-group.png", hero)
+        self.assertNotIn("trio-full", hero)
         self.assertNotIn("pointing.", hero)
         self.assertNotIn("thumbsup.", hero)
         for alt in HERO_ALTS:

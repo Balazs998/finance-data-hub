@@ -20,8 +20,8 @@ hide:
 </div>
 <div class="home-art">
 <picture>
-<source srcset="assets/mascots/trio-full.webp" type="image/webp">
-<img src="assets/mascots/trio-full.png" width="825" height="662" alt="Snowflake mascot with a tablet, Jedox mascot with a clipboard, and VBA mascot pointing outward">
+<source srcset="assets/mascots/trio-group.webp" type="image/webp">
+<img src="assets/mascots/trio-group.png" width="603" height="682" alt="Three mascots standing together: Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, and VBA in a green cardigan, waving">
 </picture>
 </div>
 </div>

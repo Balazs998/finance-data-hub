@@ -18,8 +18,10 @@ EXPECTED_FILES = (
     "snowflake/head.webp",
     "trio-full.png",
     "trio-full.webp",
-    "trio-group.png",
-    "trio-group.webp",
+    "trio-group@1x.png",
+    "trio-group@1x.webp",
+    "trio-group@2x.png",
+    "trio-group@2x.webp",
 )
 
 HERO_ALTS = (
@@ -197,8 +199,13 @@ class HomePageTests(unittest.TestCase):
         pictures = re.findall(r"<picture>\s*(.*?)</picture>", self.html, re.S)
         self.assertGreaterEqual(len(pictures), 5)
         hero = self.html.split('class="hero"', 1)[1].split('class="reveal"', 1)[0]
-        self.assertIn("assets/mascots/trio-group.webp", hero)
-        self.assertIn("assets/mascots/trio-group.png", hero)
+        self.assertIn("assets/mascots/trio-group@1x.webp 1x", hero)
+        self.assertIn("assets/mascots/trio-group@2x.webp 2x", hero)
+        self.assertIn("assets/mascots/trio-group@1x.png 1x", hero)
+        self.assertIn("assets/mascots/trio-group@2x.png 2x", hero)
+        one = png_size(MASCOTS / "trio-group@1x.png")
+        two = png_size(MASCOTS / "trio-group@2x.png")
+        self.assertEqual(two, (one[0] * 2, one[1] * 2))
         self.assertNotIn("trio-full", hero)
         self.assertNotIn("pointing.", hero)
         self.assertNotIn("thumbsup.", hero)
@@ -213,10 +220,12 @@ class HomePageTests(unittest.TestCase):
             self.assertIn('width="176"', tag)
             self.assertIn('height="176"', tag)
         for block in pictures:
-            source = re.search(r'<source srcset="([^"]+\.webp)" type="image/webp">', block)
+            source = re.search(r'<source srcset="([^"]+)" type="image/webp">', block)
             image = re.search(r"<img\b[^>]*>", block)
             self.assertIsNotNone(source, block)
             self.assertIsNotNone(image, block)
+            first_webp = source.group(1).split(",")[0].strip().split()[0]
+            self.assertTrue(first_webp.endswith(".webp"), block)
             attrs = dict(re.findall(r'([:\w-]+)="([^"]*)"', image.group(0)))
             src = attrs.get("src", "")
             self.assertTrue(src.endswith(".png"), block)
@@ -230,11 +239,11 @@ class HomePageTests(unittest.TestCase):
                 self.assertTrue(attrs["alt"].strip())
                 self.assertNotIn("loading", attrs)
             png = local_target(self.page, src)
-            webp = local_target(self.page, source.group(1))
+            webp = local_target(self.page, first_webp)
             self.assertIsNotNone(png)
             self.assertIsNotNone(webp)
             self.assertTrue(png.is_file(), src)
-            self.assertTrue(webp.is_file(), source.group(1))
+            self.assertTrue(webp.is_file(), first_webp)
             self.assertEqual(png_size(png), (int(attrs["width"]), int(attrs["height"])), src)
 
     def test_phone_layout_and_reduced_motion(self):
@@ -265,8 +274,9 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("circle at 52% 50%", self.css)
         self.assertIn("circle at 82% 55%", self.css)
         self.assertNotIn("mix-blend-mode:", self.css)
-        group = (MASCOTS / "trio-group.png").read_bytes()
-        self.assertEqual(group[25], 6, "trio-group.png needs a real alpha channel")
+        for name in ("trio-group@1x.png", "trio-group@2x.png"):
+            group = (MASCOTS / name).read_bytes()
+            self.assertEqual(group[25], 6, f"{name} needs a real alpha channel")
         self.assertIn("max-width: 76.234375em", self.css)
         phone_tabs = media_blocks(self.css, "max-width: 76.234375em")
         self.assertTrue(any("display: none;" in item and ".md-tabs" in item for item in phone_tabs))

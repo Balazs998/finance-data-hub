@@ -744,10 +744,21 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("edit_uri:", config)
         self.assertNotIn("content.action.edit", config)
         self.assertNotIn("content.action.view", config)
-        # Release URLs are built from the repo constant in hooks/site.py.
         hook = (ROOT / "hooks" / "site.py").read_text(encoding="utf-8")
-        self.assertIn('REPO = "Balazs998/finance-data-hub"', hook)
+        self.assertNotIn("github.com", hook)
+        self.assertNotIn("Balazs998/", hook)
         self.assertNotIn("repo_url", hook)
+        about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Balazs, a finance data scientist, writes and maintains it.", about)
+        self.assertNotIn("open an issue", about)
+        for page in SITE.rglob("*"):
+            if page.suffix.lower() not in {".html", ".json", ".xml"}:
+                continue
+            if "assets/javascripts" in page.as_posix():
+                continue
+            text = page.read_text(encoding="utf-8", errors="ignore")
+            self.assertNotIn("github.com", text, page.relative_to(SITE).as_posix())
+            self.assertNotIn("Balazs998/", text, page.relative_to(SITE).as_posix())
         checker = pages[2].read_text(encoding="utf-8")
         self.assertIn("email-checker", checker.lower())
         downloads = (SITE / "downloads" / "index.html").read_text(encoding="utf-8")
@@ -772,6 +783,23 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn('class="diagram-scroll"', html)
         self.assertIn('class="diagram-frame"', html)
         self.assertIn("Swipe to see the full diagram →", html)
+        css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
+        self.assertIn("linear-gradient(to right, transparent, #0F1720)", css)
+        self.assertIn("pointer-events: none;", css)
+        self.assertIn("padding-top: 2.2em;", css)
+        self.assertIn("diagram-frame--end", css)
+        fade_js = (ROOT / "docs/javascripts/diagram-fade.js").read_text(encoding="utf-8")
+        self.assertIn('addEventListener("scroll"', fade_js)
+        self.assertIn("prefers-reduced-motion", fade_js)
+        self.assertIn("diagram-frame--end", fade_js)
+        for built in (
+            page,
+            SITE / "jedox" / "snowflake-to-jedox" / "index.html",
+            SITE / "snowflake" / "plan-vs-actuals" / "index.html",
+        ):
+            text = built.read_text(encoding="utf-8")
+            self.assertIn('class="diagram-frame"', text, built.name)
+            self.assertIn("diagram-fade.js", text, built.name)
         self.assertIn("RelationalTable", html)
         self.assertIn("content.tabs.link", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
         self.assertIn('href="../snowflake-to-jedox/"', html)

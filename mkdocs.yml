@@ -14,6 +14,7 @@ extra_css:
 
 extra_javascript:
   - javascripts/reveal.js
+  - javascripts/diagram-fade.js
   - javascripts/email-sources.js
   - javascripts/email-shared.js
   - javascripts/email-check-messages.js

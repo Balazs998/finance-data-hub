@@ -69,19 +69,39 @@ class DownloadShortcodeTests(unittest.TestCase):
         with self.assertRaises(PluginError):
             render_shortcodes("[[download:../index.md]]", "index.md", DOCS)
 
-    def test_release_asset_link(self):
+    def test_release_shortcode_serves_a_file_on_this_site(self):
         out = render_shortcodes(
-            "[[release:close-model.xlsm|Workbook]]",
+            "[[release:vba/FPNA_MonthCloseChecks.bas|Workbook]]",
             "downloads.md",
             DOCS,
         )
-        self.assertIn(
-            "https://github.com/Balazs998/finance-data-hub/releases/download/files/close-model.xlsm",
-            out,
-        )
+        self.assertIn('href="files/vba/FPNA_MonthCloseChecks.bas"', out)
         self.assertIn('<div class="downloads">', out)
-        self.assertIn('data-goatcounter-click="download-close-model.xlsm"', out)
+        self.assertIn('data-goatcounter-click="download-FPNA_MonthCloseChecks.bas"', out)
+        self.assertNotIn("github.com", out)
+        self.assertNotIn("Balazs998/", out)
         self.assertNotIn("[[release:", out)
+
+    def test_missing_release_file_fails_the_build(self):
+        with self.assertRaises(PluginError):
+            render_shortcodes("[[release:close-model.xlsm]]", "index.md", DOCS)
+
+    def test_release_shortcode_is_listed_on_the_downloads_page(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp)
+            note = docs / "note.md"
+            note.write_text(
+                "# Note\n\n[[release:data/a.txt|Download a.txt]]\n",
+                encoding="utf-8",
+            )
+            linked = docs / "files" / "data"
+            linked.mkdir(parents=True)
+            (linked / "a.txt").write_text("a", encoding="utf-8")
+            index = render_file_index(docs, [{"Note": "note.md"}])
+        self.assertIn("[[download:data/a.txt|Download a.txt]]", index)
+        self.assertNotIn("github.com", index)
 
     def test_consecutive_downloads_share_one_grid(self):
         markdown = (

@@ -426,7 +426,6 @@ body:has(.home) .md-grid {
   height: auto;
   border-radius: 12px;
   display: block;
-  mix-blend-mode: lighten;
 }
 
 .md-typeset .home h2 {

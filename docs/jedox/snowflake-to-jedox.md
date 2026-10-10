@@ -112,9 +112,11 @@ The `GROUP BY` matters even though our sample has one row per cell. In real syst
 
 ## 4. The Integrator project
 
+<div class="diagram-frame">
 <figure class="diagram-scroll" style="--diagram-min-width: 700px" tabindex="0" aria-label="Pipeline diagram, scroll sideways on small screens">
   <a href="../01-pipeline-diagram.svg"><img src="../01-pipeline-diagram.svg" alt="Snowflake to Jedox pipeline: clear the Actual slice first, then load fresh actuals into the PnL cube" width="840" height="500"></a>
 </figure>
+</div>
 
 The job has four pieces:
 

@@ -41,9 +41,11 @@ SELECT COUNT(*) FROM budget; -- 696 cells
 
 ## 3. The full outer join
 
+<div class="diagram-frame">
 <figure class="diagram-scroll" tabindex="0" aria-label="Join coverage diagram, scroll sideways on small screens">
   <a href="../02-join-coverage.svg"><img src="../02-join-coverage.svg" alt="What each join keeps on the sample data. INNER JOIN keeps 605 cells with both budget and actual. LEFT JOIN from budget keeps 696, adding 91 budget-only cells. FULL OUTER JOIN keeps all 701, adding the 5 actual-only cells too." width="720" height="400"></a>
 </figure>
+</div>
 
 ```sql
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS

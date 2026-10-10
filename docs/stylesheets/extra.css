@@ -766,6 +766,10 @@ html.js .reveal.reveal-wait.is-visible {
     transition: none;
   }
 
+  .md-typeset .diagram-frame::after {
+    transition: none;
+  }
+
 }
 
 @media screen and (max-width: 760px) {
@@ -876,25 +880,41 @@ html.js .reveal.reveal-wait.is-visible {
   margin: 0;
 }
 
+/* The fade sits on the wrapper, not the scroller, so it stays at the
+   screen edge while the diagram moves. A class removes it at the end. */
+.md-typeset .diagram-frame::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(to right, transparent, #0F1720);
+  border-radius: 0 0.6rem 0.6rem 0;
+  transition: opacity 120ms linear;
+}
+
+.md-typeset .diagram-frame.diagram-frame--end::after {
+  opacity: 0;
+}
+
 @media screen and (max-width: 59.9375em) {
   .md-typeset .diagram-swipe {
     display: block;
   }
 
-  .md-typeset .diagram-frame::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 40px;
-    background: linear-gradient(to right, rgba(15, 23, 32, 0), #0f1720 88%);
-    pointer-events: none;
-    border-radius: 0 0.6rem 0.6rem 0;
+  .md-typeset pre {
+    padding-top: 2.2em;
   }
 }
 
 @media screen and (min-width: 60em) {
+  .md-typeset .diagram-frame::after {
+    content: none;
+  }
+
   .md-typeset .diagram-scroll {
     overflow: visible;
   }

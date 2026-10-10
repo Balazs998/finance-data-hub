@@ -24,6 +24,7 @@ This post builds on [From Snowflake to Jedox](snowflake-to-jedox.md). It reuses 
 <figure class="diagram-scroll" style="--diagram-min-width: 700px" tabindex="0" aria-label="Two routes from Snowflake to the same rows in the cube">
   <a href="../relational-extract-diagram.svg"><img src="../relational-extract-diagram.svg" alt="Two routes from Snowflake to the same rows in the cube. Snowflake is on the left, where the WHERE runs. The top route is RelationalTable, point and click, for filters and group by. A dotted path brings a Snowflake view into that route. The bottom route is Relational, write it yourself, for joins, CTEs and functions. Both end at the same rows in the cube." width="840" height="500"></a>
 </figure>
+<span class="diagram-chevron" aria-hidden="true">›</span>
 </div>
 
 ## The two setups

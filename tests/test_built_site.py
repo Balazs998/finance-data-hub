@@ -785,13 +785,21 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("Swipe to see the full diagram →", html)
         css = (ROOT / "docs/stylesheets/extra.css").read_text(encoding="utf-8")
         self.assertIn("linear-gradient(to right, transparent, #0F1720)", css)
+        self.assertIn("width: 64px;", css)
         self.assertIn("pointer-events: none;", css)
+        self.assertIn("opacity: 0.6;", css)
         self.assertIn("padding-top: 2.2em;", css)
         self.assertIn("diagram-frame--end", css)
+        fade = css.split(".md-typeset .diagram-frame::after {", 1)[1].split("}", 1)[0]
+        self.assertIn("width: 64px;", fade)
+        self.assertNotIn("width: 40px;", fade)
         fade_js = (ROOT / "docs/javascripts/diagram-fade.js").read_text(encoding="utf-8")
         self.assertIn('addEventListener("scroll"', fade_js)
         self.assertIn("prefers-reduced-motion", fade_js)
         self.assertIn("diagram-frame--end", fade_js)
+        self.assertIn("diagram-chevron", fade_js)
+        self.assertIn('setAttribute("aria-hidden", "true")', fade_js)
+        chevron = '<span class="diagram-chevron" aria-hidden="true">›</span>'
         for built in (
             page,
             SITE / "jedox" / "snowflake-to-jedox" / "index.html",
@@ -799,6 +807,7 @@ class BuiltSiteTests(unittest.TestCase):
         ):
             text = built.read_text(encoding="utf-8")
             self.assertIn('class="diagram-frame"', text, built.name)
+            self.assertIn(chevron, text, built.name)
             self.assertIn("diagram-fade.js", text, built.name)
         self.assertIn("RelationalTable", html)
         self.assertIn("content.tabs.link", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"))

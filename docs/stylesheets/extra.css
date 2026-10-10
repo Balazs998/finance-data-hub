@@ -766,7 +766,8 @@ html.js .reveal.reveal-wait.is-visible {
     transition: none;
   }
 
-  .md-typeset .diagram-frame::after {
+  .md-typeset .diagram-frame::after,
+  .md-typeset .diagram-chevron {
     transition: none;
   }
 
@@ -881,14 +882,15 @@ html.js .reveal.reveal-wait.is-visible {
 }
 
 /* The fade sits on the wrapper, not the scroller, so it stays at the
-   screen edge while the diagram moves. A class removes it at the end. */
+   screen edge while the diagram moves. The chevron sits on that same
+   edge. A class removes both once the scroller reaches the end. */
 .md-typeset .diagram-frame::after {
   content: "";
   position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
-  width: 40px;
+  width: 64px;
   pointer-events: none;
   z-index: 1;
   background: linear-gradient(to right, transparent, #0F1720);
@@ -896,7 +898,27 @@ html.js .reveal.reveal-wait.is-visible {
   transition: opacity 120ms linear;
 }
 
-.md-typeset .diagram-frame.diagram-frame--end::after {
+.md-typeset .diagram-chevron {
+  position: absolute;
+  right: 0.35rem;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  opacity: 0.6;
+  color: #f8fafc;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: opacity 120ms linear;
+}
+
+.md-typeset .diagram-frame.diagram-frame--end::after,
+.md-typeset .diagram-frame.diagram-frame--end .diagram-chevron {
   opacity: 0;
 }
 
@@ -913,6 +935,10 @@ html.js .reveal.reveal-wait.is-visible {
 @media screen and (min-width: 60em) {
   .md-typeset .diagram-frame::after {
     content: none;
+  }
+
+  .md-typeset .diagram-chevron {
+    display: none;
   }
 
   .md-typeset .diagram-scroll {

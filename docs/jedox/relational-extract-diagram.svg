@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 500" width="840" height="500" role="img" aria-label="Two routes from Snowflake to the same rows in the cube">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#38BDF8"/></marker>
+<marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A78BFA"/></marker>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A3E635"/></marker>
+</defs>
+<style>
+.h{font:700 22px 'Space Grotesk',system-ui,sans-serif;fill:#E6EDF3}
+.b{font:600 17px Inter,system-ui,sans-serif;fill:#E6EDF3}
+.m{font:400 15px Inter,system-ui,sans-serif;fill:#B7C5D3}
+.c{font:500 14px 'JetBrains Mono',ui-monospace,monospace}
+</style>
+<rect width="840" height="500" fill="#0F1720"/>
+<text class="h" x="30" y="44">Same job, two routes</text>
+<!-- Snowflake -->
+<rect x="30" y="170" width="180" height="150" rx="14" fill="#13202C" stroke="#38BDF8" stroke-width="2"/>
+<text class="b" x="120" y="210" text-anchor="middle">Snowflake</text>
+<text class="c" x="120" y="240" text-anchor="middle" fill="#38BDF8">FACT_ACTUALS</text>
+<rect x="55" y="262" width="130" height="32" rx="16" fill="#38BDF8"/>
+<text x="120" y="283" text-anchor="middle" style="font:700 14px Inter,sans-serif;fill:#0F1720">WHERE runs here</text>
+<!-- view -->
+<rect x="30" y="60" width="180" height="70" rx="12" fill="#13202C" stroke="#A3E635" stroke-width="2" stroke-dasharray="6 5"/>
+<text class="b" x="120" y="91" text-anchor="middle">Snowflake view</text>
+<text class="m" x="120" y="114" text-anchor="middle">joins live here</text>
+<!-- top route -->
+<rect x="300" y="110" width="250" height="100" rx="12" fill="#1A1630" stroke="#8B7CF6" stroke-width="2"/>
+<text class="b" x="425" y="146" text-anchor="middle">RelationalTable</text>
+<text class="m" x="425" y="170" text-anchor="middle">point and click</text>
+<rect x="355" y="182" width="140" height="22" rx="11" fill="#2A2350"/>
+<text class="c" x="425" y="198" text-anchor="middle" fill="#A78BFA">filters, group by</text>
+<!-- bottom route -->
+<rect x="300" y="290" width="250" height="100" rx="12" fill="#1A1630" stroke="#8B7CF6" stroke-width="2"/>
+<text class="b" x="425" y="326" text-anchor="middle">Relational</text>
+<text class="m" x="425" y="350" text-anchor="middle">write it yourself</text>
+<rect x="325" y="362" width="200" height="22" rx="11" fill="#2A2350"/>
+<text class="c" x="425" y="378" text-anchor="middle" fill="#A78BFA">+ joins, CTEs, functions</text>
+<!-- cube -->
+<rect x="630" y="185" width="180" height="120" rx="14" fill="#1A1630" stroke="#A78BFA" stroke-width="2"/>
+<text class="b" x="720" y="235" text-anchor="middle">Same rows</text>
+<text class="b" x="720" y="259" text-anchor="middle">in the cube</text>
+<!-- arrows -->
+<path d="M210,215 C250,215 255,160 296,160" fill="none" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M210,280 C250,280 255,340 296,340" fill="none" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#a)"/>
+<path d="M210,95 C260,95 260,130 296,135" fill="none" stroke="#A3E635" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#g)"/>
+<path d="M550,160 C590,160 590,225 626,225" fill="none" stroke="#A78BFA" stroke-width="2.5" marker-end="url(#p)"/>
+<path d="M550,340 C590,340 590,265 626,265" fill="none" stroke="#A78BFA" stroke-width="2.5" marker-end="url(#p)"/>
+<text class="m" x="420" y="460" text-anchor="middle">Both routes send SQL to Snowflake. The difference is how much SQL you control.</text>
+</svg>

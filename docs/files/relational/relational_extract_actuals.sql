@@ -1,0 +1,8 @@
+-- Relational extract (own SQL): Actuals for one month at cube grain
+-- Expected for 2026-03 with the sample data: 58 rows, total 1,466,143.86
+SELECT VERSION, PERIOD, COST_CENTER, ACCOUNT, SUM(AMOUNT) AS AMOUNT
+FROM FDH_DEMO.SAMPLE.FACT_ACTUALS
+WHERE VERSION = 'Actual'
+AND PERIOD = '2026-03'
+GROUP BY VERSION, PERIOD, COST_CENTER, ACCOUNT
+ORDER BY COST_CENTER, ACCOUNT

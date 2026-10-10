@@ -763,6 +763,59 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("@media screen and (min-width: 45em)", css)
         self.assertIn("grid-template-columns: repeat(3, minmax(0, 1fr));", css)
 
+    def test_relational_extracts_page_and_left_nav(self):
+        page = SITE / "jedox" / "relational-extracts" / "index.html"
+        self.assertTrue(page.is_file(), "relational extracts page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn("Relational extract: table setup or your own SQL?", html)
+        self.assertNotIn("DRAFT", html)
+        self.assertIn('class="diagram-scroll"', html)
+        self.assertIn('class="diagram-frame"', html)
+        self.assertIn("Swipe to see the full diagram →", html)
+        self.assertIn("RelationalTable", html)
+        self.assertIn("content.tabs.link", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
+        self.assertIn('href="../snowflake-to-jedox/"', html)
+        target = local_target(page, "../snowflake-to-jedox/")
+        self.assertIsNotNone(target)
+        self.assertTrue(target.is_file())
+        diagram = local_target(page, "../relational-extract-diagram.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        for relative in (
+            "relational/relational_extract_actuals.sql",
+            "relational/v_jedox_actuals_by_group.sql",
+            "relational/query_history_lookup.sql",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            sql = (ROOT / "docs" / "files" / relative).read_text(encoding="utf-8")
+            for line in sql.splitlines():
+                self.assertNotIn("  ", line.strip(), relative)
+        downloads = (SITE / "downloads" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("relational/relational_extract_actuals.sql", downloads)
+        self.assertIn("Relational extracts", downloads)
+
+        labels = (
+            "Management report export",
+            "Snowflake to Jedox load",
+            "Relational extracts",
+            "Automated value emails",
+            "Create your own email",
+        )
+        pages = [path for path in SITE.rglob("index.html") if path != SITE / "index.html"]
+        self.assertGreaterEqual(len(pages), 10)
+        for built in pages:
+            text = built.read_text(encoding="utf-8")
+            sidebar = text.split('class="md-sidebar md-sidebar--primary"', 1)[1]
+            sidebar = sidebar.split('class="md-sidebar md-sidebar--secondary"', 1)[0]
+            self.assertNotIn(" hidden", sidebar[:80], built.relative_to(SITE))
+            positions = [sidebar.find(label) for label in labels]
+            self.assertTrue(all(pos >= 0 for pos in positions), built.relative_to(SITE))
+            self.assertEqual(positions, sorted(positions), built.relative_to(SITE))
+        active = html.split('class="md-sidebar md-sidebar--primary"', 1)[1]
+        active = active.split('class="md-sidebar md-sidebar--secondary"', 1)[0]
+        self.assertIn("Relational extracts", active)
+        self.assertIn("md-nav__link--active", active)
+
     def test_heading_permalinks_are_absent_but_ids_remain(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")
         article = (SITE / "snowflake" / "month-end-actuals" / "index.html").read_text(

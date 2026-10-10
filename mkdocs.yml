@@ -44,6 +44,7 @@ theme:
     - navigation.top
     - navigation.tracking
     - navigation.footer
+    - content.tabs.link
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -82,6 +83,7 @@ nav:
       - jedox/index.md
       - Management report export: jedox/management-report-export.md
       - Snowflake to Jedox load: jedox/snowflake-to-jedox.md
+      - Relational extracts: jedox/relational-extracts.md
       - Automated value emails: jedox/automated-value-emails.md
       - Create your own email:
           - Builder: jedox/email-builder.md

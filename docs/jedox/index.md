@@ -12,6 +12,10 @@ The next note pulls monthly actuals from Snowflake into a planning cube. A servi
 
 [Snowflake to Jedox load](snowflake-to-jedox.md){ .md-button }
 
+The same month of actuals can be read two ways. A RelationalTable extract is point and click. A Relational extract is the SELECT you write. Both run the filter in Snowflake.
+
+[Relational extracts](relational-extracts.md){ .md-button }
+
 The last note sends every cost center owner their own Budget vs. Actual table from one Integrator job. Recipients and the email layout live in files, and test mode stays on until you turn it off.
 
 [Automated value emails](automated-value-emails.md){ .md-button }

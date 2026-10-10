@@ -418,6 +418,16 @@ body:has(.home) .md-grid {
     radial-gradient(circle at 52% 50%, rgba(139, 124, 246, .35), transparent 30%),
     radial-gradient(circle at 82% 55%, rgba(163, 230, 53, .28), transparent 30%);
   border-radius: 12px;
+  /* The blue glow is still colored at the left edge of this box, so the
+     box itself draws a vertical line on the hero card. Fade it out first. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent),
+    linear-gradient(to bottom, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  mask-image:
+    linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent),
+    linear-gradient(to bottom, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 
 .md-typeset .home-art img {

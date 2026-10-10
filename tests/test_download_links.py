@@ -141,6 +141,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                     "jedox/index.md",
                     {"Management report export": "jedox/management-report-export.md"},
                     {"Snowflake to Jedox load": "jedox/snowflake-to-jedox.md"},
+                    {"Relational extracts": "jedox/relational-extracts.md"},
                     {"Automated value emails": "jedox/automated-value-emails.md"},
                 ]
             },
@@ -162,6 +163,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Month-end actuals](snowflake/month-end-actuals.md)",
             "## [Plan vs actuals](snowflake/plan-vs-actuals.md)",
             "## [Management report export](jedox/management-report-export.md)",
+            "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Automated value emails](jedox/automated-value-emails.md)",
             "## [Month-close checks](vba/month-close-checks.md)",
         ]
@@ -186,6 +188,11 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertNotIn("samples/", email)
         # The load note links only sample files, so it gets no group of its own.
         self.assertNotIn("## [Snowflake to Jedox load]", index)
+        relational = index.split("## [Relational extracts](jedox/relational-extracts.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("relational/relational_extract_actuals.sql", relational)
+        self.assertIn("relational/v_jedox_actuals_by_group.sql", relational)
+        self.assertIn("relational/query_history_lookup.sql", relational)
+        self.assertNotIn("samples/", relational)
 
     def test_file_index_lists_each_file_exactly_once(self):
         index = render_file_index(DOCS, None)
@@ -195,7 +202,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 12)
+        self.assertEqual(len(disk), 15)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

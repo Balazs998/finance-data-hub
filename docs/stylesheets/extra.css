@@ -168,7 +168,27 @@
   color: var(--dn-text);
 }
 
+.md-typeset .md-typeset__scrollwrap {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.md-typeset .md-typeset__table {
+  display: block;
+  width: 100%;
+  padding: 0;
+}
+
+/* A table inside a step still shares the article's left and right edges.
+   The list itself is 10px plus a 20px marker gutter. */
+.md-typeset li > .md-typeset__scrollwrap {
+  width: calc(100% + 30px);
+  margin-left: -30px;
+}
+
 .md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
   border: 1px solid var(--dn-border);
   border-radius: 0.5rem;
   background-color: var(--dn-code-bg);
@@ -838,6 +858,40 @@ html.js .reveal.reveal-wait.is-visible {
   display: block;
   width: 100%;
   height: auto;
+}
+
+.md-typeset .diagram-swipe {
+  display: none;
+  margin: 0 0 0.35rem;
+  color: var(--dn-text-muted);
+  font-size: 0.75rem;
+}
+
+.md-typeset .diagram-frame {
+  position: relative;
+  margin: 1.2em 0;
+}
+
+.md-typeset .diagram-frame .diagram-scroll {
+  margin: 0;
+}
+
+@media screen and (max-width: 59.9375em) {
+  .md-typeset .diagram-swipe {
+    display: block;
+  }
+
+  .md-typeset .diagram-frame::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, rgba(15, 23, 32, 0), #0f1720 88%);
+    pointer-events: none;
+    border-radius: 0 0.6rem 0.6rem 0;
+  }
 }
 
 @media screen and (min-width: 60em) {

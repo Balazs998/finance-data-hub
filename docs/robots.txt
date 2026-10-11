@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://balazs998.github.io/finance-data-hub/sitemap.xml

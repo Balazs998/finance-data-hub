@@ -2,9 +2,9 @@
 
 {% block extrahead %}
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400;1,500&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link id="font-rest" rel="stylesheet" href="{{ 'stylesheets/font-rest.css' | url }}" media="print">
+  <script>requestAnimationFrame(function(){requestAnimationFrame(function(){var link=document.getElementById("font-rest");if(link)link.media="all";});});</script>
+  <noscript><link rel="stylesheet" href="{{ 'stylesheets/font-rest.css' | url }}"></noscript>
   {{ super() }}
   {% if social_image_url %}
   <meta property="og:title" content="{{ social_title }}">

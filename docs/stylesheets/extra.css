@@ -1,7 +1,133 @@
 /* Data Night
    Space Grotesk for headings, Inter for body, JetBrains Mono for code.
    Links, buttons, and h1 are #38BDF8.
-   #8B7CF6 is for charts only. Small violet text, when used, is #A78BFA. */
+   #8B7CF6 is for charts only. Small violet text, when used, is #A78BFA.
+   Inter, Space Grotesk, and JetBrains Mono are self-hosted Latin subsets.
+   The fallback faces are sized to those files so the swap does not move the text. */
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 107.89%;
+  ascent-override: 89.79%;
+  descent-override: 22.36%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 109.05%;
+  ascent-override: 88.83%;
+  descent-override: 22.12%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.20%;
+  ascent-override: 87.91%;
+  descent-override: 21.89%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 111.36%;
+  ascent-override: 86.99%;
+  descent-override: 21.66%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.89%;
+  ascent-override: 88.74%;
+  descent-override: 26.33%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.89%;
+  ascent-override: 88.74%;
+  descent-override: 26.33%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.90%;
+  ascent-override: 88.73%;
+  descent-override: 26.33%;
+  line-gap-override: 0%;
+}
+
+/* The self-hosted font files are in font-rest.css. These fallbacks
+   are what the first paint uses, sized to those files. */
+
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Courier New"), local("Liberation Mono");
+  size-adjust: 99.98%;
+  ascent-override: 102.02%;
+  descent-override: 30.00%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  font-style: italic;
+  font-weight: 400;
+  src: local("Courier New Italic"), local("Liberation Mono Italic"), local("Courier New"), local("Liberation Mono");
+  size-adjust: 99.98%;
+  ascent-override: 102.02%;
+  descent-override: 30.00%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Courier New"), local("Liberation Mono");
+  size-adjust: 99.98%;
+  ascent-override: 102.02%;
+  descent-override: 30.00%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Courier New Bold"), local("Liberation Mono Bold"), local("Courier New"), local("Liberation Mono");
+  size-adjust: 99.98%;
+  ascent-override: 102.02%;
+  descent-override: 30.00%;
+  line-gap-override: 0%;
+}
 
 :root {
   --dn-bg: #0f1720;
@@ -21,8 +147,8 @@
   --chart-negative: #f87171;
   --reveal-distance: 8px;
   --reveal-duration: 0.55s;
-  --md-text-font: "Inter", "Segoe UI", sans-serif;
-  --md-code-font: "JetBrains Mono", ui-monospace, monospace;
+  --md-text-font: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
+  --md-code-font: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
 }
 
 [data-md-color-scheme="slate"][data-md-color-primary="black"] {
@@ -94,7 +220,7 @@
 }
 
 .md-header__title {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   font-weight: 600;
 }
 
@@ -120,7 +246,7 @@
 .md-typeset h2,
 .md-typeset h3,
 .md-typeset h4 {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   letter-spacing: -0.02em;
   color: var(--dn-text);
 }
@@ -195,7 +321,7 @@
 }
 
 .md-typeset table:not([class]) th {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   font-weight: 600;
   color: var(--dn-text);
   background-color: var(--dn-surface-2);
@@ -341,7 +467,7 @@ body:has(.home) .md-grid {
 
 .md-typeset .home-eyebrow {
   margin: 0;
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   font-weight: 500;
   font-size: 13px;
   letter-spacing: 2px;

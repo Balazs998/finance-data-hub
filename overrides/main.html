@@ -2,11 +2,6 @@
 
 {% block extrahead %}
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="preload" href="{{ 'fonts/inter-latin-400-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="{{ 'fonts/space-grotesk-latin-600-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
-  {% if page and page.file and page.file.src_uri not in ["index.md", "jedox/index.md", "downloads.md", "about.md"] %}
-  <link rel="preload" href="{{ 'fonts/jetbrains-mono-latin-400-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
-  {% endif %}
   <link id="font-rest" rel="stylesheet" href="{{ 'stylesheets/font-rest.css' | url }}" media="print">
   <script>requestAnimationFrame(function(){requestAnimationFrame(function(){var link=document.getElementById("font-rest");if(link)link.media="all";});});</script>
   <noscript><link rel="stylesheet" href="{{ 'stylesheets/font-rest.css' | url }}"></noscript>

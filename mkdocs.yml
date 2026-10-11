@@ -10,7 +10,6 @@ extra:
 
 extra_css:
   - stylesheets/extra.css
-  - stylesheets/code-font.css
   - stylesheets/email-tool.css
 
 extra_javascript:

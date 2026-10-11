@@ -719,7 +719,7 @@ class BuiltSiteTests(unittest.TestCase):
             self.assertIn('class="md-tabs"', page)
             self.assertIn("md-search", page)
         versioned = re.compile(
-            r'(?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|code-font|email-tool|font-rest)\.css|javascripts/reveal\.js)\?v=[0-9a-f]+"'
+            r'(?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool|font-rest)\.css|javascripts/reveal\.js)\?v=[0-9a-f]+"'
         )
         self.assertGreaterEqual(len(versioned.findall(home)), 3)
         self.assertGreaterEqual(len(versioned.findall(plan)), 3)

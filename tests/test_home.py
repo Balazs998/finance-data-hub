@@ -295,27 +295,19 @@ class HomePageTests(unittest.TestCase):
     def test_self_hosted_fonts_logo_and_robots(self):
         self.assertNotIn("fonts.googleapis.com", self.html)
         self.assertNotIn("fonts.gstatic.com", self.html)
-        self.assertIn('href="fonts/inter-latin-400-normal.woff2"', self.html)
-        self.assertIn('href="fonts/space-grotesk-latin-600-normal.woff2"', self.html)
-        self.assertIn('as="font"', self.html)
-        self.assertIn("crossorigin", self.html)
-        self.assertIn('rel="stylesheet" href="stylesheets/code-font.css', self.html)
+        self.assertNotIn('as="font"', self.html)
         self.assertIn('href="stylesheets/font-rest.css', self.html)
         self.assertIn('media="print"', self.html)
-        for tag in re.findall(r'<link rel="preload"[^>]*>', self.html):
-            self.assertNotIn("jetbrains", tag.lower(), tag)
+        self.assertIn("requestAnimationFrame", self.html)
+        self.assertNotIn("code-font.css", self.html)
         self.assertIn('alt="Finance Data Hub home"', self.html)
         self.assertIn('width="48"', self.html)
         self.assertIn('height="48"', self.html)
         self.assertNotIn("fonts.googleapis.com", (ROOT / "overrides" / "main.html").read_text(encoding="utf-8"))
         checker = (SITE / "jedox" / "email-checker" / "index.html").read_text(encoding="utf-8")
         self.assertNotIn("fonts.googleapis.com", checker)
-        self.assertIn('href="../../fonts/inter-latin-400-normal.woff2"', checker)
-        self.assertIn('href="../../fonts/space-grotesk-latin-600-normal.woff2"', checker)
-        self.assertIn('href="../../fonts/jetbrains-mono-latin-400-normal.woff2"', checker)
-        self.assertNotIn("jetbrains-mono-latin-500", checker)
-        self.assertNotIn("jetbrains-mono-latin-700", checker)
-        self.assertNotIn("jetbrains-mono-latin-400-italic", checker)
+        self.assertNotIn('as="font"', checker)
+        self.assertIn('href="../../stylesheets/font-rest.css', checker)
         self.assertIn('id="email-how" open', checker)
         for name in (
             "inter-latin-400-normal.woff2",
@@ -342,25 +334,26 @@ class HomePageTests(unittest.TestCase):
         self.assertIn('font-family: "Space Grotesk Fallback"', self.css)
         self.assertIn('font-family: "JetBrains Mono Fallback"', self.css)
         self.assertNotIn("jetbrains-mono-latin", self.css)
-        code_font = (ROOT / "docs" / "stylesheets" / "code-font.css").read_text(encoding="utf-8")
-        self.assertIn("jetbrains-mono-latin-400-normal.woff2", code_font)
-        self.assertNotIn("jetbrains-mono-latin-400-italic.woff2", code_font)
-        self.assertNotIn("jetbrains-mono-latin-500-normal.woff2", code_font)
-        self.assertNotIn("jetbrains-mono-latin-700-normal.woff2", code_font)
+        self.assertNotIn(".woff2", self.css)
         font_rest = (ROOT / "docs" / "stylesheets" / "font-rest.css").read_text(encoding="utf-8")
-        self.assertIn("inter-latin-700-normal.woff2", font_rest)
-        self.assertIn("space-grotesk-latin-700-normal.woff2", font_rest)
-        self.assertIn("jetbrains-mono-latin-400-italic.woff2", font_rest)
-        self.assertIn("jetbrains-mono-latin-500-normal.woff2", font_rest)
-        self.assertIn("jetbrains-mono-latin-700-normal.woff2", font_rest)
-        self.assertNotIn("jetbrains-mono-latin-400-normal.woff2", font_rest)
-        self.assertTrue((SITE / "stylesheets" / "code-font.css").is_file())
+        for name in (
+            "inter-latin-400-normal.woff2",
+            "inter-latin-700-normal.woff2",
+            "space-grotesk-latin-600-normal.woff2",
+            "space-grotesk-latin-700-normal.woff2",
+            "jetbrains-mono-latin-400-normal.woff2",
+            "jetbrains-mono-latin-400-italic.woff2",
+            "jetbrains-mono-latin-500-normal.woff2",
+            "jetbrains-mono-latin-700-normal.woff2",
+        ):
+            self.assertIn(name, font_rest)
         self.assertTrue((SITE / "stylesheets" / "font-rest.css").is_file())
+        self.assertFalse((SITE / "stylesheets" / "code-font.css").exists())
         reveal = (ROOT / "docs" / "javascripts" / "reveal.js").read_text(encoding="utf-8")
         self.assertNotIn("code-font", reveal)
         self.assertNotIn("loadCodeFont", reveal)
         main = (ROOT / "overrides" / "main.html").read_text(encoding="utf-8")
-        self.assertIn("jetbrains-mono-latin-400-normal.woff2", main)
+        self.assertNotIn("as=\"font\"", main)
         self.assertIn("font-rest.css", main)
         self.assertIn('media="print"', main)
         self.assertIn("requestAnimationFrame", main)

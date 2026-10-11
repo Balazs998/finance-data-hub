@@ -28,6 +28,7 @@ Never join two fact tables at posting level. If a cell has three actual postings
 ```sql
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
+-- JEDOX_ETL_WH is created in the Snowflake to Jedox post; use any warehouse you can use.
 USE WAREHOUSE JEDOX_ETL_WH;
 
 WITH budget AS (
@@ -42,6 +43,8 @@ actuals AS (
 )
 SELECT COUNT(*) FROM budget; -- 696 cells
 ```
+
+`JEDOX_ETL_WH` is created in the [From Snowflake to Jedox](../jedox/snowflake-to-jedox.md) post; use any warehouse you can use.
 
 !!! info "Why SYSADMIN here"
     We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
@@ -59,6 +62,7 @@ SELECT COUNT(*) FROM budget; -- 696 cells
 ```sql
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
+-- JEDOX_ETL_WH is created in the Snowflake to Jedox post; use any warehouse you can use.
 USE WAREHOUSE JEDOX_ETL_WH;
 
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS
@@ -90,6 +94,8 @@ FULL OUTER JOIN budget AS b
     AND a.account = b.account
     AND a.period = b.period;
 ```
+
+`JEDOX_ETL_WH` is created in the [From Snowflake to Jedox](../jedox/snowflake-to-jedox.md) post; use any warehouse you can use.
 
 !!! info "Why SYSADMIN here"
     We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.

@@ -135,7 +135,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 <p class="email-subject-line" id="email-subject-line"></p>
 <p class="email-help" id="email-fallback" hidden></p>
 <div class="email-frame-wrap" tabindex="0" role="group" aria-label="Email preview">
-<iframe id="email-frame" title="Email preview" tabindex="-1" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
+<iframe id="email-frame" title="Email preview content" tabindex="-1" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
 </div>
 </div>
 <div id="panel-script" role="tabpanel" aria-labelledby="tab-script" hidden>

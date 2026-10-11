@@ -3,6 +3,7 @@
 USE ROLE SYSADMIN;
 -- Demo uses SYSADMIN. In a real setup, use a dedicated setup role with only the rights this script needs.
 USE SCHEMA FDH_DEMO.SAMPLE;
+-- JEDOX_ETL_WH is created in the Snowflake to Jedox post; use any warehouse you can use.
 USE WAREHOUSE JEDOX_ETL_WH;
 
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS

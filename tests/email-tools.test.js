@@ -149,7 +149,7 @@ test("the preview focus ring is on the wrapper", function () {
   const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
   const page = fs.readFileSync(path.join(root, "docs/jedox/email-builder.md"), "utf8");
   assert.match(page, /class="email-frame-wrap" tabindex="0" role="group" aria-label="Email preview"/);
-  assert.match(page, /id="email-frame" title="Email preview" tabindex="-1"/);
+  assert.match(page, /id="email-frame" title="Email preview content" tabindex="-1"/);
   assert.match(css, /\.email-frame-wrap:focus-visible,\s*\.email-frame-wrap:focus-within \{\s*outline: 2px solid #38BDF8;\s*outline-offset: 2px;\s*\}/);
   assert.match(css, /\.email-app \.email-frame-wrap iframe:focus-visible \{\s*outline: none;\s*\}/);
 });

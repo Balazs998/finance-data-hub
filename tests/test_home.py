@@ -18,10 +18,11 @@ EXPECTED_FILES = (
     "snowflake/head.webp",
     "trio-full.png",
     "trio-full.webp",
-    "trio-group@1x.png",
-    "trio-group@1x.webp",
-    "trio-group@2x.png",
-    "trio-group@2x.webp",
+    "trio-group-246.webp",
+    "trio-group-494.png",
+    "trio-group-494.webp",
+    "trio-group-680.webp",
+    "trio-group-988.webp",
 )
 
 HERO_ALTS = (
@@ -199,13 +200,18 @@ class HomePageTests(unittest.TestCase):
         pictures = re.findall(r"<picture>\s*(.*?)</picture>", self.html, re.S)
         self.assertGreaterEqual(len(pictures), 5)
         hero = self.html.split('class="hero"', 1)[1].split('class="reveal"', 1)[0]
-        self.assertIn("assets/mascots/trio-group@1x.webp 1x", hero)
-        self.assertIn("assets/mascots/trio-group@2x.webp 2x", hero)
-        self.assertIn("assets/mascots/trio-group@1x.png 1x", hero)
-        self.assertIn("assets/mascots/trio-group@2x.png 2x", hero)
-        one = png_size(MASCOTS / "trio-group@1x.png")
-        two = png_size(MASCOTS / "trio-group@2x.png")
-        self.assertEqual(two, (one[0] * 2, one[1] * 2))
+        self.assertIn("assets/mascots/trio-group-246.webp 246w", hero)
+        self.assertIn("assets/mascots/trio-group-494.webp 494w", hero)
+        self.assertIn("assets/mascots/trio-group-680.webp 680w", hero)
+        self.assertIn("assets/mascots/trio-group-988.webp 988w", hero)
+        self.assertIn('fetchpriority="high"', hero)
+        self.assertIn('src="assets/mascots/trio-group-494.png"', hero)
+        self.assertIn('width="494"', hero)
+        self.assertIn('height="573"', hero)
+        self.assertEqual(png_size(MASCOTS / "trio-group-494.png"), (494, 573))
+        self.assertEqual(webp_size(MASCOTS / "trio-group-246.webp"), (246, 285))
+        self.assertEqual(webp_size(MASCOTS / "trio-group-680.webp"), (680, 789))
+        self.assertEqual(webp_size(MASCOTS / "trio-group-988.webp"), (988, 1146))
         self.assertNotIn("trio-full", hero)
         self.assertNotIn("pointing.", hero)
         self.assertNotIn("thumbsup.", hero)
@@ -220,7 +226,10 @@ class HomePageTests(unittest.TestCase):
             self.assertIn('width="176"', tag)
             self.assertIn('height="176"', tag)
         for block in pictures:
-            source = re.search(r'<source srcset="([^"]+)" type="image/webp">', block)
+            source = re.search(
+                r'<source\b[^>]*\bsrcset="([^"]+)"[^>]*\btype="image/webp"',
+                block,
+            )
             image = re.search(r"<img\b[^>]*>", block)
             self.assertIsNotNone(source, block)
             self.assertIsNotNone(image, block)
@@ -274,15 +283,56 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("circle at 52% 50%", self.css)
         self.assertIn("circle at 82% 55%", self.css)
         self.assertNotIn("mix-blend-mode:", self.css)
-        for name in ("trio-group@1x.png", "trio-group@2x.png"):
-            group = (MASCOTS / name).read_bytes()
-            self.assertEqual(group[25], 6, f"{name} needs a real alpha channel")
+        group = (MASCOTS / "trio-group-494.png").read_bytes()
+        self.assertEqual(group[25], 6, "trio-group-494.png needs a real alpha channel")
         self.assertIn("max-width: 76.234375em", self.css)
         phone_tabs = media_blocks(self.css, "max-width: 76.234375em")
         self.assertTrue(any("display: none;" in item and ".md-tabs" in item for item in phone_tabs))
         self.assertNotIn("color: #8b7cf6", self.css.lower())
         self.assertNotIn("color: var(--chart-2)", self.css)
         self.assertNotIn("color: var(--dn-violet)", self.css)
+
+    def test_self_hosted_fonts_logo_and_robots(self):
+        self.assertNotIn("fonts.googleapis.com", self.html)
+        self.assertNotIn("fonts.gstatic.com", self.html)
+        self.assertIn('href="fonts/inter-latin-400.woff2"', self.html)
+        self.assertIn('href="fonts/space-grotesk-latin-600.woff2"', self.html)
+        self.assertIn('as="font"', self.html)
+        self.assertIn("crossorigin", self.html)
+        self.assertIn('width="48"', self.html)
+        self.assertIn('height="48"', self.html)
+        self.assertNotIn("fonts.googleapis.com", (ROOT / "overrides" / "main.html").read_text(encoding="utf-8"))
+        checker = (SITE / "jedox" / "email-checker" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("fonts.googleapis.com", checker)
+        self.assertIn('href="../../fonts/inter-latin-400.woff2"', checker)
+        self.assertIn('href="../../fonts/space-grotesk-latin-600.woff2"', checker)
+        self.assertIn('id="email-how" open', checker)
+        for name in (
+            "inter-latin-400-normal.woff2",
+            "inter-latin-500-normal.woff2",
+            "inter-latin-600-normal.woff2",
+            "inter-latin-700-normal.woff2",
+            "space-grotesk-latin-500-normal.woff2",
+            "space-grotesk-latin-600-normal.woff2",
+            "space-grotesk-latin-700-normal.woff2",
+        ):
+            font = SITE / "fonts" / name
+            self.assertTrue(font.is_file(), name)
+            self.assertEqual(font.read_bytes()[:4], b"wOF2", name)
+        for licence in ("OFL-Inter.txt", "OFL-SpaceGrotesk.txt"):
+            text = (SITE / "fonts" / licence).read_text(encoding="utf-8")
+            self.assertIn("SIL Open Font License", text)
+        self.assertIn("size-adjust:", self.css)
+        self.assertIn("ascent-override:", self.css)
+        self.assertIn('font-family: "Inter Fallback"', self.css)
+        self.assertIn('font-family: "Space Grotesk Fallback"', self.css)
+        robots = (SITE / "robots.txt").read_text(encoding="utf-8")
+        self.assertIn("User-agent: *", robots)
+        self.assertIn("Allow: /", robots)
+        self.assertIn(
+            "Sitemap: https://balazs998.github.io/finance-data-hub/sitemap.xml",
+            robots,
+        )
 
 
 if __name__ == "__main__":

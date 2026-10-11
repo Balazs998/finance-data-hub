@@ -600,7 +600,8 @@ test("the checker page lints on the quiet period and stacks by width", function 
   const leadAt = page.indexOf("Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.");
   const editorAt = page.indexOf('id="email-editor"');
   const gridAt = page.indexOf('<div class="email-grid email-grid-checker">');
-  const howAt = page.indexOf('<details class="email-how"');
+  const howAt = page.indexOf('<details class="email-how" id="email-how" open>');
+  assert.equal(ui.indexOf("how.open"), -1);
   assert.ok(leadAt >= 0 && leadAt < editorAt && editorAt < howAt);
   const betweenGridAndHow = page.slice(gridAt, howAt);
   assert.equal((betweenGridAndHow.match(/<div\b/g) || []).length, (betweenGridAndHow.match(/<\/div>/g) || []).length);

@@ -1,7 +1,149 @@
 /* Data Night
    Space Grotesk for headings, Inter for body, JetBrains Mono for code.
    Links, buttons, and h1 are #38BDF8.
-   #8B7CF6 is for charts only. Small violet text, when used, is #A78BFA. */
+   #8B7CF6 is for charts only. Small violet text, when used, is #A78BFA.
+   Inter and Space Grotesk are self-hosted Latin subsets. The fallback
+   faces are sized to those files so the swap does not move the text. */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/inter-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/inter-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 107.89%;
+  ascent-override: 89.79%;
+  descent-override: 22.36%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 109.05%;
+  ascent-override: 88.83%;
+  descent-override: 22.12%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.20%;
+  ascent-override: 87.91%;
+  descent-override: 21.89%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 111.36%;
+  ascent-override: 86.99%;
+  descent-override: 21.66%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.89%;
+  ascent-override: 88.74%;
+  descent-override: 26.33%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.89%;
+  ascent-override: 88.74%;
+  descent-override: 26.33%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 110.90%;
+  ascent-override: 88.73%;
+  descent-override: 26.33%;
+  line-gap-override: 0%;
+}
 
 :root {
   --dn-bg: #0f1720;
@@ -21,7 +163,7 @@
   --chart-negative: #f87171;
   --reveal-distance: 8px;
   --reveal-duration: 0.55s;
-  --md-text-font: "Inter", "Segoe UI", sans-serif;
+  --md-text-font: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
   --md-code-font: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -94,7 +236,7 @@
 }
 
 .md-header__title {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   font-weight: 600;
 }
 
@@ -120,7 +262,7 @@
 .md-typeset h2,
 .md-typeset h3,
 .md-typeset h4 {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   letter-spacing: -0.02em;
   color: var(--dn-text);
 }
@@ -195,7 +337,7 @@
 }
 
 .md-typeset table:not([class]) th {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   font-weight: 600;
   color: var(--dn-text);
   background-color: var(--dn-surface-2);
@@ -341,7 +483,7 @@ body:has(.home) .md-grid {
 
 .md-typeset .home-eyebrow {
   margin: 0;
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   font-weight: 500;
   font-size: 13px;
   letter-spacing: 2px;

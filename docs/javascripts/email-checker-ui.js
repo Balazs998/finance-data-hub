@@ -22,7 +22,6 @@
     var banner = document.getElementById("email-banner");
     var sticky = document.getElementById("email-checker-sticky");
     var statusLive = document.getElementById("email-status-live");
-    var how = document.getElementById("email-how");
     var expandBtn = document.getElementById("email-expand-btn");
     var scriptType = "job";
     var sawEdit = false;
@@ -509,14 +508,6 @@
 
     if (media.addEventListener) media.addEventListener("change", onWidthChange);
     else if (media.addListener) media.addListener(onWidthChange);
-
-    var howMedia = window.matchMedia("(max-width: " + (liveLint.DROPDOWN_MIN_WIDTH - 1) + "px)");
-    function syncHow() {
-      if (how) how.open = liveLint.howDetailsOpen(window.innerWidth);
-    }
-    syncHow();
-    if (howMedia.addEventListener) howMedia.addEventListener("change", syncHow);
-    else if (howMedia.addListener) howMedia.addListener(syncHow);
 
     root.querySelectorAll(".email-seg-btn").forEach(function (button) {
       button.addEventListener("click", function () {

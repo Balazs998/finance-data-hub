@@ -299,6 +299,8 @@ class HomePageTests(unittest.TestCase):
         self.assertIn('href="fonts/space-grotesk-latin-600-normal.woff2"', self.html)
         self.assertIn('as="font"', self.html)
         self.assertIn("crossorigin", self.html)
+        for tag in re.findall(r'<link rel="preload"[^>]*>', self.html):
+            self.assertNotIn("jetbrains", tag.lower(), tag)
         self.assertIn('width="48"', self.html)
         self.assertIn('height="48"', self.html)
         self.assertNotIn("fonts.googleapis.com", (ROOT / "overrides" / "main.html").read_text(encoding="utf-8"))
@@ -315,17 +317,24 @@ class HomePageTests(unittest.TestCase):
             "space-grotesk-latin-500-normal.woff2",
             "space-grotesk-latin-600-normal.woff2",
             "space-grotesk-latin-700-normal.woff2",
+            "jetbrains-mono-latin-400-normal.woff2",
+            "jetbrains-mono-latin-400-italic.woff2",
+            "jetbrains-mono-latin-500-normal.woff2",
+            "jetbrains-mono-latin-700-normal.woff2",
         ):
             font = SITE / "fonts" / name
             self.assertTrue(font.is_file(), name)
             self.assertEqual(font.read_bytes()[:4], b"wOF2", name)
-        for licence in ("OFL-Inter.txt", "OFL-SpaceGrotesk.txt"):
+        for licence in ("OFL-Inter.txt", "OFL-SpaceGrotesk.txt", "OFL-JetBrainsMono.txt"):
             text = (SITE / "fonts" / licence).read_text(encoding="utf-8")
             self.assertIn("SIL Open Font License", text)
         self.assertIn("size-adjust:", self.css)
         self.assertIn("ascent-override:", self.css)
         self.assertIn('font-family: "Inter Fallback"', self.css)
         self.assertIn('font-family: "Space Grotesk Fallback"', self.css)
+        self.assertIn('font-family: "JetBrains Mono Fallback"', self.css)
+        self.assertIn("jetbrains-mono-latin-400-normal.woff2", self.css)
+        self.assertNotIn("jetbrains-mono", (ROOT / "overrides" / "main.html").read_text(encoding="utf-8"))
         robots = (SITE / "robots.txt").read_text(encoding="utf-8")
         self.assertIn("User-agent: *", robots)
         self.assertIn("Allow: /", robots)

@@ -111,6 +111,9 @@ GROUP BY version, period, cost_center, account;
 GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_JEDOX_ACTUALS TO ROLE JEDOX_ETL_ROLE;
 ```
 
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
+
 The `GROUP BY` matters even though our sample has one row per cell. In real systems the same cell often arrives as several postings, and a cube load expects one value per cell.
 
 ## 4. The Integrator project

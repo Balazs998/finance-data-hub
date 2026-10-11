@@ -41,6 +41,17 @@
     return [];
   }
 
+  function selectedVersion(input) {
+    if (input && input.pack && input.pack.jedox_version) return String(input.pack.jedox_version);
+    if (input && input.version) return String(input.version);
+    return "";
+  }
+
+  function versionNote(input) {
+    if (selectedVersion(input) !== "2025.1") return "";
+    return " Assumed the same as 2026.1, unverified for 2025.1.";
+  }
+
   function byId(list, id) {
     for (var i = 0; i < list.length; i++) {
       if (list[i].id === id) return list[i];
@@ -89,7 +100,7 @@
       references: "Cube " + example.cube + ". Names come from the demo metadata file.",
       performanceNotes: "Draft only. " + (example.explanation || ""),
       testIdeas: "Try a base period such as 2026-09, a zero Budget (shown as an empty cell), and consolidated FY2026.",
-      assumptions: "Fictional FDH_DEMO data. " + (example.verified || "Not executed in Jedox.")
+      assumptions: "Fictional FDH_DEMO data. " + (example.verified || "Not executed in Jedox.") + versionNote(input)
     });
   }
 
@@ -237,7 +248,7 @@
         severity: "info",
         source: "ai",
         title: "Repeated lookup can be written once",
-        message: "Mock reading only: the same PALO.DATA call is written twice. The draft multiplies once. This is not a measured speedup and not a real model opinion."
+        message: "Mock reading only: the same PALO.DATA call is written twice. The draft multiplies once. This is not a measured speedup and not a real model opinion." + versionNote(input)
       });
       optimization = {
         before: rule,
@@ -252,14 +263,14 @@
         severity: "info",
         source: "ai",
         title: "Prefer B: for base cells",
-        message: "N: is the older form. The mock draft would write B: when the rule should run on base cells and aggregate."
+        message: "N: is the older form. The mock draft would write B: when the rule should run on base cells and aggregate." + versionNote(input)
       });
     }
     return base({
       findings: findings,
       scenarios: scenariosFor(rule),
       optimization: optimization,
-      explanation: "Mock provider only. Static checks are the parser; sentences in this card are not a live model."
+      explanation: "Mock provider only. Static checks are the parser; sentences in this card are not a live model." + versionNote(input)
     });
   }
 

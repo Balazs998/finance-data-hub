@@ -30,7 +30,11 @@
     var root = document.getElementById("rule-studio");
     if (!root || !window.RuleChecks || !window.RuleMock) return;
 
+    var packs = {};
     var pack = null;
+    var VERSION_NOTICE = {
+      "2025.1": "Jedox 2025.1: rules are checked against the 2026.1 reference; Jedox's public docs list no rule changes between these versions."
+    };
     var examplesDoc = null;
     var view = null;
     var dims = [];
@@ -218,12 +222,30 @@
       });
     }
 
+    function selectedPack() {
+      return packs[versionSelect.value] || pack;
+    }
+
+    function showVersionNote() {
+      var note = document.getElementById("rs-version-note");
+      if (!note) return;
+      var text = VERSION_NOTICE[versionSelect.value] || "";
+      note.hidden = !text;
+      note.textContent = text;
+    }
+
     function fillChrome() {
       versionSelect.innerHTML = "";
-      var option = document.createElement("option");
-      option.value = pack.jedox_version;
-      option.textContent = "Jedox " + pack.jedox_version;
-      versionSelect.appendChild(option);
+      ["2026.1", "2025.1"].concat(Object.keys(packs)).forEach(function (version) {
+        if (!packs[version] || versionSelect.querySelector('option[value="' + version + '"]')) return;
+        var option = document.createElement("option");
+        option.value = version;
+        option.textContent = "Jedox " + version;
+        versionSelect.appendChild(option);
+      });
+      if (packs["2026.1"]) versionSelect.value = "2026.1";
+      pack = selectedPack();
+      showVersionNote();
       cubeSelect.innerHTML = "";
       var list = document.getElementById("rs-cube-list");
       list.innerHTML = "";
@@ -529,6 +551,7 @@
       }
       showLoading();
       var cube = selectedCube();
+      pack = selectedPack();
       var local = window.RuleChecks.checkRule(rule, {
         version: versionSelect.value,
         cube: cube,
@@ -540,7 +563,7 @@
         var ai;
         if (offline()) {
           await wait(280);
-          ai = window.RuleMock.analyzeSync({ rule: rule, cube: cube, examples: examplesDoc.examples, staticFindings: local.findings });
+          ai = window.RuleMock.analyzeSync({ rule: rule, cube: cube, version: versionSelect.value, pack: pack, examples: examplesDoc.examples, staticFindings: local.findings });
         } else {
           var payload = await post("/analyze", { cube: cube, rule: rule, metadata: metadataForChecks() });
           ai = payload.ai;
@@ -615,13 +638,20 @@
         setRule(ai.rule);
         selectTab(document.getElementById("t-test"));
       });
+      pack = selectedPack();
       var local = window.RuleChecks.checkRule(ai.rule, {
         version: versionSelect.value,
         cube: document.getElementById("rs-target").value,
         pack: pack,
         metadata: metadataForChecks()
       });
-      renderResults(local.findings, window.RuleMock.analyzeSync({ rule: ai.rule, cube: document.getElementById("rs-target").value, examples: examplesDoc.examples }));
+      renderResults(local.findings, window.RuleMock.analyzeSync({
+        rule: ai.rule,
+        cube: document.getElementById("rs-target").value,
+        version: versionSelect.value,
+        pack: pack,
+        examples: examplesDoc.examples
+      }));
       say("Draft ready. It is labelled mock and has not been executed in Jedox.");
     }
 
@@ -631,7 +661,10 @@
       showLoading();
       try {
         var ai;
+        pack = selectedPack();
         var input = {
+          version: versionSelect.value,
+          pack: pack,
           database: document.getElementById("rs-database").value.trim(),
           cube: cube,
           sourceCubes: document.getElementById("rs-sources").value.trim(),
@@ -645,7 +678,17 @@
           await wait(280);
           ai = window.RuleMock.generateSync(input);
         } else {
-          var payload = await post("/generate", input);
+          var request = {
+            version: input.version,
+            database: input.database,
+            cube: input.cube,
+            sourceCubes: input.sourceCubes,
+            dimensions: input.dimensions,
+            story: input.story,
+            answers: input.answers,
+            metadata: input.metadata
+          };
+          var payload = await post("/generate", request);
           ai = payload.ai;
         }
         renderDraft(ai);
@@ -666,7 +709,8 @@
       try {
         var ai;
         if (offline()) {
-          ai = window.RuleMock.refineSync({ rule: before, chips: chips, instruction: instruction, cube: cube, examples: examplesDoc.examples });
+          pack = selectedPack();
+          ai = window.RuleMock.refineSync({ rule: before, chips: chips, instruction: instruction, cube: cube, version: versionSelect.value, pack: pack, examples: examplesDoc.examples });
         } else {
           var payload = await post("/refine", { rule: before, chips: chips, instruction: instruction, cube: cube });
           ai = payload.ai;
@@ -739,6 +783,10 @@
     function bind() {
       root.querySelectorAll("[role=tab]").forEach(function (tab) {
         tab.addEventListener("click", function () { selectTab(tab); });
+      });
+      versionSelect.addEventListener("change", function () {
+        pack = selectedPack();
+        showVersionNote();
       });
       document.getElementById("rs-analyze").addEventListener("click", analyze);
       document.getElementById("rs-generate").addEventListener("click", function () { generate(null); });
@@ -825,15 +873,16 @@
       }
     }
 
-    fetch("pack/jedox-rules-2026.1.json")
-      .then(function (response) { return response.json(); })
+    Promise.all([
+      fetch("pack/jedox-rules-2026.1.json").then(function (response) { return response.json(); }),
+      fetch("pack/jedox-rules-2025.1.json").then(function (response) { return response.json(); }),
+      fetch("pack/examples-2026.1.json").then(function (response) { return response.json(); })
+    ])
       .then(function (loaded) {
-        pack = loaded;
-        return fetch("pack/examples-2026.1.json");
-      })
-      .then(function (response) { return response.json(); })
-      .then(function (loaded) {
-        examplesDoc = loaded;
+        packs[loaded[0].jedox_version] = loaded[0];
+        packs[loaded[1].jedox_version] = loaded[1];
+        pack = packs["2026.1"] || loaded[0];
+        examplesDoc = loaded[2];
         mountEditor();
         fillChrome();
         bind();

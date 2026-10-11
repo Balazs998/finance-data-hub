@@ -110,6 +110,7 @@ def copy_rule_studio(config):
         root / "ai-engine" / "mock.js": scripts / "rule-mock.js",
         root / "ai-engine" / "diff.js": scripts / "rule-diff.js",
         root / "knowledge" / "jedox-rules-2026.1.json": pack / "jedox-rules-2026.1.json",
+        root / "knowledge" / "jedox-rules-2025.1.json": pack / "jedox-rules-2025.1.json",
         root / "knowledge" / "examples-2026.1.json": pack / "examples-2026.1.json",
     }
     for source, dest in mapping.items():

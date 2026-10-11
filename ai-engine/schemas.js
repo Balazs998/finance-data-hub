@@ -4,7 +4,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   else root.RuleSchemas = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
-  var version = { type: "string", enum: ["2026.1"] };
+  var version = { type: "string", enum: ["2026.1", "2025.1"] };
   var token = { type: "string", minLength: 1, maxLength: 2048 };
   var cube = { type: "string", minLength: 1, maxLength: 80 };
   var rule = { type: "string", minLength: 1, maxLength: 8000 };

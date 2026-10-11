@@ -115,3 +115,26 @@ test("full dictionary lists recognise CC4010 and 400000 and reject a typo", func
     assert.deepEqual(result.findings.filter(function (item) { return item.code === "UNKNOWN_ELEMENT"; }), [], rule);
   });
 });
+
+test("version switching loads the 2025.1 pack and marks unverified findings", function () {
+  const pack2025 = readJson("knowledge/jedox-rules-2025.1.json");
+  assert.equal(pack2025.jedox_version, "2025.1");
+  const rule = "['Version':'Variance'] = B: COS(0)";
+  const current = checks.checkRule(rule, { version: "2026.1", cube: "PnL", pack: pack, metadata: examples.metadata });
+  const older = checks.checkRule(rule, { version: "2025.1", cube: "PnL", pack: pack2025, metadata: examples.metadata });
+  const currentDde = current.findings.filter(function (item) { return item.code === "DDE_UNSUPPORTED_FUNCTION"; });
+  const olderDde = older.findings.filter(function (item) { return item.code === "DDE_UNSUPPORTED_FUNCTION"; });
+  assert.equal(currentDde.length, 1);
+  assert.equal(olderDde.length, 1);
+  assert.equal(currentDde[0].message.indexOf("unverified for 2025.1"), -1);
+  assert.match(olderDde[0].message, /unverified for 2025.1/);
+  const isnull = pack2025.functions.filter(function (fn) { return fn.name === "ISNULL"; })[0];
+  assert.notEqual(isnull.unverified_for_version, true);
+  const cos = pack2025.functions.filter(function (fn) { return fn.name === "COS"; })[0];
+  assert.equal(cos.unverified_for_version, true);
+  const ui = fs.readFileSync(path.join(root, "docs/javascripts/rule-studio-ui.js"), "utf8");
+  assert.match(ui, /jedox-rules-2025\.1\.json/);
+  assert.match(ui, /jedox-rules-2026\.1\.json/);
+  assert.match(ui, /Jedox 2025\.1: rules are checked against the 2026\.1 reference; Jedox's public docs list no rule changes between these versions\./);
+  assert.match(ui, /packs\["2026\.1"\]\) versionSelect\.value = "2026\.1"/);
+});

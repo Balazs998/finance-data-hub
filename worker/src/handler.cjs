@@ -8,8 +8,33 @@ var validate = require("../../ai-engine/validate.js");
 var gate = require("./gate.cjs");
 
 var root = path.resolve(__dirname, "../..");
-var pack = JSON.parse(fs.readFileSync(path.join(root, "knowledge/jedox-rules-2026.1.json"), "utf8"));
 var examples = JSON.parse(fs.readFileSync(path.join(root, "knowledge/examples-2026.1.json"), "utf8"));
+var packs = {
+  "2026.1": JSON.parse(fs.readFileSync(path.join(root, "knowledge/jedox-rules-2026.1.json"), "utf8")),
+  "2025.1": JSON.parse(fs.readFileSync(path.join(root, "knowledge/jedox-rules-2025.1.json"), "utf8"))
+};
+
+function packFor(version) {
+  return packs[version] || packs["2026.1"];
+}
+
+function knowledgeFor(pack) {
+  return {
+    jedox_version: pack.jedox_version,
+    doc_basis: pack.doc_basis || "",
+    status: pack.status || "",
+    functions: (pack.functions || []).map(function (fn) {
+      return {
+        name: fn.name,
+        min_args: fn.min_args,
+        max_args: fn.max_args,
+        unverified: !!fn.unverified,
+        unverified_for_version: fn.unverified_for_version === true,
+        version_status: fn.version_status || ""
+      };
+    })
+  };
+}
 
 var ROUTES = {
   "/analyze": { method: "analyze", schema: schemas.analyzeRequest },
@@ -107,10 +132,11 @@ async function charge(env, ip, cost) {
 
 function staticFor(body) {
   if (!body.rule) return [];
+  var chosen = packFor(body.version);
   return checks.checkRule(body.rule, {
-    version: body.version || pack.jedox_version,
+    version: body.version || chosen.jedox_version,
     cube: body.cube,
-    pack: pack,
+    pack: chosen,
     metadata: metadataFor(body)
   }).findings;
 }
@@ -198,8 +224,9 @@ async function handleRequest(request, env) {
   }
   var ai;
   try {
+    var chosen = packFor(body.version);
     ai = await engine[route.method]({
-      version: body.version,
+      version: body.version || chosen.jedox_version,
       database: body.database,
       cube: body.cube,
       sourceCubes: body.sourceCubes,
@@ -210,6 +237,8 @@ async function handleRequest(request, env) {
       instruction: body.instruction,
       answers: body.answers,
       examples: examples.examples,
+      pack: chosen,
+      knowledge: knowledgeFor(chosen),
       staticFindings: staticFindings
     }, env);
   } catch (error) {
@@ -235,5 +264,6 @@ module.exports = {
   handleRequest: handleRequest,
   resetGate: gate.resetMemory,
   examples: examples,
-  pack: pack
+  pack: packs["2026.1"],
+  packs: packs
 };

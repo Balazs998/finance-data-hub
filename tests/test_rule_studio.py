@@ -30,6 +30,16 @@ class RuleStudioTests(unittest.TestCase):
         pack = json.loads((ROOT / "knowledge" / "jedox-rules-2026.1.json").read_text())
         examples = json.loads((ROOT / "knowledge" / "examples-2026.1.json").read_text())
         self.assertEqual(pack["jedox_version"], "2026.1")
+        older = json.loads((ROOT / "knowledge" / "jedox-rules-2025.1.json").read_text())
+        self.assertEqual(older["jedox_version"], "2025.1")
+        self.assertGreater(
+            sum(1 for fn in older["functions"] if fn.get("unverified_for_version")),
+            100,
+        )
+        self.assertNotEqual(
+            next(fn for fn in older["functions"] if fn["name"] == "ISNULL").get("unverified_for_version"),
+            True,
+        )
         self.assertEqual(len(pack["functions"]), 104)
         for fn in pack["functions"]:
             self.assertTrue(str(fn["source"]).startswith("https://knowledgebase.jedox.com/"), fn["name"])
@@ -70,6 +80,13 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertIn("Delete all history", html)
         self.assertIn("nothing is stored", html.lower())
         self.assertIn('id="rs-version"', html)
+        self.assertIn('id="rs-version-note"', html)
+        ui = (ROOT / "docs/javascripts/rule-studio-ui.js").read_text(encoding="utf-8")
+        self.assertIn("jedox-rules-2025.1.json", ui)
+        self.assertIn(
+            "Jedox 2025.1: rules are checked against the 2026.1 reference; Jedox's public docs list no rule changes between these versions.",
+            ui,
+        )
         self.assertNotIn("speedup", html.lower())
         self.assertNotIn("PLAN_VS_ACTUAL", html)
         self.assertNotIn("FX_RATES", html)

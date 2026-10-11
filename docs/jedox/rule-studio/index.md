@@ -28,6 +28,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <select id="rs-version" class="rs-in"></select>
 </div>
 </div>
+<p id="rs-version-note" class="rs-hint" hidden></p>
 
 <section id="p-test" role="tabpanel" aria-labelledby="t-test">
 <div class="rs-grid2">

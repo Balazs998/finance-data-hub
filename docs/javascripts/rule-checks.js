@@ -10,7 +10,10 @@
   var AGG = { SUM: 1, MIN: 1, MAX: 1, AVERAGE: 1 };
   var SYNTAX_FN = { OFFSET: { min_args: 1, max_args: 1, name: "OFFSET" } };
 
-  function finding(code, group, severity, message, line) {
+  function finding(code, group, severity, message, line, entry) {
+    if (entry && entry.unverified_for_version === true && message.indexOf("unverified for") < 0) {
+      message += " (" + (entry.version_status || "assumed same as 2026.1, unverified for 2025.1") + ")";
+    }
     var item = {
       code: code,
       group: group,
@@ -452,7 +455,14 @@
     (pack.control_functions || []).forEach(function (fn) {
       var name = String(fn.title || "").replace(/\(.*/, "").toUpperCase();
       if (name && !byName[name]) {
-        byName[name] = { name: name, min_args: 0, max_args: 0, unverified: !!fn.unverified };
+        byName[name] = {
+          name: name,
+          min_args: 0,
+          max_args: 0,
+          unverified: !!fn.unverified,
+          unverified_for_version: fn.unverified_for_version === true,
+          version_status: fn.version_status || ""
+        };
       }
     });
     Object.keys(SYNTAX_FN).forEach(function (name) {
@@ -579,6 +589,17 @@
     var version = options.version || (pack.jedox_version || "2026.1");
     var findings = [];
     var fns = indexPack(pack);
+
+    function packEntry(id) {
+      var groups = ["syntax", "operators", "prefixes", "control_functions", "markers", "performance"];
+      for (var g = 0; g < groups.length; g++) {
+        var rows = pack[groups[g]] || [];
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].id === id) return rows[i];
+        }
+      }
+      return null;
+    }
     var structure = scanStructure(text);
     if (structure.error === "quote") {
       return {
@@ -616,7 +637,8 @@
           "syntax",
           "info",
           "N: is the older form of the cell type restriction. Prefer B: for base cells or C: for consolidated cells. Check the exact N: behaviour in your Jedox.",
-          line
+          line,
+          packEntry("pre.N")
         ));
       } else if (one.prefix && one.prefix !== "B" && one.prefix !== "C") {
         pushUnique(findings, finding(
@@ -656,7 +678,8 @@
             "syntax",
             "error",
             "Dimension " + dim + " restricted twice; use ['" + dim + "':{" + listed + "}]",
-            line
+            line,
+            packEntry("syn.target.double")
           ));
         });
 
@@ -679,7 +702,8 @@
               "syntax",
               "error",
               "Each DCR item must name its dimension: '" + cubeName + "'['" + guessDim + "':'" + (bare || "") + "']",
-              line
+              line,
+              packEntry("syn.ref.dcr")
             ));
           }
           if (area.items.some(function (item) { return item.hasOffset; })) {
@@ -688,7 +712,8 @@
               "syntax",
               "error",
               "OFFSET works only in static cell references, not DCR",
-              line
+              line,
+              packEntry("syn.ref.offset")
             ));
           }
           if (area.database && metadata.database && area.database !== metadata.database) {
@@ -778,7 +803,8 @@
             "syntax",
             "error",
             call.name + " is not a supported rule function in " + version,
-            line
+            line,
+            fn
           ));
           return;
         }
@@ -788,7 +814,8 @@
             "syntax",
             "check",
             call.name + " is not confirmed for this knowledge pack. Check the call in your Jedox.",
-            line
+            line,
+            fn
           ));
           return;
         }
@@ -826,7 +853,7 @@
               }
               message += "; " + upper + " needs " + need + " arguments, got " + call.args.length;
               if (missing.length === 1) message += " (" + missing[0] + " missing)";
-              pushUnique(findings, finding(code, "syntax", "error", message, line));
+              pushUnique(findings, finding(code, "syntax", "error", message, line, fn));
             }
           }
           if (upper === "PALO.MARKER" && call.args.some(argIsExpression)) {
@@ -835,7 +862,8 @@
               "syntax",
               "error",
               "PALO.MARKER accepts only constants and variables, no expressions",
-              line
+              line,
+              fn
             ));
           }
         } else if (fn.max_args != null && call.args.length > fn.max_args) {
@@ -844,7 +872,8 @@
             "syntax",
             "error",
             call.name + " expects " + (fn.min_args === fn.max_args ? String(fn.max_args) : fn.min_args + " to " + fn.max_args) + " arguments, got " + call.args.length,
-            line
+            line,
+            fn
           ));
         } else if (fn.min_args != null && call.args.length < fn.min_args) {
           if (unverifiedFields.indexOf("min_args") >= 0) {
@@ -853,7 +882,8 @@
               "syntax",
               "check",
               "The docs do not say whether " + call.name + " accepts " + call.args.length + " argument(s). Check the call in your Jedox.",
-              line
+              line,
+              fn
             ));
           } else {
             pushUnique(findings, finding(
@@ -861,7 +891,8 @@
               "syntax",
               "error",
               call.name + " expects " + fn.min_args + " arguments, got " + call.args.length,
-              line
+              line,
+              fn
             ));
           }
         }
@@ -872,7 +903,8 @@
             "performance",
             "warning",
             "NOW()-dependent results are not cached",
-            line
+            line,
+            fn
           ));
         } else if (fn.dde_supported === false && upper !== "NOW") {
           pushUnique(findings, finding(
@@ -880,7 +912,8 @@
             "performance",
             "info",
             TRIG[upper] ? "Trigonometric functions are not DDE-supported" : call.name + " is not DDE-supported",
-            line
+            line,
+            fn
           ));
         }
 
@@ -897,7 +930,8 @@
               "performance",
               "warning",
               "Non-uniform lookups inside " + upper + " are not supported by DDE",
-              line
+              line,
+              fn
             ));
           }
         }
@@ -915,7 +949,8 @@
           "optimization",
           "info",
           "PALO.DATA(\"FDH_DEMO\",\"FX_RATE\",...) repeated; factor to ['Measure':'Amount'] * PALO.DATA(...) * 1.1",
-          line
+          line,
+          fns["PALO.DATA"]
         ));
       });
 
@@ -935,7 +970,8 @@
           "performance",
           "info",
           cross + " cross-cube references",
-          line
+          line,
+          fns["PALO.DATA"]
         ));
       }
 
@@ -962,7 +998,8 @@
             "Result is not 0 when only the marked " + marked + " is 0" +
               (other ? " (" + other + "-only cells, e.g. 2026-09, are skipped)" : "") +
               "; mark both or remove the marker",
-            line
+            line,
+            packEntry("mk.syntax")
           ));
         } else {
           pushUnique(findings, finding(
@@ -1010,7 +1047,8 @@
             "logic",
             "warning",
             "Rule " + (later + 1) + " target is fully covered by earlier rule " + (earlier + 1) + " and never applies; put specific rules first",
-            lineAt(original, rules[later].index)
+            lineAt(original, rules[later].index),
+            packEntry("syn.order")
           ));
           break;
         }

@@ -169,6 +169,32 @@ test.describe("worker contract", { concurrency: 1 }, function () {
     assert.match(body.ai.label, /not real AI/);
   });
 
+  test("analyze uses the pack for the selected version", async function () {
+    const older = await post("/analyze", {
+      version: "2025.1",
+      cube: "PnL",
+      rule: "['Version':'Variance'] = B: COS(0)",
+      turnstileToken: "ok"
+    }, baseEnv());
+    const olderBody = await older.json();
+    assert.equal(older.status, 200);
+    const olderDde = olderBody.staticFindings.filter(function (item) { return item.code === "DDE_UNSUPPORTED_FUNCTION"; });
+    assert.equal(olderDde.length, 1);
+    assert.match(olderDde[0].message, /unverified for 2025.1/);
+    assert.match(olderBody.ai.explanation, /unverified for 2025.1/);
+    const current = await post("/analyze", {
+      version: "2026.1",
+      cube: "PnL",
+      rule: "['Version':'Variance'] = B: COS(0)",
+      turnstileToken: "ok"
+    }, baseEnv());
+    const currentBody = await current.json();
+    const currentDde = currentBody.staticFindings.filter(function (item) { return item.code === "DDE_UNSUPPORTED_FUNCTION"; });
+    assert.equal(currentDde.length, 1);
+    assert.equal(currentDde[0].message.indexOf("unverified for 2025.1"), -1);
+    assert.equal(currentBody.ai.explanation.indexOf("unverified for 2025.1"), -1);
+  });
+
   test("CORS allows the site origin only", async function () {
     const health = await handler.handleRequest(new Request("https://worker.test/health", {
       headers: { origin: ORIGIN }

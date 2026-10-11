@@ -6,7 +6,8 @@ Owner: J-dox (Jedox accuracy). Status: signed off, 2026-10-11, after Sample Data
 
 | File | Content |
 | --- | --- |
-| `jedox-rules-2026.1.json` | Syntax, operators, prefixes (`B:` / `C:` / `N:`), STET/CONTINUE, markers, performance guidance, 104 functions |
+| `jedox-rules-2026.1.json` | Syntax, operators, prefixes (`B:` / `C:` / `N:`), STET/CONTINUE, markers, performance guidance, 104 functions. Signed off for 2026.1. |
+| `jedox-rules-2025.1.json` | The same rule reference carried over for 2025.1. Most entries are marked “assumed same as 2026.1, unverified for 2025.1”. |
 | `examples-2026.1.json` | Demo metadata and 12 examples. Rule text is loaded from this file; the page does not hardcode the examples. |
 | `schema.json` | JSON Schema for the pack |
 | `../tests/rules/{correct,broken,inefficient}.json` | 32 regression cases. Expected findings are the contract; do not edit them to match the checker. |
@@ -27,6 +28,6 @@ Version elements: Actual, Budget, Forecast, plus rule elements Variance and Vari
 
 ## Versions
 
-The selector offers **2026.1** only. `N:` is accepted as the older form of the cell-type restriction and reported as info, not an error. Prefer `B:` or `C:`.
+The selector offers **2026.1** (the default) and **2025.1**. Jedox’s public docs list no rule changes between those versions. The 2025.1 pack is checked against the 2026.1 reference: three entries are sourced for 2025.1 (markers from 25.x, the 2025.1 multiparameter PALO.DATA note, and ISNULL deprecated since 2023.2). The rest say they are assumed the same as 2026.1 and unverified for 2025.1, and findings that use those entries say so. `N:` is accepted as the older form of the cell-type restriction and reported as info, not an error. Prefer `B:` or `C:`.
 
 Nothing in this pack has been executed in Jedox.

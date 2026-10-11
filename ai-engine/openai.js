@@ -4,7 +4,8 @@ var validate = require("./validate.js");
 var SYSTEM = [
   "You draft and review Jedox cube business rules.",
   "Reply with one JSON object and no markdown.",
-  "Use only functions from the supplied knowledge pack.",
+  "Use only functions from the knowledge pack in the user message for the selected Jedox version.",
+  "When a pack entry is unverified for that version, say so. Do not present it as confirmed.",
   "Prefer B: for base cells and C: for consolidated cells. N: is the older form.",
   "PALO.DATA takes database, cube, then one element per dimension of that cube, in order.",
   "A stored 0 is shown as an empty cell. Do not call that a failure.",
@@ -54,6 +55,7 @@ function userPayload(kind, input) {
     chips: input.chips,
     instruction: input.instruction,
     answers: input.answers,
+    knowledge: input.knowledge || null,
     staticFindings: input.staticFindings || [],
     roleNote: "Dimension role is a hint only. Jedox has no special measures dimension type."
   });

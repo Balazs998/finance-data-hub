@@ -363,6 +363,7 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("jetbrains-mono-latin-400-normal.woff2", main)
         self.assertIn("font-rest.css", main)
         self.assertIn('media="print"', main)
+        self.assertIn("requestAnimationFrame", main)
         self.assertNotIn("code-font.css", main)
         robots = (SITE / "robots.txt").read_text(encoding="utf-8")
         self.assertIn("User-agent: *", robots)

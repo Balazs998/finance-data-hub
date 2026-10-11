@@ -1,3 +1,8 @@
+---
+title: Jedox notes for FP&A packs
+description: Jedox Integrator notes on management report exports Excel can trust, Snowflake-to-cube loads, Relational extracts, and automated Budget vs Actual emails.
+---
+
 # Jedox
 
 Jedox holds the plan and the management report. Excel is where the pack is annotated. The fragile step is the file that travels between them.

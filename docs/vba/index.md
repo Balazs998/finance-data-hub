@@ -1,3 +1,7 @@
+---
+description: "Excel VBA modules for FP&A packs: import a .bas file, save as .xlsm, then flag blank periods, empty Input_ drivers, and formula errors before send-out."
+---
+
 # VBA and Excel
 
 The pack is still finished in Excel. The modules here are standard `.bas` files: import them, save as `.xlsm`, and run them yourself. Nothing on this site runs when a workbook opens.

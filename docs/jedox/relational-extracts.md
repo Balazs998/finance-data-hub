@@ -1,9 +1,12 @@
 ---
 title: "Relational extract: table setup or your own SQL?"
 description: "Jedox Integrator can read Snowflake with a point-and-click RelationalTable extract or a hand-written Relational extract. Same job both ways, same 58 rows, and when to pick which."
+social_image: relational-extracts.png
 ---
 
 # Relational extract: table setup or your own SQL?
+
+<p class="post-meta">Snowflake · Jedox</p>
 
 Jedox Integrator gives you two ways to read rows from Snowflake. The **RelationalTable extract** lets you point at a table or view and click your columns, filters and grouping together. The **Relational extract** lets you write the SELECT yourself.
 
@@ -26,6 +29,9 @@ USE ROLE SYSADMIN;
 CREATE OR REPLACE VIEW FDH_DEMO.SAMPLE.V_FACT_ACTUALS AS SELECT COST_CENTER, ACCOUNT, PERIOD, VERSION, AMOUNT FROM FDH_DEMO.SAMPLE.FACT_ACTUALS;
 GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_FACT_ACTUALS TO ROLE JEDOX_ETL_ROLE;
 ```
+
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
 
 To undo it later:
 
@@ -56,10 +62,17 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
     3. Pick the columns `VERSION`, `PERIOD`, `COST_CENTER`, `ACCOUNT` and `AMOUNT`. Give them aliases if your Cube Load expects other names.
     4. Add two filters:
 
+        <div class="diagram-frame" markdown="block">
+        <div class="diagram-scroll" tabindex="0" aria-label="RelationalTable filters, scroll sideways on small screens" markdown="block">
+
         | # | Column | Operator | Value |
         |---|---|---|---|
         | 1 | `VERSION` | `=` | `Actual` |
         | 2 | `PERIOD` | `=` | `2026-03` |
+
+        </div>
+        <span class="diagram-chevron" aria-hidden="true">›</span>
+        </div>
 
         Several filters are joined with AND unless you write a logical expression such as `(1 AND 2) OR 3`.
 
@@ -92,11 +105,11 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
 
 **Aggregate in Snowflake, in both modes.** Group down to cube grain (one row per Version, Period, CostCenter and Account) before anything reaches Integrator. Fewer rows cross the network, and the totals match the cube exactly.
 
-!!! note "Both run in Snowflake"
-    The RelationalTable extract doesn't download the table. It turns your columns, filters and grouping into a SELECT with WHERE, GROUP BY and HAVING, and Snowflake runs it. You can see this yourself. Run both extracts, then look them up in query history (same lookup as the launch post):
+!!! info "Both run in Snowflake"
+    The RelationalTable extract doesn't download the table. It turns your columns, filters and grouping into a SELECT with WHERE, GROUP BY and HAVING, and Snowflake runs it. You can see this yourself. Run both extracts, then look them up in query history (the launch post's lookup plus a row count):
 
     ```sql
-    USE ROLE SYSADMIN;
+    -- a role with MONITOR on the warehouse
     SELECT start_time, query_text, rows_produced, total_elapsed_time
     FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
     WHERE query_tag = 'jedox_actuals_load'

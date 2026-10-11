@@ -6,6 +6,8 @@ social_image: plan-vs-actuals.png
 
 # Plan vs. actuals in Snowflake SQL, without losing rows
 
+<p class="post-meta">Snowflake</p>
+
 A variance report has one job: show every euro that's in the budget or in the actuals. The most common way it fails is quiet. Somebody joins actuals to budget with a `LEFT JOIN` or an inner join, the report looks fine, and the rows that exist on only one side vanish.
 
 This post builds the variance the safe way, using the site's made-up sample data: 10 cost centers and 8 accounts. Budget covers October 2025 to September 2026 and Actual covers October 2025 to August 2026.
@@ -24,7 +26,9 @@ The second group is the one that matters most. Unbudgeted spend is exactly what 
 Never join two fact tables at posting level. If a cell has three actual postings and two budget rows, a direct join produces six rows and inflates both totals. Sum each side to one row per cell first, then join.
 
 ```sql
+USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
+USE WAREHOUSE JEDOX_ETL_WH;
 
 WITH budget AS (
     SELECT cost_center, account, period, SUM(amount) AS budget
@@ -39,8 +43,12 @@ actuals AS (
 SELECT COUNT(*) FROM budget; -- 696 cells
 ```
 
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
+
 ## 3. The full outer join
 
+<p class="diagram-swipe">Swipe to see the full diagram →</p>
 <div class="diagram-frame">
 <figure class="diagram-scroll" tabindex="0" aria-label="Join coverage diagram, scroll sideways on small screens">
   <a href="../02-join-coverage.svg"><img src="../02-join-coverage.svg" alt="What each join keeps on the sample data. INNER JOIN keeps 605 cells with both budget and actual. LEFT JOIN from budget keeps 696, adding 91 budget-only cells. FULL OUTER JOIN keeps all 701, adding the 5 actual-only cells too." width="720" height="400"></a>
@@ -49,6 +57,10 @@ SELECT COUNT(*) FROM budget; -- 696 cells
 </div>
 
 ```sql
+USE ROLE SYSADMIN;
+USE SCHEMA FDH_DEMO.SAMPLE;
+USE WAREHOUSE JEDOX_ETL_WH;
+
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS
 WITH budget AS (
     SELECT cost_center, account, period, SUM(amount) AS budget
@@ -78,6 +90,9 @@ FULL OUTER JOIN budget AS b
     AND a.account = b.account
     AND a.period = b.period;
 ```
+
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
 
 Three details carry the whole thing:
 

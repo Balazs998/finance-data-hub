@@ -103,7 +103,17 @@
 }
 
 .md-nav__link {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 24px;
   margin-top: .5em;
+}
+
+@media screen and (max-width: 44.9375em) {
+  .md-nav__link {
+    min-height: 32px;
+  }
 }
 
 .md-nav__link--active,
@@ -132,6 +142,25 @@
 
 .md-typeset a {
   color: var(--dn-link);
+}
+
+.md-typeset p a:not(.md-button),
+.md-typeset li a:not(.md-button) {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(56, 189, 248, 0.4);
+}
+
+.md-typeset p a:not(.md-button):hover,
+.md-typeset li a:not(.md-button):hover {
+  text-decoration-color: rgba(56, 189, 248, 1);
+}
+
+.md-typeset .post-meta {
+  margin: 0.15rem 0 1rem;
+  color: var(--dn-text-muted);
+  font-size: 0.8rem;
 }
 
 .md-search__form {
@@ -166,6 +195,14 @@
   border-left-width: 0.2rem;
   background-color: var(--dn-surface);
   color: var(--dn-text);
+}
+
+.md-typeset .admonition.success {
+  border-color: #A3E635;
+}
+
+.md-typeset .admonition.success > .admonition-title::before {
+  background-color: #A3E635;
 }
 
 .md-typeset .md-typeset__scrollwrap {
@@ -204,6 +241,11 @@
 .md-typeset table:not([class]) td {
   color: var(--dn-text);
   border-top: 1px solid var(--dn-border);
+}
+
+.md-typeset table:not([class]) td code,
+.md-typeset table:not([class]) th code {
+  white-space: nowrap;
 }
 
 .md-typeset .highlight,
@@ -251,10 +293,18 @@
 }
 
 .md-typeset .downloads .md-button {
+  display: flex;
+  align-items: center;
   margin: 0;
   width: 100%;
+  min-height: 3.25rem;
   text-align: left;
+  overflow-wrap: anywhere;
   border: 1px solid #2a3847;
+}
+
+.md-typeset .downloads .md-button:only-child {
+  grid-column: 1 / -1;
 }
 
 .md-typeset .downloads .md-button:hover,
@@ -904,6 +954,17 @@ html.js .reveal.reveal-wait.is-visible {
   white-space: nowrap;
 }
 
+/* Room on the right so the chevron sits clear of the cell text.
+   The fade stays on the scrollport, over the cut-off columns. */
+.md-typeset .diagram-frame:has(table) {
+  padding-right: 2.75rem;
+}
+
+.md-typeset .diagram-frame:has(table)::after {
+  right: 2.75rem;
+  border-radius: 0;
+}
+
 .md-typeset .diagram-frame .diagram-scroll {
   margin: 0;
 }
@@ -966,11 +1027,13 @@ html.js .reveal.reveal-wait.is-visible {
 }
 
 @media screen and (min-width: 60em) {
-  .md-typeset .diagram-frame::after {
+  /* Image diagrams are scaled to the column. A table that still
+     overflows keeps the fade and chevron until it is scrolled to the end. */
+  .md-typeset .diagram-frame:not(:has(table))::after {
     content: none;
   }
 
-  .md-typeset .diagram-chevron {
+  .md-typeset .diagram-frame:not(:has(table)) .diagram-chevron {
     display: none;
   }
 

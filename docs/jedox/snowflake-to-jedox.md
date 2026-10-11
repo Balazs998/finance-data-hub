@@ -6,6 +6,8 @@ social_image: snowflake-to-jedox.png
 
 # From Snowflake to Jedox: a rerun-safe actuals load with Integrator
 
+<p class="post-meta">Snowflake · Jedox</p>
+
 Most finance teams keep their actuals in a warehouse and do their planning in a separate tool. This post connects the two. We'll pull monthly actuals out of Snowflake and load them into a Jedox planning cube, in a way you can rerun as often as you like without leaving stale numbers behind.
 
 Everything here runs on made-up sample data: 10 cost centers, 8 accounts, and twelve months of Budget and eleven of Actual for fiscal year 2026 (October 2025 to September 2026). You can download the files below and follow along.
@@ -97,16 +99,20 @@ Our target cube is `PnL` with four dimensions: `Version`, `Period`, `CostCenter`
 USE ROLE SYSADMIN;
 CREATE OR REPLACE VIEW FDH_DEMO.SAMPLE.V_JEDOX_ACTUALS AS
 SELECT
-    'Actual' AS version,
-    period AS period, -- 'YYYY-MM', matches the Period elements
-    cost_center AS cost_center,
-    account AS account,
+    version,
+    period, -- 'YYYY-MM', matches the Period elements
+    cost_center,
+    account,
     SUM(amount) AS amount
 FROM FDH_DEMO.SAMPLE.FACT_ACTUALS
-GROUP BY period, cost_center, account;
+WHERE version = 'Actual'
+GROUP BY version, period, cost_center, account;
 
 GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_JEDOX_ACTUALS TO ROLE JEDOX_ETL_ROLE;
 ```
+
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
 
 The `GROUP BY` matters even though our sample has one row per cell. In real systems the same cell often arrives as several postings, and a cube load expects one value per cell.
 
@@ -217,10 +223,10 @@ In Jedox, read the same total for `Actual` and `2026-03` at the top of `CostCent
 
 Then run the job a second time. The totals shouldn't change. If they double, the load is adding instead of replacing. If an old value survives, the clear step isn't covering the slice.
 
-And in Snowflake, you can see every query the job ran in the last 7 days. Run this as SYSADMIN, which owns the warehouse and can see the service user's queries:
+And in Snowflake, you can see every query the job ran in the last 7 days. Run this as a role with MONITOR on the warehouse:
 
 ```sql
-USE ROLE SYSADMIN;
+-- a role with MONITOR on the warehouse
 SELECT start_time, query_text, total_elapsed_time
 FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
 WHERE query_tag = 'jedox_actuals_load'

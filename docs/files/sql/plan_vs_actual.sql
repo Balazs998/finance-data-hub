@@ -1,6 +1,9 @@
 -- Plan vs. actuals variance, Finance Data Hub sample data (synthetic)
 -- Run load_snowflake.sql first. Periods are zero-padded 'YYYY-MM'.
+USE ROLE SYSADMIN;
+-- Demo uses SYSADMIN. In a real setup, use a dedicated setup role with only the rights this script needs.
 USE SCHEMA FDH_DEMO.SAMPLE;
+USE WAREHOUSE JEDOX_ETL_WH;
 
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS
 WITH budget AS (

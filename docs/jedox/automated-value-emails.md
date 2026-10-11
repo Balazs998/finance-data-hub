@@ -24,6 +24,9 @@ Everything runs on the site's made-up sample data: 10 cost centers and 8 account
 
 There's no mail component in Integrator. You send email from a **Groovy job**, using the mailer the job API gives you:
 
+!!! info "Job or function?"
+    Integrator runs Groovy in two places. A Groovy **job** is a job of its own, which you can run directly or call from another job. It can run extracts and loads, read job variables and send email, and the value-email script in this post is one. A Groovy **function** sits inside a transform, calculates a value for each row, and returns it. If you're building the email script from this post, choose a job.
+
 ```groovy
 def mailer = API.getMailer()
 mailer.addRecipient('owner.cc4010@example.com')

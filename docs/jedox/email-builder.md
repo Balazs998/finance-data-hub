@@ -1,6 +1,7 @@
 ---
 title: "Create your own Jedox email: Groovy script builder"
 description: "Fill in a short form and download a tested Jedox Integrator Groovy script that sends one Budget vs. Actual email per owner. Test mode is on by default, and it all runs in your browser."
+social_image: email-builder.png
 hide:
   - toc
 ---
@@ -123,9 +124,9 @@ The preview uses the site's made-up sample data. Your real emails will show your
 
 <div class="email-card email-panel" id="email-panel">
 <div class="email-ptabs" role="tablist" aria-label="Preview">
-<button type="button" class="email-tab is-on" role="tab" id="tab-preview" data-tab="preview" aria-selected="true" aria-controls="panel-preview">Email preview</button>
-<button type="button" class="email-tab" role="tab" id="tab-script" data-tab="script" aria-selected="false" aria-controls="panel-script">Groovy script</button>
-<button type="button" class="email-tab" role="tab" id="tab-template" data-tab="template" aria-selected="false" aria-controls="panel-template">Template</button>
+<button type="button" class="email-tab is-on" role="tab" id="tab-preview" data-tab="preview" aria-selected="true" aria-controls="panel-preview" tabindex="0">Email preview</button>
+<button type="button" class="email-tab" role="tab" id="tab-script" data-tab="script" aria-selected="false" aria-controls="panel-script" tabindex="-1">Groovy script</button>
+<button type="button" class="email-tab" role="tab" id="tab-template" data-tab="template" aria-selected="false" aria-controls="panel-template" tabindex="-1">Template</button>
 </div>
 <div id="panel-preview" role="tabpanel" aria-labelledby="tab-preview">
 <p class="email-caption">Sample data: cost center CC4010, March 2026. In test mode the real subject also starts with <code>[TEST for ...]</code>.</p>

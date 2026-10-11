@@ -116,9 +116,13 @@ def on_page_context(context, page, config, nav):
     # except the home page which is just the site name. The nav label can be
     # shorter than the article title, so it is not used here.
     meta_title = str(page.meta.get("title") or "").strip() if page.meta else ""
-    if meta_title:
+    # The home page title is the front matter on its own. Every other page
+    # keeps the site name after the page title, matching the document <title>.
+    if getattr(page, "is_homepage", False):
+        title = meta_title or config.site_name
+    elif meta_title:
         title = f"{meta_title} - {config.site_name}"
-    elif page.title and not getattr(page, "is_homepage", False):
+    elif page.title:
         title = f"{page.title} - {config.site_name}"
     else:
         title = config.site_name

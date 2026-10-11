@@ -24,7 +24,9 @@ The second group is the one that matters most. Unbudgeted spend is exactly what 
 Never join two fact tables at posting level. If a cell has three actual postings and two budget rows, a direct join produces six rows and inflates both totals. Sum each side to one row per cell first, then join.
 
 ```sql
+USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
+USE WAREHOUSE <your warehouse>;
 
 WITH budget AS (
     SELECT cost_center, account, period, SUM(amount) AS budget
@@ -41,6 +43,7 @@ SELECT COUNT(*) FROM budget; -- 696 cells
 
 ## 3. The full outer join
 
+<p class="diagram-swipe">Swipe to see the full diagram →</p>
 <div class="diagram-frame">
 <figure class="diagram-scroll" tabindex="0" aria-label="Join coverage diagram, scroll sideways on small screens">
   <a href="../02-join-coverage.svg"><img src="../02-join-coverage.svg" alt="What each join keeps on the sample data. INNER JOIN keeps 605 cells with both budget and actual. LEFT JOIN from budget keeps 696, adding 91 budget-only cells. FULL OUTER JOIN keeps all 701, adding the 5 actual-only cells too." width="720" height="400"></a>
@@ -49,6 +52,7 @@ SELECT COUNT(*) FROM budget; -- 696 cells
 </div>
 
 ```sql
+USE ROLE SYSADMIN;
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS
 WITH budget AS (
     SELECT cost_center, account, period, SUM(amount) AS budget

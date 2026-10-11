@@ -1,6 +1,7 @@
 -- Optional middle ground: put joins and logic in a view,
 -- then point a RelationalTable extract at it.
 USE ROLE SYSADMIN;
+-- Demo uses SYSADMIN. In a real setup, use a dedicated setup role with only the rights this script needs.
 CREATE OR REPLACE VIEW FDH_DEMO.SAMPLE.V_JEDOX_ACTUALS_BY_GROUP AS
 SELECT f.VERSION, f.PERIOD, f.COST_CENTER, c.PARENT AS COST_CENTER_GROUP, f.ACCOUNT, SUM(f.AMOUNT) AS AMOUNT
 FROM FDH_DEMO.SAMPLE.FACT_ACTUALS f

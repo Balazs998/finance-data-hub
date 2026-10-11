@@ -30,6 +30,9 @@ CREATE OR REPLACE VIEW FDH_DEMO.SAMPLE.V_FACT_ACTUALS AS SELECT COST_CENTER, ACC
 GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_FACT_ACTUALS TO ROLE JEDOX_ETL_ROLE;
 ```
 
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
+
 To undo it later:
 
 ```sql

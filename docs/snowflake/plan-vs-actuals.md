@@ -43,6 +43,9 @@ actuals AS (
 SELECT COUNT(*) FROM budget; -- 696 cells
 ```
 
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
+
 ## 3. The full outer join
 
 <p class="diagram-swipe">Swipe to see the full diagram →</p>
@@ -87,6 +90,9 @@ FULL OUTER JOIN budget AS b
     AND a.account = b.account
     AND a.period = b.period;
 ```
+
+!!! info "Why SYSADMIN here"
+    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
 
 Three details carry the whole thing:
 

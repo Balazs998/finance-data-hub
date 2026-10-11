@@ -600,7 +600,8 @@ test("the checker page lints on the quiet period and stacks by width", function 
   const leadAt = page.indexOf("Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.");
   const editorAt = page.indexOf('id="email-editor"');
   const gridAt = page.indexOf('<div class="email-grid email-grid-checker">');
-  const howAt = page.indexOf('<details class="email-how"');
+  const howAt = page.indexOf('<details class="email-how" id="email-how" open>');
+  assert.equal(ui.indexOf("how.open"), -1);
   assert.ok(leadAt >= 0 && leadAt < editorAt && editorAt < howAt);
   const betweenGridAndHow = page.slice(gridAt, howAt);
   assert.equal((betweenGridAndHow.match(/<div\b/g) || []).length, (betweenGridAndHow.match(/<\/div>/g) || []).length);
@@ -805,12 +806,15 @@ test("phone preview scrolls below the header and returns to the last field", fun
   assert.match(ui, /focus\(\{ preventScroll: true \}\)/);
   assert.match(ui, /getElementById\("tab-preview"\)/);
   const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  const extra = fs.readFileSync(path.join(root, "docs/stylesheets/extra.css"), "utf8");
   const builderPage = fs.readFileSync(path.join(root, "docs/jedox/email-builder.md"), "utf8");
   assert.match(builderPage, /class="email-bar-space"/);
   assert.match(css, /#email-builder \.email-bar-space \{\s*height: 64px;/);
   assert.match(css, /#email-builder \.email-frame-wrap iframe \{\s*min-height: 640px;/);
   assert.match(css, /:has\(#email-builder\) > \.email-lead \{\s*min-height: 135px;/);
-  assert.match(css, /font-family: "Inter Fallback"/);
+  assert.match(extra, /font-family: "Inter Fallback"/);
+  assert.match(extra, /font-family: "JetBrains Mono Fallback"/);
+  assert.doesNotMatch(css, /@font-face/);
   assert.match(css, /body:has\(#email-builder\) \.md-path \{\s*font-family: "Inter", "Inter Fallback"/);
   assert.match(css, /@media screen and \(max-width: 390px\) \{\s*#email-builder \{\s*min-height: 1862\.45px;/);
   assert.match(css, /@media screen and \(min-width: 391px\) and \(max-width: 412px\) \{\s*#email-builder \{\s*min-height: 1769\.67px;/);

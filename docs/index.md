@@ -20,8 +20,8 @@ hide:
 </div>
 <div class="home-art">
 <picture>
-<source srcset="assets/mascots/trio-group@1x.webp 1x, assets/mascots/trio-group@2x.webp 2x" type="image/webp">
-<img src="assets/mascots/trio-group@1x.png" srcset="assets/mascots/trio-group@1x.png 1x, assets/mascots/trio-group@2x.png 2x" width="601" height="697" alt="Three mascots standing together: Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, and VBA in a green cardigan, waving">
+<source srcset="assets/mascots/trio-group-246.webp 246w, assets/mascots/trio-group-494.webp 494w, assets/mascots/trio-group-680.webp 680w, assets/mascots/trio-group-988.webp 988w" type="image/webp" sizes="(max-width: 760px) calc(100vw - 74px), (max-width: 1200px) calc((100vw - 32px) * 0.42), 494px">
+<img src="assets/mascots/trio-group-494.png" width="494" height="573" fetchpriority="high" alt="Three mascots standing together: Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, and VBA in a green cardigan, waving" sizes="(max-width: 760px) calc(100vw - 74px), (max-width: 1200px) calc((100vw - 32px) * 0.42), 494px">
 </picture>
 </div>
 </div>

@@ -11,11 +11,29 @@ A common belief is that the point-and-click version pulls the whole table into J
 
 To show it, we'll do the same job both ways: load Actuals for March 2026 from the sample data. Both routes should return **58 rows totaling 1,466,143.86**.
 
-This post builds on [From Snowflake to Jedox](snowflake-to-jedox.md). It reuses the same Snowflake connection `SNOWFLAKE_DEMO`, the service user `JEDOX_SVC`, the role `JEDOX_ETL_ROLE` and the warehouse `JEDOX_ETL_WH`.
+This post builds on [From Snowflake to Jedox](snowflake-to-jedox.md). It reuses your Snowflake connection from the launch post (we call it SNOWFLAKE_DEMO here), the service user `JEDOX_SVC`, the role `JEDOX_ETL_ROLE` and the warehouse `JEDOX_ETL_WH`.
 
 > **Which Integrator UI?** The steps use the **legacy** Integrator UI.
 
 ---
+
+## Setup: give the role a view to read
+
+`JEDOX_ETL_ROLE` reads views only, so it can't select from `FACT_ACTUALS` directly. Create a plain pass-through view once and grant it to the role:
+
+```sql
+USE ROLE SYSADMIN;
+CREATE OR REPLACE VIEW FDH_DEMO.SAMPLE.V_FACT_ACTUALS AS SELECT COST_CENTER, ACCOUNT, PERIOD, VERSION, AMOUNT FROM FDH_DEMO.SAMPLE.FACT_ACTUALS;
+GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_FACT_ACTUALS TO ROLE JEDOX_ETL_ROLE;
+```
+
+To undo it later:
+
+```sql
+REVOKE SELECT ON VIEW FDH_DEMO.SAMPLE.V_FACT_ACTUALS FROM ROLE JEDOX_ETL_ROLE;
+```
+
+Both routes below read `V_FACT_ACTUALS`. [[download:relational/v_fact_actuals.sql|Download v_fact_actuals.sql]]
 
 ## Two routes, one result
 
@@ -34,7 +52,7 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
 === "RelationalTable"
 
     1. Add a **RelationalTable extract** and pick the connection `SNOWFLAKE_DEMO`.
-    2. Choose the table `FDH_DEMO.SAMPLE.FACT_ACTUALS`.
+    2. Choose the view `FDH_DEMO.SAMPLE.V_FACT_ACTUALS`.
     3. Pick the columns `VERSION`, `PERIOD`, `COST_CENTER`, `ACCOUNT` and `AMOUNT`. Give them aliases if your Cube Load expects other names.
     4. Add two filters:
 
@@ -59,7 +77,7 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
 
         ```sql
         SELECT VERSION, PERIOD, COST_CENTER, ACCOUNT, SUM(AMOUNT) AS AMOUNT
-        FROM FDH_DEMO.SAMPLE.FACT_ACTUALS
+        FROM FDH_DEMO.SAMPLE.V_FACT_ACTUALS
         WHERE VERSION = 'Actual'
         AND PERIOD = '2026-03'
         GROUP BY VERSION, PERIOD, COST_CENTER, ACCOUNT
@@ -80,7 +98,7 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
     ```sql
     USE ROLE SYSADMIN;
     SELECT start_time, query_text, rows_produced, total_elapsed_time
-    FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH'))
+    FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
     WHERE query_tag = 'jedox_actuals_load'
     ORDER BY start_time DESC;
     ```
@@ -91,7 +109,7 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
 
 ## Check the result
 
-Both routes should give the same answer for Actual 2026-03: **58 rows, total 1,466,143.86**. Check the row count in the extract preview, then compare the total in the cube after loading. If one route returns more than 58 rows, the grouping is probably missing.
+Both routes should give the same answer for Actual 2026-03: **58 rows, total 1,466,143.86**. Check the total plus a row count: 58 rows in the extract preview, then 1,466,143.86 in the cube after loading. If one route returns more than 58 rows, the grouping is probably missing.
 
 ## Side by side
 
@@ -116,12 +134,13 @@ Both routes should give the same answer for Actual 2026-03: **58 rows, total 1,4
 
 Both extracts filter in Snowflake, so you're not choosing between fast and slow. You're choosing between simple and flexible. Start with the table setup, move the logic into a view when it grows, and write your own SQL when you need the full language. For the full load around it (service user, slice clear and Cube Load), see [From Snowflake to Jedox](snowflake-to-jedox.md).
 
-Jedox docs: [Relational extract](https://knowledgebase-onprem.jedox.com/integration/extracts/relational-extract.htm) and [RelationalTable extract](https://knowledgebase.jedox.com/integration/extracts/relational-table-extract.htm).
+Jedox docs: [Relational extract](https://knowledgebase.jedox.com/integration/extracts/relational-extract.htm) and [RelationalTable extract](https://knowledgebase.jedox.com/integration/extracts/relational-table-extract.htm).
 
 ## Downloads
 
 All files use synthetic sample data and placeholder names.
 
+[[download:relational/v_fact_actuals.sql|Download v_fact_actuals.sql (setup view and grant)]]
 [[download:relational/relational_extract_actuals.sql|Download relational_extract_actuals.sql]]
 [[download:relational/v_jedox_actuals_by_group.sql|Download v_jedox_actuals_by_group.sql (optional view)]]
 [[download:relational/query_history_lookup.sql|Download query_history_lookup.sql]]

@@ -112,6 +112,7 @@ The `GROUP BY` matters even though our sample has one row per cell. In real syst
 
 ## 4. The Integrator project
 
+<p class="diagram-swipe">Swipe to see the full diagram →</p>
 <div class="diagram-frame">
 <figure class="diagram-scroll" style="--diagram-min-width: 700px" tabindex="0" aria-label="Pipeline diagram, scroll sideways on small screens">
   <a href="../01-pipeline-diagram.svg"><img src="../01-pipeline-diagram.svg" alt="Snowflake to Jedox pipeline: clear the Actual slice first, then load fresh actuals into the PnL cube" width="840" height="500"></a>
@@ -121,12 +122,19 @@ The `GROUP BY` matters even though our sample has one row per cell. In real syst
 
 The job has four pieces:
 
+<div class="diagram-frame" markdown="block">
+<div class="diagram-scroll" tabindex="0" aria-label="Four pieces of the Integrator job, scroll sideways on small screens" markdown="block">
+
 | Step | Integrator component | What it does |
 |---|---|---|
 | 1 | Snowflake connection | Logs in as `JEDOX_SVC` with the private key |
 | 2 | Cube Slice extract + Cube Load (delete mode) | Clears `Actual` for the months being reloaded |
 | 3 | Relational extract | `SELECT version, period, cost_center, account, amount FROM V_JEDOX_ACTUALS WHERE period BETWEEN ...` |
 | 4 | Cube Load | Writes the fresh actuals into `PnL` |
+
+</div>
+<span class="diagram-chevron" aria-hidden="true">›</span>
+</div>
 
 ### 4.1 Connection
 
@@ -214,7 +222,7 @@ And in Snowflake, you can see every query the job ran in the last 7 days. Run th
 ```sql
 USE ROLE SYSADMIN;
 SELECT start_time, query_text, total_elapsed_time
-FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH'))
+FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
 WHERE query_tag = 'jedox_actuals_load'
 ORDER BY start_time DESC;
 ```

@@ -299,6 +299,16 @@ body:has(#email-builder) .md-header__title {
   width: min(100%, 280px);
 }
 
+.email-type-hint {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #9AA7B4;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .md-typeset .email-app button.email-chip,
 .md-typeset .email-app button.email-seg-btn,
 .md-typeset .email-app button.email-switch,
@@ -443,6 +453,20 @@ body:has(#email-builder) .md-header__title {
   min-height: 280px;
   border: 0;
   background: #f3f6f9;
+}
+
+/* Tab stops on the wrapper. Keyboard focus on the iframe does not
+   match :focus-within, so a ring painted on the iframe never shows.
+   #38BDF8 is the site link color. */
+.email-frame-wrap:focus-visible,
+.email-frame-wrap:focus-within {
+  outline: 2px solid #38BDF8;
+  outline-offset: 2px;
+}
+
+.email-app .email-frame-wrap iframe:focus,
+.email-app .email-frame-wrap iframe:focus-visible {
+  outline: none;
 }
 
 .email-subject-line {

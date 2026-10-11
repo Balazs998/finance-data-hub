@@ -197,16 +197,34 @@
       });
     });
 
-    root.querySelectorAll(".email-tab").forEach(function (tab) {
+    var previewTabs = Array.prototype.slice.call(root.querySelectorAll(".email-tab"));
+
+    function selectPreviewTab(tab) {
+      previewTabs.forEach(function (item) {
+        var on = item === tab;
+        item.classList.toggle("is-on", on);
+        item.setAttribute("aria-selected", on ? "true" : "false");
+        item.tabIndex = on ? 0 : -1;
+      });
+      ["preview", "script", "template"].forEach(function (name) {
+        document.getElementById("panel-" + name).hidden = tab.getAttribute("data-tab") !== name;
+      });
+    }
+
+    previewTabs.forEach(function (tab, index) {
       tab.addEventListener("click", function () {
-        root.querySelectorAll(".email-tab").forEach(function (item) {
-          var on = item === tab;
-          item.classList.toggle("is-on", on);
-          item.setAttribute("aria-selected", on ? "true" : "false");
-        });
-        ["preview", "script", "template"].forEach(function (name) {
-          document.getElementById("panel-" + name).hidden = tab.getAttribute("data-tab") !== name;
-        });
+        selectPreviewTab(tab);
+      });
+      tab.addEventListener("keydown", function (event) {
+        var nextIndex = null;
+        if (event.key === "ArrowRight") nextIndex = (index + 1) % previewTabs.length;
+        else if (event.key === "ArrowLeft") nextIndex = (index - 1 + previewTabs.length) % previewTabs.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = previewTabs.length - 1;
+        if (nextIndex === null) return;
+        event.preventDefault();
+        selectPreviewTab(previewTabs[nextIndex]);
+        previewTabs[nextIndex].focus();
       });
     });
 

@@ -1,4 +1,6 @@
 ---
+title: Snowflake, Jedox and Excel VBA for FP&A
+description: Build your month-end FP&A pack with tested Snowflake SQL, Jedox Integrator jobs, and Excel VBA, each with sample data you can download and run yourself.
 social_image: home.png
 hide:
   - navigation

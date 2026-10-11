@@ -1,11 +1,14 @@
 ---
 title: "Check your email script"
 description: "Paste a Jedox Integrator Groovy script and find the usual email traps: ${ markers, missing reset(), old SMTP calls, HTML sent as plain text and more."
+social_image: email-checker.png
 hide:
   - toc
 ---
 
 # Check your email script
+
+<p class="post-meta">Jedox</p>
 
 Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.
 { .email-lead }
@@ -18,10 +21,11 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 <div id="email-checker" class="email-app">
 <div class="email-type">
 <span id="script-type-label">Script type</span>
-<div class="email-seg" role="radiogroup" aria-labelledby="script-type-label">
+<div class="email-seg" role="radiogroup" aria-labelledby="script-type-label" aria-describedby="script-type-hint">
 <button type="button" class="email-seg-btn is-on" role="radio" aria-checked="true" data-script-type="job">Groovy job</button>
 <button type="button" class="email-seg-btn" role="radio" aria-checked="false" data-script-type="function">Groovy function</button>
 </div>
+<p class="email-type-hint" id="script-type-hint">Pick <strong>Groovy job</strong> if the script runs as its own job, like the value-email script. Pick <strong>Groovy function</strong> if it calculates a value for each row inside a transform.</p>
 </div>
 <div class="email-grid email-grid-checker">
 <div class="email-editor-column">

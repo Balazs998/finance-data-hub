@@ -415,6 +415,9 @@ SOCIAL_PAGES = {
     "snowflake/plan-vs-actuals/index.html": "plan-vs-actuals.png",
     "jedox/snowflake-to-jedox/index.html": "snowflake-to-jedox.png",
     "jedox/automated-value-emails/index.html": "automated-value-emails.png",
+    "jedox/email-builder/index.html": "email-builder.png",
+    "jedox/email-checker/index.html": "email-checker.png",
+    "jedox/relational-extracts/index.html": "relational-extracts.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
 }
@@ -423,6 +426,9 @@ SOCIAL_FILES = (
     "plan-vs-actuals.png",
     "automated-value-emails.png",
     "snowflake-to-jedox.png",
+    "email-builder.png",
+    "email-checker.png",
+    "relational-extracts.png",
 )
 
 
@@ -470,10 +476,10 @@ class SocialPreviewTests(unittest.TestCase):
         home = (SITE / "index.html").read_text(encoding="utf-8")
         self.assertEqual(
             meta_contents(home, "property", "og:title"),
-            ["Finance Data Hub"],
+            ["Snowflake, Jedox and Excel VBA for FP&A"],
         )
         self.assertIn(
-            "Practical notes on Snowflake, Jedox, and Excel VBA",
+            "Build your month-end FP&A pack with tested Snowflake SQL",
             meta_contents(home, "property", "og:description")[0],
         )
         article = (SITE / "snowflake" / "plan-vs-actuals" / "index.html").read_text(
@@ -698,7 +704,10 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn(">qualify<", article)
         self.assertIn("nullif(trim(l.entity_code), '')", sql)
         self.assertIn("nullif(trim(l.cost_center_code), '')", sql)
-        self.assertIn("coalesce(l.entity_code, '(none)') not in ('E900')", sql)
+        self.assertIn(
+            "coalesce(nullif(trim(l.entity_code), ''), '(none)') not in ('E900')",
+            sql,
+        )
         self.assertIn("download-gl_actuals_pnl.sql", article)
         self.assertIn("DIM_ACCOUNT", article)
         self.assertNotIn("lorem ipsum", article.lower())
@@ -867,7 +876,7 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn('id="why-it-matters"', home)
         self.assertNotIn('id="where-to-start"', home)
         self.assertIn('<h1 id="month-end-actuals">', article)
-        self.assertIn('href="#grain"', article)
+        self.assertIn('href="#what-youll-build"', article)
 
 
 if __name__ == "__main__":

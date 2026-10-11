@@ -6,6 +6,8 @@ social_image: relational-extracts.png
 
 # Relational extract: table setup or your own SQL?
 
+<p class="post-meta">Snowflake · Jedox</p>
+
 Jedox Integrator gives you two ways to read rows from Snowflake. The **RelationalTable extract** lets you point at a table or view and click your columns, filters and grouping together. The **Relational extract** lets you write the SELECT yourself.
 
 A common belief is that the point-and-click version pulls the whole table into Jedox and filters there. It doesn't. Both run their filters in Snowflake. The real difference is how much SQL you're allowed to use.
@@ -104,7 +106,7 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
     The RelationalTable extract doesn't download the table. It turns your columns, filters and grouping into a SELECT with WHERE, GROUP BY and HAVING, and Snowflake runs it. You can see this yourself. Run both extracts, then look them up in query history (the launch post's lookup plus a row count):
 
     ```sql
-    USE ROLE SYSADMIN;
+    -- a role with MONITOR on the warehouse
     SELECT start_time, query_text, rows_produced, total_elapsed_time
     FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
     WHERE query_tag = 'jedox_actuals_load'

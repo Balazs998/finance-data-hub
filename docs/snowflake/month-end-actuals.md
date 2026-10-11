@@ -5,7 +5,7 @@ description: "Build month-end P&L actuals in Snowflake SQL: closed periods only,
 
 # Month-end actuals
 
-<p class="post-meta">Snowflake · Intermediate</p>
+<p class="post-meta">Snowflake</p>
 
 If your September total grows every time the loader reruns, or revenue shows up negative in the pack, this query fixes both. You need actuals after the books close, at a grain you can drop into Excel or Jedox, and a raw journal extract is where double counts and negative revenue come from. The script on this page is the extract to start from.
 

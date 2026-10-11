@@ -2,6 +2,7 @@
 -- Run load_snowflake.sql first. Periods are zero-padded 'YYYY-MM'.
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
+USE WAREHOUSE JEDOX_ETL_WH;
 
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS
 WITH budget AS (
@@ -31,9 +32,6 @@ FULL OUTER JOIN budget AS b
     ON a.cost_center = b.cost_center
     AND a.account = b.account
     AND a.period = b.period;
-
--- Check queries need a warehouse SYSADMIN can use.
-USE WAREHOUSE <your warehouse>;
 
 -- Check: expect Actual only 5, Both 605, Budget only 91 (701 cells)
 SELECT match_status, COUNT(*) AS cells, SUM(budget) AS budget, SUM(actual) AS actual

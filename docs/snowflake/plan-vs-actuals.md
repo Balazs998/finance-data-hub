@@ -6,6 +6,8 @@ social_image: plan-vs-actuals.png
 
 # Plan vs. actuals in Snowflake SQL, without losing rows
 
+<p class="post-meta">Snowflake</p>
+
 A variance report has one job: show every euro that's in the budget or in the actuals. The most common way it fails is quiet. Somebody joins actuals to budget with a `LEFT JOIN` or an inner join, the report looks fine, and the rows that exist on only one side vanish.
 
 This post builds the variance the safe way, using the site's made-up sample data: 10 cost centers and 8 accounts. Budget covers October 2025 to September 2026 and Actual covers October 2025 to August 2026.
@@ -26,7 +28,7 @@ Never join two fact tables at posting level. If a cell has three actual postings
 ```sql
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
-USE WAREHOUSE <your warehouse>;
+USE WAREHOUSE JEDOX_ETL_WH;
 
 WITH budget AS (
     SELECT cost_center, account, period, SUM(amount) AS budget
@@ -53,6 +55,9 @@ SELECT COUNT(*) FROM budget; -- 696 cells
 
 ```sql
 USE ROLE SYSADMIN;
+USE SCHEMA FDH_DEMO.SAMPLE;
+USE WAREHOUSE JEDOX_ETL_WH;
+
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS
 WITH budget AS (
     SELECT cost_center, account, period, SUM(amount) AS budget

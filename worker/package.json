@@ -1,0 +1,5 @@
+{
+  "name": "fdh-rule-studio-worker",
+  "private": true,
+  "description": "Cloudflare Worker for the Jedox Business Rule Studio. Deploy steps are in docs/WORKER-SETUP.md."
+}

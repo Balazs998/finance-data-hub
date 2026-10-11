@@ -1,0 +1,309 @@
+{
+  "jedox_version": "2026.1",
+  "metadata": {
+    "status": "CONFIRMED against DATA-DICTIONARY.md v1.3. CostCenter and Account base lists are the full dictionary codes; parents are Sales, Marketing, IT, G&A, R&D and REVENUE, EXPENSE. PnL_FX is the demo FX cube.",
+    "database": "FDH_DEMO",
+    "cubes": {
+      "PnL": [
+        "Version",
+        "Period",
+        "CostCenter",
+        "Account"
+      ],
+      "FX_RATE": [
+        "Currency",
+        "Period",
+        "Measure"
+      ],
+      "PnL_FX": [
+        "Version",
+        "Period",
+        "CostCenter",
+        "Account",
+        "Currency",
+        "Measure"
+      ]
+    },
+    "elements": {
+      "Version": {
+        "base": [
+          "Actual",
+          "Budget",
+          "Forecast"
+        ],
+        "rule": [
+          "Variance",
+          "Variance %"
+        ]
+      },
+      "Period": {
+        "base": [
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09"
+        ],
+        "consolidated": {
+          "FY2026": "2025-10..2026-09"
+        }
+      },
+      "CostCenter": {
+        "base": [
+          "CC1000",
+          "CC1010",
+          "CC2000",
+          "CC3000",
+          "CC3010",
+          "CC4000",
+          "CC4010",
+          "CC5000",
+          "CC5010",
+          "CC6000"
+        ],
+        "consolidated": [
+          "Sales",
+          "Marketing",
+          "IT",
+          "G&A",
+          "R&D"
+        ]
+      },
+      "Account": {
+        "base": [
+          "400000",
+          "410000",
+          "500000",
+          "600000",
+          "610000",
+          "620000",
+          "630000",
+          "640000"
+        ],
+        "consolidated": [
+          "REVENUE",
+          "EXPENSE"
+        ]
+      },
+      "Currency": [
+        "EUR",
+        "USD"
+      ],
+      "Measure (FX_RATE)": [
+        "Rate"
+      ],
+      "Measure (PnL_FX)": [
+        "Amount",
+        "Amount EUR",
+        "Label (string)"
+      ]
+    },
+    "fx_values": "EUR 1.0000, USD 0.9000 EUR per USD, every period (fictional)",
+    "palo_data_order": {
+      "PnL": "db, cube, Version, Period, CostCenter, Account",
+      "FX_RATE": "db, cube, Currency, Period, Measure",
+      "PnL_FX": "db, cube, Version, Period, CostCenter, Account, Currency, Measure"
+    },
+    "element_lists": "CostCenter and Account base members are the full v1.3 lists so unknown-element checks can run. Consolidated parents come from dim_cost_center.parent and dim_account.account_type."
+  },
+  "examples": [
+    {
+      "id": "ex01",
+      "title": "Variance on base cells",
+      "cube": "PnL",
+      "rule": "['Version':'Variance'] = B: ['Version':'Actual'] - ['Version':'Budget']",
+      "uses": [
+        "syn.ref.qualified",
+        "pre.B"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-comments-cell-restrictions.htm"
+      ],
+      "explanation": "Base-only difference; consolidated Variance (FY2026, cost-center groups, REVENUE/EXPENSE) aggregates automatically.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex02",
+      "title": "Variance % at every level, blank when Budget is 0",
+      "cube": "PnL",
+      "rule": "['Version':'Variance %'] = IF(['Version':'Budget'] != 0, (['Version':'Actual'] - ['Version':'Budget']) / ['Version':'Budget'], null)",
+      "uses": [
+        "syn.null",
+        "op.ne",
+        "fn.IF"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-terminology.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/zero-values.htm"
+      ],
+      "explanation": "No prefix so ratios are computed, not summed, at consolidated levels. null = blank, matching the dictionary definition.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex03",
+      "title": "Forecast copies Actual for a period list",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast','Period':{'2026-07','2026-08'}] = B: ['Version':'Actual']",
+      "uses": [
+        "syn.target.multi"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-dimensions-rule-targets-strings.htm"
+      ],
+      "explanation": "One restriction per dimension, with a list.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex04",
+      "title": "Specific before general with STET",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast','Period':'2026-09'] = B: STET()\n['Version':'Forecast'] = B: ['Version':'Budget']",
+      "uses": [
+        "syn.order",
+        "ctl.stet"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-overview.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm"
+      ],
+      "explanation": "2026-09 Forecast stays an input cell; the general rule fills the other periods.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex05",
+      "title": "CONTINUE to fall through",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: IF(['Version':'Actual'] != 0, ['Version':'Actual'], CONTINUE())\n['Version':'Forecast'] = B: ['Version':'Budget']",
+      "uses": [
+        "ctl.continue",
+        "syn.order"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-overview.htm"
+      ],
+      "explanation": "Actual where present, otherwise the next rule (Budget). 2026-09 has no Actual in the sample, so it gets Budget.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex06",
+      "title": "FX conversion with PALO.DATA",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: ['Measure':'Amount'] * PALO.DATA(\"FDH_DEMO\",\"FX_RATE\",!'Currency',!'Period',\"Rate\")",
+      "uses": [
+        "fn.PALO.DATA",
+        "syn.current"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-dimensions-rule-targets-strings.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engine-data-driven.htm"
+      ],
+      "explanation": "FX_RATE order: Currency, Period, Measure. !'Currency'/!'Period' take the target cell's elements (USD x 0.9000, EUR x 1.0000). \"\" could replace FDH_DEMO (same database).",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex07",
+      "title": "Same conversion with DCR",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: ['Measure':'Amount'] * 'FX_RATE'['Currency':!'Currency','Period':!'Period','Measure':'Rate']",
+      "uses": [
+        "syn.ref.dcr"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm"
+      ],
+      "explanation": "DCR names each source dimension; order irrelevant.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex08",
+      "title": "Prior period with OFFSET",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast','Period':'2026-09'] = B: ['Version':'Actual','Period':OFFSET(-1)]",
+      "uses": [
+        "syn.ref.offset"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm"
+      ],
+      "explanation": "2026-09 Forecast = 2026-08 Actual. Static reference only; assumes Period elements are in chronological order (position in dimension).",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex09",
+      "title": "Constant seed with comment",
+      "cube": "PnL",
+      "rule": "// Planning placeholder\n['Version':'Forecast','Period':'2026-09','CostCenter':'CC4010','Account':'400000'] = B: 0",
+      "uses": [
+        "syn.comments"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-comments-cell-restrictions.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/zero-values.htm"
+      ],
+      "explanation": "Comment persists with the rule. 0 and null display differently if Store Zero Values is on.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex10",
+      "title": "Marker only after an analyzed issue",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: [['Measure':'Amount']] * PALO.DATA(\"FDH_DEMO\",\"FX_RATE\",!'Currency',!'Period',\"Rate\")",
+      "uses": [
+        "mk.syntax",
+        "mk.correctness",
+        "mk.when"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/markers.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engine-data-driven.htm"
+      ],
+      "explanation": "Valid marker: result is 0 whenever Amount is 0. DDE may ignore it; add only for an analyzed performance issue.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex11",
+      "title": "Uniform SUM of versions",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: SUM(['Version':'Actual'],['Version':'Budget']) / 2",
+      "uses": [
+        "perf.uniform_lookup",
+        "fn.SUM"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engines.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm"
+      ],
+      "explanation": "Uniform lookups stay DDE-compatible.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    },
+    {
+      "id": "ex12",
+      "title": "String label with |",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Label'] = B: !'CostCenter' | \" \" | !'Currency'",
+      "uses": [
+        "op.concat",
+        "syn.current",
+        "perf.strings"
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-terminology.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-dimensions-rule-targets-strings.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engine-data-driven.htm"
+      ],
+      "explanation": "Label is a string measure. String rule results are not cached, and element variables outside cell references are not DDE - keep the target small.",
+      "verified": "syntax checked against cited docs; names checked against DATA-DICTIONARY v1.3; not executed in Jedox"
+    }
+  ]
+}

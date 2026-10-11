@@ -49,7 +49,7 @@ SAMPLE_DATA_FILES = (
 
 _ASSET_VERSION = ""
 _VERSIONED_ASSET = re.compile(
-    r'((?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool|font-rest)\.css|javascripts/[^"?]+\.js))"'
+    r'((?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool|font-rest|rule-studio)\.css|javascripts/[^"?]+\.js))"'
 )
 
 
@@ -84,7 +84,42 @@ def on_post_page(output, page, config):
     return _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
 
 
+def copy_rule_studio(config):
+    """Publish the shared checker, mock provider, and knowledge pack with the site.
+
+    The canonical copies live in ``static-checks/``, ``ai-engine/``, and
+    ``knowledge/``. The page loads the copies under ``docs/``.
+    """
+    import shutil
+
+    try:
+        docs_dir = config["docs_dir"]
+    except (TypeError, KeyError):
+        docs_dir = getattr(config, "docs_dir", None)
+    if not docs_dir:
+        return
+
+    root = Path(__file__).resolve().parents[1]
+    docs = Path(docs_dir)
+    scripts = docs / "javascripts"
+    pack = docs / "jedox" / "rule-studio" / "pack"
+    scripts.mkdir(parents=True, exist_ok=True)
+    pack.mkdir(parents=True, exist_ok=True)
+    mapping = {
+        root / "static-checks" / "checks.js": scripts / "rule-checks.js",
+        root / "ai-engine" / "mock.js": scripts / "rule-mock.js",
+        root / "ai-engine" / "diff.js": scripts / "rule-diff.js",
+        root / "knowledge" / "jedox-rules-2026.1.json": pack / "jedox-rules-2026.1.json",
+        root / "knowledge" / "examples-2026.1.json": pack / "examples-2026.1.json",
+    }
+    for source, dest in mapping.items():
+        if not source.is_file():
+            raise PluginError(f"Rule Studio asset is missing: {source}")
+        shutil.copyfile(source, dest)
+
+
 def on_config(config):
+    copy_rule_studio(config)
     code = str(config.extra.get("goatcounter_code") or "").strip()
     config.extra["goatcounter_code"] = code
     if code and not CODE_PATTERN.fullmatch(code):

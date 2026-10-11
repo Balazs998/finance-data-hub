@@ -1,0 +1,24 @@
+name = "fdh-rule-studio"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[durable_objects]
+bindings = [
+  { name = "BUDGET_GATE", class_name = "BudgetGate" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["BudgetGate"]
+
+[vars]
+AI_PROVIDER = "mock"
+AI_MODEL = ""
+ALLOWED_ORIGIN = "https://balazs998.github.io"
+MAX_BODY_BYTES = "48000"
+RATE_LIMIT_PER_IP = "30"
+RATE_LIMIT_GLOBAL = "400"
+DAILY_TOKEN_BUDGET = "100000"
+DAILY_SPEND_BUDGET_USD = "2"
+TOKEN_USD = "0.000002"

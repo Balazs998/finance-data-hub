@@ -1,0 +1,333 @@
+{
+  "schema": {
+    "$comment": "expected_findings: static findings only (SPEC: source=static). Empty list = no findings. Codes are proposed for static-checks/ (Grok Bot may rename).",
+    "metadata_file": "../../knowledge/examples-2026.1.json#metadata"
+  },
+  "cases": [
+    {
+      "id": "bad-01",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Variance' = B: ['Version':'Actual'] - ['Version':'Budget']",
+      "expected_findings": [
+        {
+          "code": "BRACKET_UNBALANCED",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Missing ] in target"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm"
+      ]
+    },
+    {
+      "id": "bad-02",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Variance'] = B: ['Version':'Actual] - ['Version':'Budget']",
+      "expected_findings": [
+        {
+          "code": "QUOTE_UNBALANCED",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Unclosed single quote"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm"
+      ]
+    },
+    {
+      "id": "bad-03",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Variance'] = X: ['Version':'Actual'] - ['Version':'Budget']",
+      "expected_findings": [
+        {
+          "code": "UNKNOWN_PREFIX",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Cell type restriction must be B: or C: (N: is the older form)"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-comments-cell-restrictions.htm"
+      ]
+    },
+    {
+      "id": "bad-04",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Period':'2026-08','Period':'2026-09'] = B: ['Version':'Budget']",
+      "expected_findings": [
+        {
+          "code": "DOUBLE_RESTRICTION",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Dimension Period restricted twice; use ['Period':{'2026-08','2026-09'}]"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-comments-cell-restrictions.htm"
+      ]
+    },
+    {
+      "id": "bad-05",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: ['Measure':'Amount'] * PALO.DATA(\"FDH_DEMO\",\"FX_RATE\",!'Currency',\"Rate\")",
+      "expected_findings": [
+        {
+          "code": "PALO_DATA_ARITY",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "FX_RATE has 3 dimensions (Currency, Period, Measure); PALO.DATA needs 5 arguments, got 4"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm"
+      ]
+    },
+    {
+      "id": "bad-06",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Variance'] = B: SUMX(['Version':'Actual'])",
+      "expected_findings": [
+        {
+          "code": "UNKNOWN_FUNCTION",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "SUMX is not a supported rule function in 2026.1"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm"
+      ]
+    },
+    {
+      "id": "bad-07",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Varience'] = B: ['Version':'Actual'] - ['Version':'Budget']",
+      "expected_findings": [
+        {
+          "code": "UNKNOWN_ELEMENT",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Element 'Varience' not in dimension Version"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-dimensions-rule-targets-strings.htm"
+      ]
+    },
+    {
+      "id": "bad-08",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: IF(['Version':'Actual'] = 0, ['Version':'Budget'], ['Version':'Actual'])",
+      "expected_findings": [
+        {
+          "code": "EXCEL_OPERATOR",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Use == for comparison, not ="
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-terminology.htm"
+      ]
+    },
+    {
+      "id": "bad-09",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Label'] = B: MID(!'CostCenter',1)",
+      "expected_findings": [
+        {
+          "code": "FUNCTION_ARITY",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "MID expects 3 arguments, got 2"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm"
+      ]
+    },
+    {
+      "id": "bad-10",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: ['Measure':'Amount'] * 'FX_RATE'['Rate']",
+      "expected_findings": [
+        {
+          "code": "DCR_DIMENSION_REQUIRED",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Each DCR item must name its dimension: 'FX_RATE'['Measure':'Rate']"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm"
+      ]
+    },
+    {
+      "id": "bad-11",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: ['Measure':'Amount'] * 'FX_RATE'['Currency':!'Currency','Period':OFFSET(-1),'Measure':'Rate']",
+      "expected_findings": [
+        {
+          "code": "OFFSET_IN_DCR",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "OFFSET works only in static cell references, not DCR"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm"
+      ]
+    },
+    {
+      "id": "bad-12",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: PALO.MARKER(\"FDH_DEMO\",\"PnL\",IF(['Version':'Actual'] > 10,\"Actual\",\"Budget\"),!'Period',!'CostCenter',!'Account')",
+      "expected_findings": [
+        {
+          "code": "MARKER_EXPRESSION_ARG",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "PALO.MARKER accepts only constants and variables, no expressions"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/markers.htm"
+      ],
+      "note": "Arity is correct (2 + 4 dims of PnL)."
+    },
+    {
+      "id": "bad-13",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Measure':'Amount EUR'] = B: ['Version':'Actual'] * 0.9",
+      "expected_findings": [
+        {
+          "code": "UNKNOWN_DIMENSION",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "PnL has no Measure dimension (Version, Period, CostCenter, Account); use cube PnL_FX"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm"
+      ]
+    },
+    {
+      "id": "bad-14",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: PALO.DATA(\"FDH_DEMO\",\"PnL\",\"Actual\",!'Period',!'CostCenter')",
+      "expected_findings": [
+        {
+          "code": "PALO_DATA_ARITY",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "PnL has 4 dimensions; PALO.DATA needs 6 arguments, got 5 (Account missing)"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm"
+      ]
+    },
+    {
+      "id": "logic-01",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: ['Version':'Budget']\n['Version':'Forecast','Period':'2026-09'] = B: STET()",
+      "expected_findings": [
+        {
+          "code": "SHADOWED_RULE",
+          "group": "logic",
+          "severity": "warning",
+          "source": "static",
+          "message": "Rule 2 target is fully covered by earlier rule 1 and never applies; put specific rules first"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-overview.htm"
+      ]
+    },
+    {
+      "id": "logic-02",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Variance'] = B: [['Version':'Actual']] - ['Version':'Budget']",
+      "expected_findings": [
+        {
+          "code": "MARKER_NONZERO_RESULT",
+          "group": "logic",
+          "severity": "warning",
+          "source": "static",
+          "message": "Result is not 0 when only the marked Actual is 0 (Budget-only cells, e.g. 2026-09, are skipped); mark both or remove the marker"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/markers.htm",
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engines.htm"
+      ]
+    },
+    {
+      "id": "logic-03",
+      "category": "broken",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Variance %'] = B: (['Version':'Actual'] - ['Version':'Budget']) / ['Version':'Budget']",
+      "expected_findings": [
+        {
+          "code": "RATIO_ON_BASE",
+          "group": "logic",
+          "severity": "warning",
+          "source": "static",
+          "message": "B: ratio is summed at consolidated levels (FY2026, groups); ratios need no prefix or C:"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-comments-cell-restrictions.htm"
+      ]
+    }
+  ]
+}

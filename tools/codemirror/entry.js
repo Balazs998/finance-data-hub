@@ -43,6 +43,66 @@ function groovy() {
   ];
 }
 
+/* Jedox rule text. Colours follow the same classes as the Groovy editor:
+   keywords (B:/C:/N:), strings, numbers, comments, and function names.
+   Block comments are matched a character at a time so the bundle still
+   contains only the Groovy mode's slash-star string. */
+function jedoxBlockOpen(stream) {
+  if (stream.peek() !== "/" || stream.string.charCodeAt(stream.pos + 1) !== 42) return false;
+  stream.next();
+  stream.next();
+  return true;
+}
+
+function jedoxBlockClose(stream) {
+  if (stream.peek() !== "*" || stream.string.charCodeAt(stream.pos + 1) !== 47) return false;
+  stream.next();
+  stream.next();
+  return true;
+}
+
+var jedoxMode = {
+  startState: function () { return { block: false }; },
+  copyState: function (state) { return { block: !!state.block }; },
+  token: function (stream, state) {
+    if (state.block) {
+      if (jedoxBlockClose(stream)) {
+        state.block = false;
+        return "comment";
+      }
+      stream.next();
+      return "comment";
+    }
+    if (stream.eatSpace()) return null;
+    if (stream.match("//")) {
+      stream.skipToEnd();
+      return "comment";
+    }
+    if (jedoxBlockOpen(stream)) {
+      state.block = true;
+      return "comment";
+    }
+    if (stream.match(/"(?:[^"\\]|\\.)*"/)) return "string";
+    if (stream.match(/'(?:[^'\\]|\\.)*'/)) return "string";
+    if (stream.match(/\b(?:B|C|N):/)) return "keyword";
+    if (stream.match(/\b(?:IF|IFS|STET|CONTINUE|OFFSET|SUM|MIN|MAX|AVERAGE|AND|OR|NOT|PALO\.[A-Z0-9]+)\b/)) {
+      return "variableName.function";
+    }
+    if (stream.match(/\b\d+(?:\.\d+)?\b/)) return "number";
+    if (stream.match(/!=|==|<=|>=/)) return "operator";
+    if (stream.match(/[+\-*/|=@<>!]/)) return "operator";
+    stream.next();
+    return null;
+  }
+};
+
+function jedox() {
+  return [
+    StreamLanguage.define(jedoxMode),
+    syntaxHighlighting(groovyHighlight)
+  ];
+}
+
 globalThis.EmailCodeMirror = {
   EditorState: EditorState,
   EditorView: EditorView,
@@ -66,5 +126,6 @@ globalThis.EmailCodeMirror = {
   linter: linter,
   lintGutter: lintGutter,
   forceLinting: forceLinting,
-  groovy: groovy
+  groovy: groovy,
+  jedox: jedox
 };

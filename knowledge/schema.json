@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://balazs998.github.io/finance-data-hub/knowledge/jedox-rules.schema.json",
+  "title": "Jedox rules knowledge pack",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["pack", "jedox_version", "syntax", "operators", "prefixes", "functions", "examples_file"],
+  "properties": {
+    "pack": { "const": "jedox-rules" },
+    "jedox_version": { "type": "string" },
+    "status": { "type": "string" },
+    "syntax": { "type": "array", "items": { "$ref": "#/$defs/sourced" } },
+    "operators": { "type": "array", "items": { "$ref": "#/$defs/sourced" } },
+    "prefixes": { "type": "array", "items": { "$ref": "#/$defs/sourced" } },
+    "functions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "min_args", "source", "unverified"],
+        "properties": {
+          "name": { "type": "string" },
+          "min_args": { "type": "integer", "minimum": 0 },
+          "max_args": { "type": ["integer", "null"] },
+          "source": { "type": "string", "format": "uri" },
+          "unverified": { "type": "boolean" },
+          "dde_supported": { "type": ["boolean", "null"] }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sourced": {
+      "type": "object",
+      "required": ["id", "source", "unverified"],
+      "properties": {
+        "id": { "type": "string" },
+        "source": { "type": "string" },
+        "unverified": { "type": "boolean" }
+      }
+    }
+  }
+}

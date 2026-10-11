@@ -28,3 +28,7 @@ The last note sends every cost center owner their own Budget vs. Actual table fr
 The same job can be filled in from the browser. The builder writes the tested script with your wording, and the checker looks for the usual traps. Both stay on your machine.
 
 [Create your own email](email-builder.md){ .md-button }
+
+Business Rule Studio reads a cube rule as text. Static checks run in the browser. A draft from the mock provider is labelled as mock. Nothing is executed in Jedox. The demo cubes are the fictional FDH_DEMO model.
+
+[Business Rule Studio](rule-studio/index.md){ .md-button }

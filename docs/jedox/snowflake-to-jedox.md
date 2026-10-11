@@ -226,7 +226,7 @@ Then run the job a second time. The totals shouldn't change. If they double, the
 And in Snowflake, you can see every query the job ran in the last 7 days. Run this as a role with MONITOR on the warehouse:
 
 ```sql
--- a role with MONITOR on the warehouse
+USE ROLE SYSADMIN; -- or any role with MONITOR on JEDOX_ETL_WH
 SELECT start_time, query_text, total_elapsed_time
 FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
 WHERE query_tag = 'jedox_actuals_load'

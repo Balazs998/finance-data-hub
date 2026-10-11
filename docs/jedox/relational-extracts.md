@@ -109,7 +109,8 @@ Both extracts use the `SNOWFLAKE_DEMO` connection and feed the same Cube Load in
     The RelationalTable extract doesn't download the table. It turns your columns, filters and grouping into a SELECT with WHERE, GROUP BY and HAVING, and Snowflake runs it. You can see this yourself. Run both extracts, then look them up in query history (the launch post's lookup plus a row count):
 
     ```sql
-    -- a role with MONITOR on the warehouse
+    USE ROLE SYSADMIN; -- or any role with MONITOR on JEDOX_ETL_WH
+    -- What did Snowflake actually run? Both extracts show up here.
     SELECT start_time, query_text, rows_produced, total_elapsed_time
     FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
     WHERE query_tag = 'jedox_actuals_load'

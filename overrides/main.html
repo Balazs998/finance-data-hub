@@ -7,6 +7,8 @@
   {% if page and page.file and page.file.src_uri not in ["index.md", "jedox/index.md", "downloads.md", "about.md"] %}
   <link rel="preload" href="{{ 'fonts/jetbrains-mono-latin-400-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
   {% endif %}
+  <link rel="stylesheet" href="{{ 'stylesheets/font-rest.css' | url }}" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="{{ 'stylesheets/font-rest.css' | url }}"></noscript>
   {{ super() }}
   {% if social_image_url %}
   <meta property="og:title" content="{{ social_title }}">

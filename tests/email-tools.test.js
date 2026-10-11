@@ -145,6 +145,15 @@ test("the email template fits a phone without a fixed width", function () {
   assert.equal(builder.includes('frame.style.width = width + "px"'), false);
 });
 
+test("the preview focus ring is on the wrapper", function () {
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  const page = fs.readFileSync(path.join(root, "docs/jedox/email-builder.md"), "utf8");
+  assert.match(page, /class="email-frame-wrap" tabindex="0" role="group" aria-label="Email preview"/);
+  assert.match(page, /id="email-frame" title="Email preview" tabindex="-1"/);
+  assert.match(css, /\.email-frame-wrap:focus-visible,\s*\.email-frame-wrap:focus-within \{\s*outline: 2px solid #38BDF8;\s*outline-offset: 2px;\s*\}/);
+  assert.match(css, /\.email-app \.email-frame-wrap iframe:focus-visible \{\s*outline: none;\s*\}/);
+});
+
 test("outlook conditional comments are not checker issues", function () {
   const open = '<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->';
   const close = '<!--[if mso]></td></tr></table><![endif]-->';

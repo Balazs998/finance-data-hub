@@ -455,11 +455,18 @@ body:has(#email-builder) .md-header__title {
   background: #f3f6f9;
 }
 
-/* The preview focus lands inside the iframe, so the ring goes on the
-   wrapper. #38BDF8 is the site link color. */
+/* Tab stops on the wrapper. Keyboard focus on the iframe does not
+   match :focus-within, so a ring painted on the iframe never shows.
+   #38BDF8 is the site link color. */
+.email-frame-wrap:focus-visible,
 .email-frame-wrap:focus-within {
   outline: 2px solid #38BDF8;
   outline-offset: 2px;
+}
+
+.email-app .email-frame-wrap iframe:focus,
+.email-app .email-frame-wrap iframe:focus-visible {
+  outline: none;
 }
 
 .email-subject-line {

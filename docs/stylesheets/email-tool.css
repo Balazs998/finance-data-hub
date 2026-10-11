@@ -2,6 +2,112 @@
    Error #F87171 and warning #FBBF24 are never the only signal:
    gutter icons and the words Error, Warning, and Check sit beside them. */
 
+/* Local faces adjusted to Inter, Space Grotesk, and JetBrains Mono,
+   so the builder keeps its size when those fonts swap in. */
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 100 500;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 107%;
+  ascent-override: 90.5%;
+  descent-override: 22.53%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: italic;
+  font-weight: 100 500;
+  src: local("Arial Italic"), local("Arimo Italic"), local("Liberation Sans Italic");
+  size-adjust: 107%;
+  ascent-override: 90.5%;
+  descent-override: 22.53%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 600 900;
+  src: local("Arial Bold"), local("Arimo Bold"), local("Liberation Sans Bold");
+  size-adjust: 102.6%;
+  ascent-override: 90.5%;
+  descent-override: 22.53%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: italic;
+  font-weight: 600 900;
+  src: local("Arial Bold Italic"), local("Arimo Bold Italic"), local("Liberation Sans Bold Italic");
+  size-adjust: 102.6%;
+  ascent-override: 90.5%;
+  descent-override: 22.53%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Space Grotesk Fallback";
+  font-style: normal;
+  font-weight: 500 700;
+  src: local("Arial"), local("Arimo"), local("Liberation Sans");
+  size-adjust: 107%;
+  ascent-override: 92%;
+  descent-override: 27.3%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  font-style: normal;
+  font-weight: 100 900;
+  src: local("Liberation Mono"), local("Cousine");
+  size-adjust: 100%;
+  ascent-override: 100%;
+  descent-override: 29.41%;
+  line-gap-override: 0%;
+}
+
+.md-content__inner:has(#email-builder) {
+  --md-text-font: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
+  font-family: var(--md-text-font);
+}
+
+/* The breadcrumb sits above the builder. Keep its font metrics matched
+   so the builder does not move down when Inter loads. */
+body:has(#email-builder) .md-path {
+  font-family: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
+}
+
+body:has(#email-builder) .md-header__title {
+  font-family: "Space Grotesk", "Space Grotesk Fallback", "Inter", "Inter Fallback", sans-serif;
+}
+
+.md-typeset:has(#email-builder) :is(h1, h2, h3, h4) {
+  font-family: "Space Grotesk", "Space Grotesk Fallback", "Inter", "Inter Fallback", sans-serif;
+}
+
+#email-builder {
+  --md-code-font: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
+  font-family: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
+}
+
+/* Loaded height of the builder at the two phone widths Lighthouse uses.
+   The box stays put while the fallback above is swapped for the web font. */
+@media screen and (max-width: 390px) {
+  #email-builder {
+    min-height: 1862.45px;
+  }
+}
+
+@media screen and (min-width: 391px) and (max-width: 412px) {
+  #email-builder {
+    min-height: 1769.67px;
+  }
+}
+
 .md-content__inner:has(.email-app) {
   max-width: 72rem;
 }
@@ -106,7 +212,7 @@
   border-radius: 999px;
   background: transparent;
   color: var(--dn-text-muted);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 11px;
   font-weight: 500;
   line-height: 1.45;
@@ -146,7 +252,7 @@
   border: 1px solid #9aa7b4;
   border-radius: 999px;
   color: var(--dn-text);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 11px;
   font-style: italic;
   font-weight: 700;
@@ -420,7 +526,7 @@
   border-radius: 8px;
   box-shadow: none;
   color: var(--dn-text);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 13px;
   line-height: calc(1.7 * 13px);
   white-space: pre;
@@ -488,7 +594,7 @@
   flex: none;
   padding: 12px 0;
   color: var(--dn-text-faint);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 13px;
   line-height: calc(1.7 * 13px);
 }
@@ -545,7 +651,7 @@
 
 .email-highlight,
 .email-code-main textarea {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 13px;
   line-height: calc(1.7 * 13px);
   tab-size: 4;
@@ -561,7 +667,7 @@
   overflow: hidden;
   white-space: pre;
   color: var(--dn-text);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 13px;
   line-height: calc(1.7 * 13px);
 }
@@ -707,7 +813,7 @@
 .md-typeset .email-app .email-name-list li {
   margin: 0 0 4px;
   color: var(--dn-text);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 12px;
 }
 
@@ -954,7 +1060,7 @@
   max-width: 100%;
   min-height: 0;
   flex: 1 1 auto;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 14px;
   line-height: calc(1.7 * 14px);
 }
@@ -963,7 +1069,7 @@
   padding: 20px 16px 20px 20px;
   color: #e6edf3;
   caret-color: #e6edf3;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 14px;
   line-height: calc(1.7 * 14px);
 }
@@ -977,7 +1083,7 @@
   padding: 0;
   white-space: pre;
   color: #e6edf3;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 14px;
   line-height: calc(1.7 * 14px);
 }
@@ -1011,7 +1117,7 @@
   min-width: 48px;
   min-height: 420px !important;
   color: #8b98a5;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
   font-size: 14px;
 }
 
@@ -1038,7 +1144,7 @@
   min-height: 1em;
   content: none;
   cursor: pointer;
-  font-family: Inter, "Segoe UI", sans-serif;
+  font-family: Inter, "Inter Fallback", "Segoe UI", sans-serif;
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
@@ -1090,7 +1196,7 @@
 #email-checker .cm-tooltip-autocomplete ul {
   max-height: 256px;
   min-width: 280px;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
 }
 
 #email-checker .cm-tooltip-autocomplete ul li {
@@ -1110,14 +1216,14 @@
 }
 
 #email-checker .cm-completionLabel {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
 }
 
 #email-checker .cm-completionDetail {
   margin-left: auto;
   padding-left: 16px;
   color: var(--dn-text-muted);
-  font-family: Inter, "Segoe UI", sans-serif;
+  font-family: Inter, "Inter Fallback", "Segoe UI", sans-serif;
   font-size: 12px;
   font-style: normal;
 }

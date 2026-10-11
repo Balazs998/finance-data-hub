@@ -149,6 +149,9 @@
   --reveal-duration: 0.55s;
   --md-text-font: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
   --md-code-font: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
+  --font-body: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
+  --font-heading: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
+  --font-code: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
 }
 
 [data-md-color-scheme="slate"][data-md-color-primary="black"] {
@@ -1194,4 +1197,57 @@ html.js .reveal.reveal-wait.is-visible {
     min-width: 0;
     height: auto;
   }
+}
+
+/* Section indexes need about 1080px of article width for three cards at 1440. */
+@media screen and (min-width: 76.25em) {
+  .md-grid:has(.fdh-section) {
+    max-width: 68.1rem;
+  }
+}
+
+/* Material's list rules outrank section.css (display:flow-root, discs, indent). */
+[dir] .md-typeset ul.fdh-cards:not([hidden]) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[dir] .md-typeset ul.fdh-cards--few:not([hidden]) {
+  grid-template-columns: 1fr;
+}
+
+[dir] .md-typeset .fdh-downloads ul:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[dir] .md-typeset .fdh-cards > li,
+[dir] .md-typeset .fdh-downloads li {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  [dir] .md-typeset ul.fdh-cards:not([hidden]) {
+    grid-template-columns: 1fr;
+  }
+
+  [dir] .md-typeset .fdh-downloads ul:not([hidden]) {
+    flex-direction: column;
+  }
+}
+
+.md-typeset .fdh-card p {
+  margin: 0;
+}
+
+.md-typeset .fdh-card .fdh-card__meta {
+  margin: 0.35rem 0 0;
 }

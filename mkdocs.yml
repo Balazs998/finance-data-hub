@@ -12,6 +12,7 @@ extra_css:
   - stylesheets/extra.css
   - stylesheets/email-tool.css
   - stylesheets/rule-studio.css
+  - stylesheets/section.css
 
 extra_javascript:
   - javascripts/reveal.js

@@ -8,6 +8,8 @@ hide:
 
 # Check your email script
 
+<p class="post-meta">Jedox</p>
+
 Paste or type your Groovy script. It checks as you type, and nothing leaves your browser.
 { .email-lead }
 
@@ -23,7 +25,7 @@ Paste or type your Groovy script. It checks as you type, and nothing leaves your
 <button type="button" class="email-seg-btn is-on" role="radio" aria-checked="true" data-script-type="job">Groovy job</button>
 <button type="button" class="email-seg-btn" role="radio" aria-checked="false" data-script-type="function">Groovy function</button>
 </div>
-<p class="email-type-hint" id="script-type-hint">Pick <strong>Job</strong> if the script runs as its own job, like the value-email script. Pick <strong>Function</strong> if it calculates a value for each row inside a transform.</p>
+<p class="email-type-hint" id="script-type-hint">Pick <strong>Groovy job</strong> if the script runs as its own job, like the value-email script. Pick <strong>Groovy function</strong> if it calculates a value for each row inside a transform.</p>
 </div>
 <div class="email-grid email-grid-checker">
 <div class="email-editor-column">

@@ -6,6 +6,8 @@ social_image: automated-value-emails.png
 
 # Automated value emails from Jedox Integrator with a generic Groovy template
 
+<p class="post-meta">Jedox</p>
+
 Every month somebody exports a report, cuts it into one piece per cost center and emails each owner their numbers. This post replaces that with one Integrator job. It reads Budget and Actual from a cube, builds a formatted email for each cost center owner and sends it.
 
 The job is built so that you rarely touch the code. Recipients live in a CSV file, the look of the email lives in an HTML file, and everything else (period, versions, subject, test mode) is a job variable.
@@ -24,9 +26,6 @@ Everything runs on the site's made-up sample data: 10 cost centers and 8 account
 
 There's no mail component in Integrator. You send email from a **Groovy job**, using the mailer the job API gives you:
 
-!!! info "Job or function?"
-    Integrator runs Groovy in two places. A Groovy **job** is a job of its own, which you can run directly or call from another job. It can run extracts and loads, read job variables and send email, and the value-email script in this post is one. A Groovy **function** sits inside a transform, calculates a value for each row, and returns it. If you're building the email script from this post, choose a job.
-
 ```groovy
 def mailer = API.getMailer()
 mailer.addRecipient('owner.cc4010@example.com')
@@ -35,6 +34,9 @@ mailer.setHtmlMessage(html)
 mailer.send()
 mailer.reset() // clear recipients, subject and body before the next email
 ```
+
+!!! info "Job or function?"
+    Integrator runs Groovy in two places. A Groovy **job** is a job of its own, which you can run directly or call from another job. It can run extracts and loads, read job variables and send email, and the value-email script in this post is one. A Groovy **function** sits inside a transform, calculates a value for each row, and returns it. If you're building the email script from this post, choose a job.
 
 `addCcRecipient` and `addBccRecipient` work the same way as `addRecipient`. `addAttachment(filename)` attaches a file. The docs don't say which folder a relative path starts from, so check in your Integrator (or use `API.getLocalFilesDir()`).
 

@@ -6,6 +6,8 @@ social_image: snowflake-to-jedox.png
 
 # From Snowflake to Jedox: a rerun-safe actuals load with Integrator
 
+<p class="post-meta">Snowflake · Jedox</p>
+
 Most finance teams keep their actuals in a warehouse and do their planning in a separate tool. This post connects the two. We'll pull monthly actuals out of Snowflake and load them into a Jedox planning cube, in a way you can rerun as often as you like without leaving stale numbers behind.
 
 Everything here runs on made-up sample data: 10 cost centers, 8 accounts, and twelve months of Budget and eleven of Actual for fiscal year 2026 (October 2025 to September 2026). You can download the files below and follow along.
@@ -218,10 +220,10 @@ In Jedox, read the same total for `Actual` and `2026-03` at the top of `CostCent
 
 Then run the job a second time. The totals shouldn't change. If they double, the load is adding instead of replacing. If an old value survives, the clear step isn't covering the slice.
 
-And in Snowflake, you can see every query the job ran in the last 7 days. Run this as SYSADMIN, which owns the warehouse and can see the service user's queries:
+And in Snowflake, you can see every query the job ran in the last 7 days. Run this as a role with MONITOR on the warehouse:
 
 ```sql
-USE ROLE SYSADMIN;
+-- a role with MONITOR on the warehouse
 SELECT start_time, query_text, total_elapsed_time
 FROM TABLE(FDH_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(WAREHOUSE_NAME => 'JEDOX_ETL_WH', END_TIME_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP()), RESULT_LIMIT => 10000))
 WHERE query_tag = 'jedox_actuals_load'

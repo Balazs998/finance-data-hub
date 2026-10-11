@@ -519,9 +519,9 @@ body:has(#email-builder) .md-header__title {
   background: #f3f6f9;
 }
 
-#email-frame:focus,
-#email-frame:focus-visible,
-#email-frame:focus-within {
+/* The preview focus lands inside the iframe, so the ring goes on the
+   wrapper. #38BDF8 is the site link color. */
+.email-frame-wrap:focus-within {
   outline: 2px solid #38BDF8;
   outline-offset: 2px;
 }

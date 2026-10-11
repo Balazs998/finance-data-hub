@@ -8,6 +8,8 @@ hide:
 
 # Create your own email
 
+<p class="post-meta">Jedox</p>
+
 Fill in the form, watch the email build, then download a tested Groovy script. Nothing you type leaves your browser.
 { .email-lead }
 

@@ -110,4 +110,8 @@ test("full dictionary lists recognise CC4010 and 400000 and reject a typo", func
     { version: "2026.1", cube: "PnL", pack: pack, metadata: examples.metadata }
   );
   assert.ok(typo.findings.some(function (item) { return item.code === "UNKNOWN_ELEMENT"; }));
+  ["['Period':'FY2026'] = B: 1", "['CostCenter':'All Cost Centers'] = B: 1"].forEach(function (rule) {
+    const result = checks.checkRule(rule, { version: "2026.1", cube: "PnL", pack: pack, metadata: examples.metadata });
+    assert.deepEqual(result.findings.filter(function (item) { return item.code === "UNKNOWN_ELEMENT"; }), [], rule);
+  });
 });

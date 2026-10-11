@@ -45,6 +45,8 @@ class RuleStudioTests(unittest.TestCase):
             accounts,
             ["400000", "410000", "500000", "600000", "610000", "620000", "630000", "640000"],
         )
+        self.assertEqual(examples["metadata"]["elements"]["Period"]["consolidated"], ["FY2026"])
+        self.assertIn("All Cost Centers", examples["metadata"]["elements"]["CostCenter"]["consolidated"])
         self.assertNotIn("PLAN_VS_ACTUAL", json.dumps(examples))
         joined = "\n".join(example["rule"] for example in examples["examples"])
         self.assertIn('PALO.DATA("FDH_DEMO","FX_RATE",!\'Currency\',!\'Period\',"Rate")', joined)

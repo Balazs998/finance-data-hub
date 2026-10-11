@@ -21,7 +21,7 @@ Database `FDH_DEMO`.
 | FX_RATE | Currency, Period, Measure |
 | PnL_FX | Version, Period, CostCenter, Account, Currency, Measure |
 
-Version elements: Actual, Budget, Forecast, plus rule elements Variance and Variance %. Period runs `2025-10` through `2026-09`, with consolidated `FY2026`. CostCenter base codes are CC1000, CC1010, CC2000, CC3000, CC3010, CC4000, CC4010, CC5000, CC5010, CC6000, with parents Sales, Marketing, IT, G&A, and R&D. Account base codes are 400000, 410000, 500000, 600000, 610000, 620000, 630000, 640000, with parents REVENUE and EXPENSE. Currency is EUR and USD. FX_RATE's measure is Rate. PnL_FX measures are Amount, Amount EUR, and Label (a string element).
+Version elements: Actual, Budget, Forecast, plus rule elements Variance and Variance %. Period runs `2025-10` through `2026-09`, with consolidated `FY2026` (`2025-10..2026-09`). CostCenter base codes are CC1000, CC1010, CC2000, CC3000, CC3010, CC4000, CC4010, CC5000, CC5010, CC6000, with parents Sales, Marketing, IT, G&A, and R&D, plus the top element All Cost Centers. Account base codes are 400000, 410000, 500000, 600000, 610000, 620000, 630000, 640000, with parents REVENUE and EXPENSE. Currency is EUR and USD. FX_RATE's measure is Rate. PnL_FX measures are Amount, Amount EUR, and Label (a string element).
 
 `PALO.DATA` and `PALO.MARKER` take the database, the cube, then one coordinate per dimension of that cube, in the cube's dimension order. The FX lookup used by the examples is `PALO.DATA("FDH_DEMO","FX_RATE",!'Currency',!'Period',"Rate")`.
 

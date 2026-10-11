@@ -38,6 +38,7 @@
     var dragFrom = -1;
     var lastStatic = [];
     var lastAi = null;
+    var lastGenerated = null;
     var widgetId = null;
 
     var editorHost = document.getElementById("rs-editor");
@@ -114,10 +115,11 @@
         return;
       }
       var lintFindings = [];
-      function lintSource(state) {
+      function lintSource(editorView) {
+        var doc = editorView.state.doc;
         return lintFindings.map(function (item) {
-          var lineNo = Math.min(Math.max(item.line || 1, 1), state.doc.lines);
-          var line = state.doc.line(lineNo);
+          var lineNo = Math.min(Math.max(item.line || 1, 1), doc.lines);
+          var line = doc.line(lineNo);
           var severity = item.severity === "error" ? "error" : item.severity === "warning" ? "warning" : "info";
           return { from: line.from, to: line.to, severity: severity, message: item.message };
         });
@@ -582,11 +584,15 @@
     function renderDraft(ai) {
       var box = document.getElementById("rs-draft");
       if (ai.clarification) {
+        lastGenerated = null;
         box.hidden = true;
         showClarification(ai);
+        results.innerHTML = '<div class="rs-card rs-state"><h3>Waiting on your answers</h3>' +
+          '<p class="rs-cnt">The mock provider did not write a rule. Answer the questions above, then continue.</p></div>';
         say("The draft needs a clarification.");
         return;
       }
+      lastGenerated = ai;
       document.getElementById("rs-clarify").hidden = true;
       box.hidden = false;
       var mock = ai.mock !== false;
@@ -652,7 +658,7 @@
     }
 
     async function refine() {
-      var before = ruleText();
+      var before = (lastGenerated && lastGenerated.rule) || ruleText();
       var chips = [];
       root.querySelectorAll(".rs-chip[aria-pressed=true]").forEach(function (chip) { chips.push(chip.textContent.trim()); });
       var instruction = document.getElementById("rs-instruction").value.trim();
@@ -668,7 +674,14 @@
         if (ai.mock === false) {
           /* A live provider may return a rule. The badge stays off only then. */
         }
-        setRule(ai.rule || before);
+        var next = ai.rule || before;
+        if (lastGenerated) {
+          renderDraft(Object.assign({}, lastGenerated, {
+            rule: next,
+            explanation: ai.explanation || lastGenerated.explanation
+          }));
+        }
+        setRule(next);
         var host = document.getElementById("rs-refine-diff");
         host.hidden = false;
         host.innerHTML = '<div class="rs-grid2 equal"><div><div class="rs-label">Before</div>' + renderCode(before, "rs-del") +
@@ -738,6 +751,7 @@
         document.getElementById("rs-draft").hidden = true;
         document.getElementById("rs-refine-diff").hidden = true;
         document.getElementById("rs-clarify").hidden = true;
+        lastGenerated = null;
         showEmpty();
         say("Cleared.");
       });
@@ -746,6 +760,10 @@
       });
       cubeSelect.addEventListener("change", function () {
         document.getElementById("rs-target").value = cubeSelect.value;
+        if ((examplesDoc.metadata.cubes || {})[cubeSelect.value]) {
+          dims = dimsFromCube(cubeSelect.value);
+          drawDims();
+        }
       });
       document.getElementById("rs-target").addEventListener("change", function () {
         var name = document.getElementById("rs-target").value.trim();

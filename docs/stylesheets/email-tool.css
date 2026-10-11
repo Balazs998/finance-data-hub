@@ -2,73 +2,9 @@
    Error #F87171 and warning #FBBF24 are never the only signal:
    gutter icons and the words Error, Warning, and Check sit beside them. */
 
-/* Local faces adjusted to Inter, Space Grotesk, and JetBrains Mono,
-   so the builder keeps its size when those fonts swap in. */
-@font-face {
-  font-family: "Inter Fallback";
-  font-style: normal;
-  font-weight: 100 500;
-  src: local("Arial"), local("Arimo"), local("Liberation Sans");
-  size-adjust: 107%;
-  ascent-override: 90.5%;
-  descent-override: 22.53%;
-  line-gap-override: 0%;
-}
-
-@font-face {
-  font-family: "Inter Fallback";
-  font-style: italic;
-  font-weight: 100 500;
-  src: local("Arial Italic"), local("Arimo Italic"), local("Liberation Sans Italic");
-  size-adjust: 107%;
-  ascent-override: 90.5%;
-  descent-override: 22.53%;
-  line-gap-override: 0%;
-}
-
-@font-face {
-  font-family: "Inter Fallback";
-  font-style: normal;
-  font-weight: 600 900;
-  src: local("Arial Bold"), local("Arimo Bold"), local("Liberation Sans Bold");
-  size-adjust: 102.6%;
-  ascent-override: 90.5%;
-  descent-override: 22.53%;
-  line-gap-override: 0%;
-}
-
-@font-face {
-  font-family: "Inter Fallback";
-  font-style: italic;
-  font-weight: 600 900;
-  src: local("Arial Bold Italic"), local("Arimo Bold Italic"), local("Liberation Sans Bold Italic");
-  size-adjust: 102.6%;
-  ascent-override: 90.5%;
-  descent-override: 22.53%;
-  line-gap-override: 0%;
-}
-
-@font-face {
-  font-family: "Space Grotesk Fallback";
-  font-style: normal;
-  font-weight: 500 700;
-  src: local("Arial"), local("Arimo"), local("Liberation Sans");
-  size-adjust: 107%;
-  ascent-override: 92%;
-  descent-override: 27.3%;
-  line-gap-override: 0%;
-}
-
-@font-face {
-  font-family: "JetBrains Mono Fallback";
-  font-style: normal;
-  font-weight: 100 900;
-  src: local("Liberation Mono"), local("Cousine");
-  size-adjust: 100%;
-  ascent-override: 100%;
-  descent-override: 29.41%;
-  line-gap-override: 0%;
-}
+/* Fallback faces for these families are declared in extra.css, measured
+   from the self-hosted files. A second copy here would win the cascade
+   and put the builder back on the wrong metrics. */
 
 .md-content__inner:has(#email-builder) {
   --md-text-font: "Inter", "Inter Fallback", "Segoe UI", sans-serif;

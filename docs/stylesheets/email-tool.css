@@ -1038,6 +1038,13 @@ body:has(#email-builder) .md-header__title {
   border-radius: 8px;
 }
 
+/* Hold the empty editor at the mounted height so CodeMirror does not push
+   the page down. On a phone that is the 240px editor plus the 56px gap
+   under the sticky bar. */
+#email-checker .email-editor {
+  min-height: 420px;
+}
+
 #email-checker .cm-editor {
   position: relative;
   display: flex;
@@ -1246,6 +1253,10 @@ body:has(#email-builder) .md-header__title {
 }
 
 @media screen and (max-width: 760px) {
+  #email-checker .email-editor {
+    min-height: 296px;
+  }
+
   #email-checker .cm-editor,
   #email-checker .cm-scroller,
   #email-checker .cm-gutters {
@@ -1380,6 +1391,10 @@ body:has(#email-builder) .md-header__title {
 }
 
 @media screen and (max-width: 639px) {
+  #email-checker .email-editor {
+    min-height: calc(min(240px, 50vh) + 56px);
+  }
+
   #email-checker .cm-editor {
     max-height: 50vh;
     min-height: min(240px, 50vh) !important;

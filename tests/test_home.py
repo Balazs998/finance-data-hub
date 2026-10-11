@@ -295,8 +295,8 @@ class HomePageTests(unittest.TestCase):
     def test_self_hosted_fonts_logo_and_robots(self):
         self.assertNotIn("fonts.googleapis.com", self.html)
         self.assertNotIn("fonts.gstatic.com", self.html)
-        self.assertIn('href="fonts/inter-latin-400.woff2"', self.html)
-        self.assertIn('href="fonts/space-grotesk-latin-600.woff2"', self.html)
+        self.assertIn('href="fonts/inter-latin-400-normal.woff2"', self.html)
+        self.assertIn('href="fonts/space-grotesk-latin-600-normal.woff2"', self.html)
         self.assertIn('as="font"', self.html)
         self.assertIn("crossorigin", self.html)
         self.assertIn('width="48"', self.html)
@@ -304,8 +304,8 @@ class HomePageTests(unittest.TestCase):
         self.assertNotIn("fonts.googleapis.com", (ROOT / "overrides" / "main.html").read_text(encoding="utf-8"))
         checker = (SITE / "jedox" / "email-checker" / "index.html").read_text(encoding="utf-8")
         self.assertNotIn("fonts.googleapis.com", checker)
-        self.assertIn('href="../../fonts/inter-latin-400.woff2"', checker)
-        self.assertIn('href="../../fonts/space-grotesk-latin-600.woff2"', checker)
+        self.assertIn('href="../../fonts/inter-latin-400-normal.woff2"', checker)
+        self.assertIn('href="../../fonts/space-grotesk-latin-600-normal.woff2"', checker)
         self.assertIn('id="email-how" open', checker)
         for name in (
             "inter-latin-400-normal.woff2",

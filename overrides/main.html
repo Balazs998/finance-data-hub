@@ -4,7 +4,9 @@
   <script>document.documentElement.classList.add("js");</script>
   <link rel="preload" href="{{ 'fonts/inter-latin-400-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{{ 'fonts/space-grotesk-latin-600-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
-  <noscript><link rel="stylesheet" href="{{ 'stylesheets/code-font.css' | url }}"></noscript>
+  {% if page and page.file and page.file.src_uri not in ["index.md", "jedox/index.md", "downloads.md", "about.md"] %}
+  <link rel="preload" href="{{ 'fonts/jetbrains-mono-latin-400-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
+  {% endif %}
   {{ super() }}
   {% if social_image_url %}
   <meta property="og:title" content="{{ social_title }}">

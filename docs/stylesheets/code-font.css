@@ -1,5 +1,5 @@
-/* JetBrains Mono, Latin subset. Loaded after the first paint so it does not
-   compete with the text fonts. The size-matched fallback lives in extra.css. */
+/* JetBrains Mono, Latin subset. Linked from the page head. The
+   size-matched fallback lives in extra.css. */
 
 @font-face {
   font-family: "JetBrains Mono";

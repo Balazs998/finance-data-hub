@@ -108,20 +108,3 @@
     setup();
   }
 })();
-
-/* JetBrains Mono is not used for the first paint. Request it once the
-   page has loaded so it does not sit on the critical path. */
-(function () {
-  function loadCodeFont() {
-    var extra = document.querySelector('link[rel="stylesheet"][href*="stylesheets/extra.css"]');
-    if (!extra || document.getElementById("code-font")) return;
-    var link = document.createElement("link");
-    link.id = "code-font";
-    link.rel = "stylesheet";
-    link.href = extra.href.replace(/extra\.css(\?.*)?$/, "code-font.css$1");
-    document.head.appendChild(link);
-  }
-
-  if (document.readyState === "complete") loadCodeFont();
-  else window.addEventListener("load", loadCodeFont);
-})();

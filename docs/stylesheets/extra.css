@@ -145,7 +145,7 @@
   line-gap-override: 0%;
 }
 
-/* The JetBrains Mono files are in code-font.css, requested after load. */
+/* The JetBrains Mono files are in code-font.css, linked from the page head. */
 
 @font-face {
   font-family: "JetBrains Mono Fallback";

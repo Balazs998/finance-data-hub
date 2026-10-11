@@ -8,7 +8,7 @@ social_image: plan-vs-actuals.png
 
 <p class="post-meta">Snowflake</p>
 
-A variance report has one job: show every euro that's in the budget or in the actuals. The most common way it fails is quiet. Somebody joins actuals to budget with a `LEFT JOIN` or an inner join, the report looks fine, and the rows that exist on only one side vanish.
+A variance report has one job: show every amount that's in the budget or in the actuals. The most common way it fails is quiet. Somebody joins actuals to budget with a `LEFT JOIN` or an inner join, the report looks fine, and the rows that exist on only one side vanish.
 
 This post builds the variance the safe way, using the site's made-up sample data: 10 cost centers and 8 accounts. Budget covers October 2025 to September 2026 and Actual covers October 2025 to August 2026.
 
@@ -28,7 +28,6 @@ Never join two fact tables at posting level. If a cell has three actual postings
 ```sql
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
--- JEDOX_ETL_WH is created in the Snowflake to Jedox post; use any warehouse you can use.
 USE WAREHOUSE JEDOX_ETL_WH;
 
 WITH budget AS (
@@ -62,7 +61,6 @@ SELECT COUNT(*) FROM budget; -- 696 cells
 ```sql
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;
--- JEDOX_ETL_WH is created in the Snowflake to Jedox post; use any warehouse you can use.
 USE WAREHOUSE JEDOX_ETL_WH;
 
 CREATE OR REPLACE VIEW V_PLAN_VS_ACTUAL AS
@@ -95,11 +93,6 @@ FULL OUTER JOIN budget AS b
     AND a.period = b.period;
 ```
 
-`JEDOX_ETL_WH` is created in the [From Snowflake to Jedox](../jedox/snowflake-to-jedox.md) post; use any warehouse you can use.
-
-!!! info "Why SYSADMIN here"
-    We use `SYSADMIN` to keep the demo short. In a real setup, run this with a dedicated setup role that has only the rights this step needs, such as creating the view and granting access to it.
-
 Three details carry the whole thing:
 
 - **`COALESCE` on the keys.** On a budget-only row, every column from `actuals` is NULL, so the key has to come from whichever side exists.
@@ -122,11 +115,18 @@ ORDER BY match_status;
 
 On the sample files this returns:
 
+<div class="diagram-frame" markdown="block">
+<div class="diagram-scroll" tabindex="0" aria-label="Match status counts on the sample files, scroll sideways on small screens" markdown="block">
+
 | match_status | cells | budget | actual |
 |---|---:|---:|---:|
 | Actual only | 5 | 0.00 | 14,896.50 |
 | Both | 605 | 14,968,531.49 | 15,431,676.59 |
 | Budget only | 91 | 2,284,689.40 | 0.00 |
+
+</div>
+<span class="diagram-chevron" aria-hidden="true">›</span>
+</div>
 
 That's 701 cells in total. A `LEFT JOIN` from budget would return only 696, and the report would be 14,896.50 short on actuals with nothing on screen to say so.
 
@@ -179,10 +179,17 @@ GROUP BY d.account_type
 ORDER BY d.account_type;
 ```
 
+<div class="diagram-frame" markdown="block">
+<div class="diagram-scroll" tabindex="0" aria-label="March 2026 totals by account type, scroll sideways on small screens" markdown="block">
+
 | account_type | budget | actual | variance |
 |---|---:|---:|---:|
 | EXPENSE | 1,207,184.99 | 1,236,450.39 | 29,265.40 |
 | REVENUE | 223,769.38 | 229,693.47 | 5,924.09 |
+
+</div>
+<span class="diagram-chevron" aria-hidden="true">›</span>
+</div>
 
 Actual adds up to 1,466,143.86. If you load the same sample files anywhere else, March should give that same total, which makes it a handy check.
 

@@ -25,6 +25,11 @@ from mkdocs.utils import get_relative_url
 
 CODE_PATTERN = re.compile(r"[A-Za-z0-9-]+")
 SHORTCODE = re.compile(r"\[\[(download|release):([^\]|\s]+)(?:\|([^\]]+))?\]\]")
+# A trailing (note) or [note] on a Downloads button. The button keeps the
+# file name; the note is small text under it.
+BUTTON_NOTE = re.compile(
+    r"^(?P<label>.+?)\s+(?P<note>\([^()\n]+\)|\[[^\[\]\n]+\])$"
+)
 BLOCK_SHORTCODE = re.compile(
     r"\[\[(download|release):([^\]|\s]+)(?:\|([^\]]+))?\]\][ \t]*"
 )
@@ -482,10 +487,13 @@ def build_link(
     filename = path.name
 
     text = label or f"Download {filename}"
+    note = None
+    if as_html and src_uri == "downloads.md":
+        text, note = split_button_note(text)
     event = event_name(filename)
     title = f"Download {filename}"
     if as_html:
-        return (
+        anchor = (
             '<a class="md-button download"'
             f' href="{escape_attr(href)}"'
             f' download="{escape_attr(filename)}"'
@@ -493,6 +501,14 @@ def build_link(
             f' data-goatcounter-title="{escape_attr(title)}"'
             ' data-goatcounter-no-session="1">'
             f"{html.escape(text)}</a>"
+        )
+        if note is None:
+            return anchor
+        return (
+            '<div class="download-entry">\n'
+            f"{anchor}\n"
+            f'<p class="download-note">{html.escape(note)}</p>\n'
+            "</div>"
         )
     return (
         f"[{escape_label(text)}]({href})"
@@ -502,6 +518,14 @@ def build_link(
         f' data-goatcounter-title="{escape_attr(title)}"'
         ' data-goatcounter-no-session="1" }'
     )
+
+
+def split_button_note(text: str) -> tuple[str, str | None]:
+    """Split a trailing bracketed note off a download button label."""
+    match = BUTTON_NOTE.match(text.strip())
+    if not match:
+        return text, None
+    return match.group("label"), match.group("note")
 
 
 def event_name(filename: str) -> str:

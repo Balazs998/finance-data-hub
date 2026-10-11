@@ -238,7 +238,7 @@
 
 @media screen and (max-width: 44.9375em) {
   .md-nav__link {
-    min-height: 32px;
+    min-height: 44px;
   }
 }
 
@@ -416,6 +416,23 @@
     gap: 0.75rem;
     margin-top: 1rem;
   }
+
+  /* The sample group has five files. The last one spans the row so it
+     is not left alone in a half-width cell. */
+  .md-typeset .downloads > :nth-child(5):last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.md-typeset .downloads .download-entry {
+  min-width: 0;
+}
+
+.md-typeset .downloads .download-note {
+  margin: 0.35rem 0 0;
+  color: var(--dn-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
 }
 
 .md-typeset .downloads .md-button {

@@ -19,12 +19,13 @@ class ContentTests(unittest.TestCase):
     def test_snowflake_blank_codes_and_unmapped_accounts(self):
         article = (ROOT / "docs/snowflake/month-end-actuals.md").read_text()
         sql = (ROOT / "docs/files/sql/gl_actuals_pnl.sql").read_text()
-        self.assertIn("nullif(trim(l.entity_code), '')", sql)
-        self.assertIn("nullif(trim(l.cost_center_code), '')", sql)
-        elimination = "coalesce(nullif(trim(l.entity_code), ''), '(none)') not in ('E900')"
-        self.assertIn(elimination, sql)
+        self.assertIn("NULLIF(TRIM(l.entity_code), '')", sql)
+        self.assertIn("NULLIF(TRIM(l.cost_center_code), '')", sql)
+        elimination = "COALESCE(NULLIF(TRIM(l.entity_code), ''), '(none)') NOT IN ('E900')"
+        self.assertIn("COALESCE(NULLIF(TRIM(l.entity_code), ''), '(none)')", sql)
+        self.assertIn("NOT IN ('E900')", sql)
         self.assertIn(elimination, article)
-        self.assertIn("order by loaded_at desc, load_id desc", sql)
+        self.assertIn("ORDER BY loaded_at DESC, load_id DESC", sql)
         self.assertIn("load_id is your own load or batch id.", sql)
         self.assertIn("inner join to `DIM_ACCOUNT`", article)
         self.assertIn("empty string", article)

@@ -316,7 +316,7 @@ test("the example script matches the nine-check severities", function () {
   assert.equal(job.issues[5].label, "Check");
   assert.equal(job.issues[5].explanation, "1 extract to check in your Jedox. Make sure an extract with this exact name is in the project.");
   assert.deepEqual(job.issues[5].items, [{ name: "PnL_Extract", lines: [1] }]);
-  assert.equal(job.issues[6].explanation, "1 column name to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't documented, so check it especially.");
+  assert.equal(job.issues[6].explanation, "1 column name to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't stated in the Cube extract docs, so check `#Value` in the preview too, or set Rename value to `#Value` in the extract.");
   assert.deepEqual(job.issues[6].items, [{ name: "CostCenter", lines: [3] }]);
   const smtp = job.issues.filter(function (issue) { return issue.rule === "EM04"; })[0];
   assert.equal(smtp.severity, "warning");
@@ -384,7 +384,7 @@ test("grey Jedox cards are grouped by kind and list every line", function () {
   assert.deepEqual(linesFor("column", "Version"), [lineOf("getColumnString('Version')")]);
   assert.deepEqual(linesFor("column", "#Value"), [lineOf("getColumnValue('#Value')")]);
   assert.equal(checks[0].explanation, "4 file connections to check in your Jedox. Each name must match a File connection in the project. A relative path is read from the local files folder.");
-  assert.equal(checks[1].explanation, "4 column names to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't documented, so check it especially.");
+  assert.equal(checks[1].explanation, "4 column names to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't stated in the Cube extract docs, so check `#Value` in the preview too, or set Rename value to `#Value` in the extract.");
 
   const mixed = [
     "def src = API.initSource('PnL_BudgetActual')",
@@ -804,6 +804,18 @@ test("phone preview scrolls below the header and returns to the last field", fun
   assert.match(ui, /shared\.previewScrollMargin\(headerOffset\(\)\)/);
   assert.match(ui, /focus\(\{ preventScroll: true \}\)/);
   assert.match(ui, /getElementById\("tab-preview"\)/);
+  const css = fs.readFileSync(path.join(root, "docs/stylesheets/email-tool.css"), "utf8");
+  const builderPage = fs.readFileSync(path.join(root, "docs/jedox/email-builder.md"), "utf8");
+  assert.match(builderPage, /class="email-bar-space"/);
+  assert.match(css, /#email-builder \.email-bar-space \{\s*height: 64px;/);
+  assert.match(css, /#email-builder \.email-frame-wrap iframe \{\s*min-height: 640px;/);
+  assert.match(css, /:has\(#email-builder\) > \.email-lead \{\s*min-height: 135px;/);
+  assert.match(css, /font-family: "Inter Fallback"/);
+  assert.match(css, /body:has\(#email-builder\) \.md-path \{\s*font-family: "Inter", "Inter Fallback"/);
+  assert.match(css, /@media screen and \(max-width: 390px\) \{\s*#email-builder \{\s*min-height: 1862\.45px;/);
+  assert.match(css, /@media screen and \(min-width: 391px\) and \(max-width: 412px\) \{\s*#email-builder \{\s*min-height: 1769\.67px;/);
+  assert.equal(ui.indexOf("paddingBottom"), -1);
+  assert.equal(ui.indexOf("email-bar-space"), -1);
 });
 
 test("a mistake on line 2051 does not count as a clean script", function () {

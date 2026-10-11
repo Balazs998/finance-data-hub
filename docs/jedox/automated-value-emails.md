@@ -14,7 +14,7 @@ Everything runs on the site's made-up sample data: 10 cost centers and 8 account
 
 **What you'll build**
 
-1. A Cube Slice extract that reads Budget and Actual for one period from the `PnL` cube.
+1. A Cube extract that reads Budget and Actual for one period from the `PnL` cube.
 2. A Groovy job that turns each cost center's values into an HTML email and sends it.
 3. A test mode, on by default, that sends every email to one test address first.
 
@@ -33,7 +33,7 @@ mailer.send()
 mailer.reset() // clear recipients, subject and body before the next email
 ```
 
-`addCcRecipient` and `addBccRecipient` work the same way as `addRecipient`. `addAttachment('file.xlsx')` attaches a file, with the path relative to the local files folder.
+`addCcRecipient` and `addBccRecipient` work the same way as `addRecipient`. `addAttachment(filename)` attaches a file. The docs don't say which folder a relative path starts from, so check in your Integrator (or use `API.getLocalFilesDir()`).
 
 > **Older examples are out of date.** Since Jedox 24.2, the SMTP server and the From address are set centrally in Cloud Console. Scripts can't set them anymore. You'll still see `setServer()`, `setSMTPServer()` and `setSender()` in older examples, including Jedox's own SendMail sample. On 24.2 and later these calls do nothing apart from logging a deprecation warning. If mail doesn't arrive, check the Cloud Console settings, not the script.
 
@@ -81,7 +81,7 @@ In the Integrator project, create one **File connection** for each of the four d
 | `VERSION_ACTUAL` | `Actual` | The actual version element |
 | `SUBJECT_TEMPLATE` | `{{COST_CENTER}} {{VERSION_ACTUAL}} vs {{VERSION_PLAN}}, {{PERIOD}}` | Email subject, with `{{...}}` markers |
 | `COLOR_VARIANCE` | `true` | Highlight unfavorable variances; `false` turns it off |
-| `SOURCE_EXTRACT` | `PnL_BudgetActual` | Name of the Cube Slice extract |
+| `SOURCE_EXTRACT` | `PnL_BudgetActual` | Name of the Cube extract |
 | `TEMPLATE_FILE` | `email-template.html` | File name used by the `EmailTemplate` connection |
 | `RECIPIENTS_FILE` | `recipients.csv` | File name used by the `EmailRecipients` connection |
 | `ACCOUNTS_FILE` | `dim_account.csv` | File name used by the `Accounts` connection |
@@ -91,18 +91,18 @@ Keep the defaults safe. Someone who runs the job as downloaded should only ever 
 
 ## 5. The extract
 
-Create a **Cube Slice extract** named `PnL_BudgetActual` on the cube `PnL`, with the dimensions `Version`, `Period`, `CostCenter` and `Account`:
+Create a **Cube extract** named `PnL_BudgetActual` on the cube `PnL`, with the dimensions `Version`, `Period`, `CostCenter` and `Account`:
 
 | Dimension | Filter |
 |---|---|
 | `Version` | `${VERSION_PLAN}` and `${VERSION_ACTUAL}` |
 | `Period` | `${PERIOD}` |
-| `CostCenter` | No filter: all base elements |
-| `Account` | No filter: all base elements |
+| `CostCenter` | No filter |
+| `Account` | No filter |
 
-Use filter mode `onlyBases`, so you get base cells and no consolidated totals. Run the extract's preview and check it shows no empty rows. A cost center with no values for the month should then get no email.
+Turn on **Base elements only** in the Cube extract, so only cells where all elements are base elements are returned. Filter Version and Period; leave CostCenter and Account unfiltered. Set empty cells to `excludeEmpty`, so cost centers with no values give no rows. Run the extract's preview and check it shows no empty rows. A cost center with no values for the month should then get no email.
 
-The output has one column per dimension plus a value column. Run the extract's preview once and check the column names match the ones in the script (`Version`, `Period`, `CostCenter`, `Account`, and `#Value` for the value). The value column's name isn't documented. If your preview shows a different name, change `'#Value'` in `src.getColumnValue('#Value')` in `send_value_emails.groovy`. It's on line 362, or search the script for `#Value`. The dimension column names are read on the lines just above it.
+The output has one column per dimension plus a value column. Its name isn't stated in the Cube extract docs, so check it in the extract's preview. The script expects `#Value`; if your preview shows another name, set Rename value to `#Value` in the extract, or change `'#Value'` in `src.getColumnValue('#Value')` in `send_value_emails.groovy`. Check the dimension columns (`Version`, `Period`, `CostCenter`, `Account`) in the preview too. It's on line 362, or search the script for `#Value`. The dimension column names are read on the lines just above it.
 
 ## 6. The script, part 1: the builder
 
@@ -221,7 +221,7 @@ parseCsv(readFile('Accounts')).each { r -> accounts[r.account] = [name: r.accoun
 Map<String, String> ccNames = [:]
 parseCsv(readFile('CostCenters')).each { r -> ccNames[r.cost_center] = r.cost_center_name }
 
-// Read the Cube Slice extract.
+// Read the Cube extract.
 // Column names assume one column per dimension, named
 // like the dimension, plus the value column. Check them in the extract's preview.
 List<Map> rows = []
@@ -318,7 +318,7 @@ This job splits the emails by cost center, because in most FP&A teams the cost c
 2. In `recipients.csv`, keep the `cost_center` header, but fill that column with the new dimension's elements. The script finds the column by its header name.
 3. Point `COST_CENTERS_FILE` at a file with display names for the new elements, using the same `cost_center` and `cost_center_name` headers. Otherwise the names show up blank.
 
-This only works when the new split really is a dimension of the cube. With `onlyBases`, the extract returns base elements, never consolidated totals. So if country or ledger is a consolidation level above your entities, or an attribute on them, this script can't group by it as written. You'd need a dimension that really holds those elements, or a small code change that groups the base elements by country before it builds the emails.
+This only works when the new split really is a dimension of the cube. With **Base elements only**, the extract returns base elements, never consolidated totals. So if country or ledger is a consolidation level above your entities, or an attribute on them, this script can't group by it as written. You'd need a dimension that really holds those elements, or a small code change that groups the base elements by country before it builds the emails.
 
 Keep the `{{COST_CENTER}}` marker names as they are, because the script stops on any marker it doesn't know. Only change the words around them in the `TEXT` block, for example `'Country {{COST_CENTER}}'`. Test it in test mode before you switch it on.
 

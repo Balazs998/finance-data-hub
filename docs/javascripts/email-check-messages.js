@@ -1,4 +1,4 @@
-/* Checker wording, page text v0.2 (J-dox signed off).
+/* Checker wording, page text v0.4 (J-dox signed off).
    This is the only file for the nine check titles, explanations, and fixes.
    Square-bracket notes in the source text are filled in by the checker. */
 (function (root, factory) {
@@ -32,7 +32,7 @@
         return (one ? "1 extract" : n + " extracts") + " to check in your Jedox. Make sure an extract with this exact name is in the project.";
       }
       if (kind === "column") {
-        return (one ? "1 column name" : n + " column names") + " to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't documented, so check it especially.";
+        return (one ? "1 column name" : n + " column names") + " to check in your Jedox. Open the extract preview and compare the names. The value column's name isn't stated in the Cube extract docs, so check `#Value` in the preview too, or set Rename value to `#Value` in the extract.";
       }
       if (kind === "connection") {
         return (one ? "1 file connection" : n + " file connections") + " to check in your Jedox. Each name must match a File connection in the project. A relative path is read from the local files folder.";
@@ -43,8 +43,8 @@
       return n + " names to check in your Jedox.";
     },
     checks: {
-      extract: "Extract name `'{name}'` can't be verified here. Check that a Cube Slice extract with exactly this name exists in your project.",
-      column: "Column `'{name}'` can't be verified here. Run the extract's preview and check the column is called exactly this. The value column's name isn't documented, so check `'#Value'` too.",
+      extract: "Extract name `'{name}'` can't be verified here. Check that a Cube extract with exactly this name exists in your project.",
+      column: "Column `'{name}'` can't be verified here. Run the extract's preview and check the column is called exactly this. The value column's name isn't stated in the Cube extract docs, so check `'#Value'` in the preview too, or set Rename value to `#Value` in the extract.",
       connection: "Connection `'{name}'` can't be verified here. Check that a File connection with exactly this name exists in your project.",
       variable: "Job variable `'{name}'` can't be verified here. Check it's defined on the job, or that the script has a safe default for it.",
       call: "API call `'{name}'` isn't one the checker knows. Compare it with the documented Integrator API.",
@@ -109,15 +109,15 @@
       EM07: {
         severity: "warning",
         title: "`getSource()` is deprecated",
-        explanation: "`API.getSource()` is the old way to read an extract in a Groovy job. Jedox has replaced it with `API.initSource()`.",
-        fix: "Switch to `API.initSource()`, and add the null check from EM08 while you're there.",
+        explanation: "Jedox 26.1 marks `getSource()` deprecated for removal. Use `initSource()` instead.",
+        fix: "Use `API.initSource()`, and add the null check from EM08 while you're there.",
         before: "def src = API.getSource('PnL_BudgetActual')",
         after: "def src = API.initSource('PnL_BudgetActual')"
       },
       EM08: {
         severity: "error",
         title: "No null check after `initSource()`",
-        explanation: "`initSource()` returns `null` when the extract can't be set up, for example when the name is wrong. Without a check, the job fails on the next line with an error that doesn't say what went wrong.",
+        explanation: "`initSource()` returns null when the extract can't be set up. Without a null check, the job fails later with an unclear error.",
         fix: "Check the result straight away and stop with a clear message.",
         before: "def src = API.initSource(extractName)\nwhile (src.nextRow()) {",
         after: "def src = API.initSource(extractName)\nif (src == null) throw new IllegalStateException('Could not initialize extract ' + extractName)\nwhile (src.nextRow()) {"
@@ -125,7 +125,7 @@
       EM09: {
         severity: "error",
         title: "`getMailer()` only works in a Groovy job",
-        explanation: "The mailer is only available in a Groovy job. Inside an Integrator Groovy function, `API.getMailer()` returns `null`, so nothing gets sent and the next mailer call fails.",
+        explanation: "Jedox documents the mailer as only available in Integrator jobs, so a Groovy function can't send email.",
         fix: "Move the email code into a Groovy job. If you keep a check in the script, make it fail clearly.",
         before: "def mailer = API.getMailer()\nmailer.addRecipient(to)",
         after: "def mailer = API.getMailer()\nif (mailer == null) throw new IllegalStateException('No mailer: run this as a Groovy job')\nmailer.addRecipient(to)"

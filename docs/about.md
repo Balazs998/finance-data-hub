@@ -1,3 +1,7 @@
+---
+description: "Learn what Finance Data Hub covers: public FP&A notes on Snowflake, Jedox, and Excel, with sample files and no install or licensing walkthrough."
+---
+
 # About
 
 Finance Data Hub is a public set of notes for FP&A work in Snowflake, Jedox, and Excel. The aim is a page you can follow on a close weekend, with a file you can take with you.

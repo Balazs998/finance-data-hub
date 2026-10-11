@@ -97,13 +97,14 @@ Our target cube is `PnL` with four dimensions: `Version`, `Period`, `CostCenter`
 USE ROLE SYSADMIN;
 CREATE OR REPLACE VIEW FDH_DEMO.SAMPLE.V_JEDOX_ACTUALS AS
 SELECT
-    'Actual' AS version,
-    period AS period, -- 'YYYY-MM', matches the Period elements
-    cost_center AS cost_center,
-    account AS account,
+    version,
+    period, -- 'YYYY-MM', matches the Period elements
+    cost_center,
+    account,
     SUM(amount) AS amount
 FROM FDH_DEMO.SAMPLE.FACT_ACTUALS
-GROUP BY period, cost_center, account;
+WHERE version = 'Actual'
+GROUP BY version, period, cost_center, account;
 
 GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_JEDOX_ACTUALS TO ROLE JEDOX_ETL_ROLE;
 ```

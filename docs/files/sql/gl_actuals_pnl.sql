@@ -6,7 +6,8 @@
 --
 -- FINANCE.GL_JOURNAL_LINE
 -- journal_line_id, entity_code, cost_center_code, account_code,
--- accounting_date, currency_code, amount_gl, loaded_at
+-- accounting_date, currency_code, amount_gl, loaded_at, load_id
+-- load_id is your own load or batch id.
 -- amount_gl uses general-ledger sign: debits positive, credits negative.
 --
 -- FINANCE.DIM_ACCOUNT
@@ -28,11 +29,12 @@ with latest_line as (
         accounting_date,
         currency_code,
         amount_gl,
-        loaded_at
+        loaded_at,
+        load_id
     from FINANCE.GL_JOURNAL_LINE
     qualify row_number() over (
         partition by journal_line_id
-        order by loaded_at desc
+        order by loaded_at desc, load_id desc
     ) = 1
 ),
 signed as (
@@ -60,7 +62,7 @@ signed as (
         on c.calendar_date = cast(l.accounting_date as date)
     where a.statement = 'PL'
       and c.period_status = 'CLOSED'
-      -- and coalesce(l.entity_code, '(none)') not in ('E900') -- drop elimination entities
+      -- and coalesce(nullif(trim(l.entity_code), ''), '(none)') not in ('E900') -- drop elimination entities
       -- and c.fiscal_year = 2026
       -- and c.fiscal_period = 9
 )

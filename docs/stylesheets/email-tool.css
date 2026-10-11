@@ -363,6 +363,16 @@ body:has(#email-builder) .md-header__title {
   width: min(100%, 280px);
 }
 
+.email-type-hint {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #9AA7B4;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .md-typeset .email-app button.email-chip,
 .md-typeset .email-app button.email-seg-btn,
 .md-typeset .email-app button.email-switch,
@@ -507,6 +517,13 @@ body:has(#email-builder) .md-header__title {
   min-height: 280px;
   border: 0;
   background: #f3f6f9;
+}
+
+#email-frame:focus,
+#email-frame:focus-visible,
+#email-frame:focus-within {
+  outline: 2px solid #38BDF8;
+  outline-offset: 2px;
 }
 
 .email-subject-line {

@@ -77,9 +77,10 @@ function logLine(pathname, status, tokens, error) {
 }
 
 function clientIp(request) {
-  return request.headers.get("CF-Connecting-IP")
-    || request.headers.get("x-forwarded-for")
-    || "unknown";
+  var value = request.headers.get("CF-Connecting-IP");
+  if (value == null) return "unknown";
+  var trimmed = String(value).trim();
+  return trimmed || "unknown";
 }
 
 function metadataFor(body) {
@@ -87,17 +88,87 @@ function metadataFor(body) {
   return examples.metadata;
 }
 
-function estimate(body, env) {
-  var text = String(body.rule || "") + "\n" + String(body.story || "") + "\n" + String(body.instruction || "");
-  var tokens = Math.ceil(text.length / 4) + 200;
-  var price = Number(env.TOKEN_USD || "0.000002");
+var SYSTEM_PROMPT_TOKENS = 250;
+
+function configuredNumber(value, fallback) {
+  if (value == null || String(value).trim() === "") return fallback;
+  var n = Number(value);
+  if (!isFinite(n) || n < 0) return fallback;
+  return n;
+}
+
+function roundMoney(value) {
+  return Math.round(value * 1000000) / 1000000;
+}
+
+function prices(env) {
+  env = env || {};
+  var input = configuredNumber(
+    env.INPUT_TOKEN_USD != null && String(env.INPUT_TOKEN_USD) !== "" ? env.INPUT_TOKEN_USD : env.TOKEN_USD,
+    0.000002
+  );
+  var output = configuredNumber(env.OUTPUT_TOKEN_USD, input);
+  return { input: input, output: output };
+}
+
+function maxTokens(env) {
+  var n = Number(env && env.MAX_TOKENS);
+  if (!isFinite(n) || n < 1) return 1500;
+  return Math.floor(n);
+}
+
+function repairPossible(env) {
+  var name = String((env && env.AI_PROVIDER) || "mock").toLowerCase();
+  return name === "openai" || name === "anthropic";
+}
+
+function inputEstimate(body) {
+  var chosen = packFor(body && body.version);
+  var text = JSON.stringify({
+    version: (body && body.version) || chosen.jedox_version,
+    database: (body && body.database) || "",
+    cube: (body && body.cube) || "",
+    story: (body && body.story) || "",
+    rule: (body && body.rule) || "",
+    instruction: (body && body.instruction) || "",
+    knowledge: knowledgeFor(chosen)
+  });
+  return Math.ceil(text.length / 4) + SYSTEM_PROMPT_TOKENS;
+}
+
+function quote(body, env) {
+  var inputTokens = inputEstimate(body || {});
+  var completionCap = maxTokens(env);
+  var calls = repairPossible(env) ? 2 : 1;
+  var rate = prices(env);
+  var tokens = (inputTokens + completionCap) * calls;
+  var spend = roundMoney((inputTokens * rate.input + completionCap * rate.output) * calls);
   return {
+    inputTokens: inputTokens,
+    maxTokens: completionCap,
+    calls: calls,
     tokens: tokens,
-    spend: Math.round(tokens * price * 1000000) / 1000000
+    spend: spend
   };
 }
 
-async function verifyTurnstile(token, secret, ip, fetchImpl) {
+function priceUsage(usage, env) {
+  var rate = prices(env);
+  var prompt = Number(usage && usage.promptTokens) || 0;
+  var completion = Number(usage && usage.completionTokens) || 0;
+  return {
+    tokens: prompt + completion,
+    spend: roundMoney(prompt * rate.input + completion * rate.output)
+  };
+}
+
+function turnstileHost(env) {
+  var host = env && env.TURNSTILE_HOSTNAME;
+  if (host == null || String(host).trim() === "") return "balazs998.github.io";
+  return String(host).trim();
+}
+
+async function verifyTurnstile(token, secret, ip, fetchImpl, expectedHost) {
   var form = new URLSearchParams();
   form.set("secret", secret);
   form.set("response", token || "");
@@ -107,27 +178,43 @@ async function verifyTurnstile(token, secret, ip, fetchImpl) {
     body: form
   });
   var data = await response.json();
-  return !!(data && data.success);
+  return !!(data && data.success === true && String(data.hostname || "") === expectedHost);
 }
 
-async function charge(env, ip, cost) {
+async function gateOp(env, body) {
   if (env.BUDGET_GATE) {
     var id = env.BUDGET_GATE.idFromName("global");
     var stub = env.BUDGET_GATE.get(id);
     var response = await stub.fetch("https://gate/charge", {
       method: "POST",
-      body: JSON.stringify({ ip: ip, tokens: cost.tokens, spend: cost.spend })
+      body: JSON.stringify(body)
     });
     return response.json();
   }
   if (String(env.MEMORY_GATE) === "1") {
-    return gate.chargeMemory(
-      { ip: ip, tokens: cost.tokens, spend: cost.spend },
-      gate.limitsFrom(env),
-      env.now ? new Date(env.now) : new Date()
+    var limits = gate.limitsFrom(env);
+    var now = env.now ? new Date(env.now) : new Date();
+    if (body.op === "settle") return gate.settleMemory(body, limits, now);
+    return gate.reserveMemory(
+      { ip: body.ip, tokens: body.tokens, spend: body.spend },
+      limits,
+      now
     );
   }
   return { ok: false, error: "budget_unconfigured" };
+}
+
+async function settleUsage(env, reserved, usage) {
+  if (!usage) return false;
+  var actual = priceUsage(usage, env);
+  await gateOp(env, {
+    op: "settle",
+    reservedTokens: reserved.tokens,
+    reservedSpend: reserved.spend,
+    actualTokens: actual.tokens,
+    actualSpend: actual.spend
+  });
+  return actual;
 }
 
 function staticFor(body) {
@@ -152,6 +239,10 @@ async function handleRequest(request, env) {
   if (request.method === "GET" && (pathname === "/" || pathname === "/health")) {
     logLine(pathname, 200, 0, null);
     return json(200, { ok: true, provider: env.AI_PROVIDER || "mock" }, cors);
+  }
+  if (request.method === "POST" && !cors) {
+    logLine(pathname, 403, 0, "origin");
+    return json(403, { ok: false, error: "origin" }, "");
   }
   var route = ROUTES[pathname];
   if (!route) {
@@ -188,7 +279,7 @@ async function handleRequest(request, env) {
   var fetchImpl = env.fetchImpl || fetch;
   var turned = false;
   try {
-    turned = await verifyTurnstile(body.turnstileToken, env.TURNSTILE_SECRET, ip, fetchImpl);
+    turned = await verifyTurnstile(body.turnstileToken, env.TURNSTILE_SECRET, ip, fetchImpl, turnstileHost(env));
   } catch (error) {
     turned = false;
   }
@@ -202,10 +293,15 @@ async function handleRequest(request, env) {
   } catch (error) {
     staticFindings = [];
   }
-  var cost = estimate(body, env);
+  var reserved = quote(body, env);
   var admission;
   try {
-    admission = await charge(env, ip, cost);
+    admission = await gateOp(env, {
+      op: "reserve",
+      ip: ip,
+      tokens: reserved.tokens,
+      spend: reserved.spend
+    });
   } catch (error) {
     admission = { ok: false, error: "budget_unconfigured" };
   }
@@ -222,10 +318,10 @@ async function handleRequest(request, env) {
       staticFindings: staticFindings
     }, cors);
   }
-  var ai;
+  var outcome;
   try {
     var chosen = packFor(body.version);
-    ai = await engine[route.method]({
+    outcome = await engine[route.method]({
       version: body.version || chosen.jedox_version,
       database: body.database,
       cube: body.cube,
@@ -242,7 +338,11 @@ async function handleRequest(request, env) {
       staticFindings: staticFindings
     }, env);
   } catch (error) {
-    logLine(pathname, 502, cost.tokens, "ai_response");
+    var failedUsage = error && error.usage ? priceUsage(error.usage, env) : null;
+    if (failedUsage) {
+      try { await settleUsage(env, reserved, error.usage); } catch (settleError) { failedUsage = null; }
+    }
+    logLine(pathname, 502, failedUsage ? failedUsage.tokens : reserved.tokens, "ai_response");
     return json(502, {
       ok: false,
       error: "ai_response",
@@ -250,7 +350,14 @@ async function handleRequest(request, env) {
       staticFindings: staticFindings
     }, cors);
   }
-  logLine(pathname, 200, cost.tokens, null);
+  var ai = outcome.result;
+  var actual = null;
+  try {
+    actual = await settleUsage(env, reserved, outcome.usage);
+  } catch (error) {
+    actual = null;
+  }
+  logLine(pathname, 200, actual ? actual.tokens : reserved.tokens, null);
   return json(200, {
     ok: true,
     staticFindings: staticFindings,
@@ -263,6 +370,8 @@ async function handleRequest(request, env) {
 module.exports = {
   handleRequest: handleRequest,
   resetGate: gate.resetMemory,
+  quote: quote,
+  gateSnapshot: gate.snapshot,
   examples: examples,
   pack: packs["2026.1"],
   packs: packs

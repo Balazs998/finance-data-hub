@@ -1,5 +1,8 @@
 /* Hourly rate counters and a hard daily token/spend budget.
-   The stored record is counts only. Rule text is never passed in. */
+   The stored record is counts only. Rule text is never passed in.
+   reserve() holds the worst case before a provider call.
+   settle() replaces that hold with the actual usage and never records
+   a daily total above the cap. */
 function limitsFrom(env) {
   env = env || {};
   return {
@@ -14,7 +17,13 @@ function fresh(day) {
   return { day: day, tokens: 0, spend: 0, hours: {} };
 }
 
-function applyCharge(state, request, limits, now) {
+function clamp(value, limit) {
+  if (value < 0) return 0;
+  if (value > limit) return limit;
+  return value;
+}
+
+function applyReserve(state, request, limits, now) {
   var day = now.toISOString().slice(0, 10);
   var hour = now.toISOString().slice(0, 13);
   if (!state || state.day !== day) state = fresh(day);
@@ -38,21 +47,50 @@ function applyCharge(state, request, limits, now) {
   return { ok: true, error: null, state: state, tokens: state.tokens, spend: state.spend };
 }
 
+function applySettle(state, request, limits, now) {
+  var day = now.toISOString().slice(0, 10);
+  if (!state || state.day !== day) state = fresh(day);
+  var tokens = (Number(state.tokens) || 0)
+    - (Number(request.reservedTokens) || 0)
+    + (Number(request.actualTokens) || 0);
+  var spend = (Number(state.spend) || 0)
+    - (Number(request.reservedSpend) || 0)
+    + (Number(request.actualSpend) || 0);
+  state.tokens = clamp(tokens, limits.tokens);
+  state.spend = Math.round(clamp(spend, limits.spend) * 1000000) / 1000000;
+  return { ok: true, error: null, state: state, tokens: state.tokens, spend: state.spend };
+}
+
 var memory = fresh("1970-01-01");
 
 function resetMemory() {
   memory = fresh("1970-01-01");
 }
 
-function chargeMemory(request, limits, now) {
-  var result = applyCharge(memory, request, limits, now || new Date());
+function reserveMemory(request, limits, now) {
+  var result = applyReserve(memory, request, limits, now || new Date());
   memory = result.state;
   return result;
 }
 
+function settleMemory(request, limits, now) {
+  var result = applySettle(memory, request, limits, now || new Date());
+  memory = result.state;
+  return result;
+}
+
+function snapshot() {
+  return { day: memory.day, tokens: memory.tokens, spend: memory.spend };
+}
+
 module.exports = {
   limitsFrom: limitsFrom,
-  applyCharge: applyCharge,
-  chargeMemory: chargeMemory,
-  resetMemory: resetMemory
+  applyReserve: applyReserve,
+  applySettle: applySettle,
+  applyCharge: applyReserve,
+  reserveMemory: reserveMemory,
+  settleMemory: settleMemory,
+  chargeMemory: reserveMemory,
+  resetMemory: resetMemory,
+  snapshot: snapshot
 };

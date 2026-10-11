@@ -77,21 +77,30 @@ If `TURNSTILE_SECRET` is missing, the worker refuses requests. It does not skip 
 
 ## 5. Spend limit
 
-The worker hard-stops when either daily cap is reached. Defaults in `wrangler.toml`:
+The worker hard-stops when a request's reservation would pass either daily cap. Defaults in `wrangler.toml`:
 
 | Var | Default | Meaning |
 | --- | --- | --- |
-| `DAILY_TOKEN_BUDGET` | `100000` | Estimated tokens for the UTC day. The next request is refused. |
-| `DAILY_SPEND_BUDGET_USD` | `2` | Estimated dollars for the UTC day, using `TOKEN_USD` per token. |
-| `TOKEN_USD` | `0.000002` | Rough dollars per token for the estimate. Match it to the provider price you chose. |
+| `DAILY_TOKEN_BUDGET` | `100000` | Token cap for the UTC day. |
+| `DAILY_SPEND_BUDGET_USD` | `2` | Dollar cap for the UTC day. |
+| `MAX_TOKENS` | `1500` | `max_tokens` sent on every provider call, including a repair call. |
+| `INPUT_TOKEN_USD` | `0.000002` | Dollars per prompt token. |
+| `OUTPUT_TOKEN_USD` | `0.000002` | Dollars per completion token. |
 | `RATE_LIMIT_PER_IP` | `30` | Requests per IP per hour. |
 | `RATE_LIMIT_GLOBAL` | `400` | Requests per hour for the whole worker. |
 | `MAX_BODY_BYTES` | `48000` | Largest request body. |
-| `ALLOWED_ORIGIN` | `https://balazs998.github.io` | Browser origin allowed by CORS. Comma-separate more than one. |
+| `ALLOWED_ORIGIN` | `https://balazs998.github.io` | Browser origin allowed to POST. Comma-separate more than one. |
+| `TURNSTILE_HOSTNAME` | `balazs998.github.io` | Hostname that Turnstile siteverify must return. |
 
-Set a real cap in the provider dashboard as well (OpenAI or Anthropic billing limit). The worker cap is a second brake. It estimates tokens from the size of the text. It is not an invoice.
+Before the provider is called, the worker reserves `input estimate + MAX_TOKENS`. Prompt tokens and completion tokens are priced separately: `input estimate × INPUT_TOKEN_USD + MAX_TOKENS × OUTPUT_TOKEN_USD`. OpenAI and Anthropic can run `repair()`, which is a second call, so that reservation is doubled for those providers. If the reservation does not fit under both caps, the worker returns the static findings and does not call the provider.
 
-When the cap is hit, the worker returns the static findings and does not call the provider. Counts are kept until the next UTC day. Rule text is not written to the Durable Object and is not written to logs. Logs are the path, status, token estimate, and an error code.
+After the call, the reservation is replaced with the provider's reported prompt and completion tokens, priced with the same two rates. A repair adds the second call's usage. The stored daily totals are clamped to the caps. If the provider errors before it reports usage, the reservation stays, so an unreported completion cannot open more budget. Mock mode reports zero tokens and releases the reservation. The rate-limit counter is not released.
+
+`TOKEN_USD` is still read when `INPUT_TOKEN_USD` is unset, so an older deploy keeps a single input price. Set both new vars to match the model you chose. Also set a cap in the provider dashboard. This counter is not an invoice.
+
+Counts are kept until the next UTC day. Rule text is not written to the Durable Object and is not written to logs. Logs are the path, status, token count, and an error code.
+
+The client address is `CF-Connecting-IP` only. `x-forwarded-for` is ignored. A POST whose `Origin` is missing or not in `ALLOWED_ORIGIN` is rejected with 403 before the body is used. Turnstile must succeed and its `hostname` must equal `TURNSTILE_HOSTNAME`.
 
 ## 6. Point the site at the worker
 
@@ -104,7 +113,7 @@ window.FDH_RULE_STUDIO = {
 };
 ```
 
-Publish the site after that change. Clearing `endpoint` returns the page to offline mock mode without undeploying the worker.
+Publish the site after that change. The Rule Studio page's Content-Security-Policy is built from this `endpoint` and from `extra.goatcounter_code`, so a new endpoint is allowed only after the next site build. Clearing `endpoint` returns the page to offline mock mode without undeploying the worker.
 
 ## 7. Check
 

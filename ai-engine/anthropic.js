@@ -23,6 +23,20 @@ function extractJson(text) {
   return JSON.parse(raw.slice(start, end + 1));
 }
 
+function maxTokens(env) {
+  var n = Number(env && env.MAX_TOKENS);
+  if (!isFinite(n) || n < 1) return 1500;
+  return Math.floor(n);
+}
+
+function usageFrom(body) {
+  if (!body || !body.usage || typeof body.usage !== "object") return null;
+  return {
+    promptTokens: Number(body.usage.input_tokens) || 0,
+    completionTokens: Number(body.usage.output_tokens) || 0
+  };
+}
+
 async function complete(env, user, fetchImpl) {
   var response = await fetchImpl("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -33,7 +47,7 @@ async function complete(env, user, fetchImpl) {
     },
     body: JSON.stringify({
       model: env.AI_MODEL || "claude-3-5-haiku-latest",
-      max_tokens: 2000,
+      max_tokens: maxTokens(env),
       temperature: 0,
       system: SYSTEM,
       messages: [{ role: "user", content: user }]
@@ -42,7 +56,7 @@ async function complete(env, user, fetchImpl) {
   if (!response.ok) throw new Error("anthropic HTTP " + response.status);
   var body = await response.json();
   var block = body && body.content && body.content[0] && body.content[0].text;
-  return extractJson(block);
+  return { result: extractJson(block), usage: usageFrom(body) };
 }
 
 function userPayload(kind, input) {
@@ -67,26 +81,28 @@ function userPayload(kind, input) {
 function call(kind) {
   return async function run(input, env) {
     var fetchImpl = (env && env.fetchImpl) || fetch;
-    var result = await complete(env, userPayload(kind, input || {}), fetchImpl);
+    var done = await complete(env, userPayload(kind, input || {}), fetchImpl);
+    var result = done.result;
     result.provider = "anthropic";
     result.mock = false;
     if (!result.label) result.label = env.AI_MODEL || "claude-3-5-haiku-latest";
-    return result;
+    return { result: result, usage: done.usage };
   };
 }
 
 async function repair(kind, input, previous, errors, env) {
   var fetchImpl = (env && env.fetchImpl) || fetch;
-  var result = await complete(
+  var done = await complete(
     env,
     userPayload(kind, input || {}) + "\nThe previous JSON was rejected: " + errors.join("; ") + ". Return only corrected JSON. Previous: " + JSON.stringify(previous),
     fetchImpl
   );
+  var result = done.result;
   result.provider = "anthropic";
   result.mock = false;
   if (!result.label) result.label = env.AI_MODEL || "claude-3-5-haiku-latest";
   if (validate.bannedKeys(result, "$", []).length) throw new Error("anthropic response included a timing field");
-  return result;
+  return { result: result, usage: done.usage };
 }
 
 module.exports = {

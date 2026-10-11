@@ -1,3 +1,6 @@
+import base64
+import hashlib
+import re
 import subprocess
 import unittest
 from pathlib import Path
@@ -92,6 +95,51 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertNotIn("FX_RATES", html)
         config = (ROOT / "docs/javascripts/rule-studio-config.js").read_text(encoding="utf-8")
         self.assertIn('endpoint: ""', config)
+
+    def test_rule_studio_content_security_policy(self):
+        html = self.page.read_text(encoding="utf-8")
+        head = html.split("</head>", 1)[0]
+        meta = re.search(r'<meta http-equiv="Content-Security-Policy" content="([^"]+)">', head)
+        self.assertIsNotNone(meta)
+        policy = meta.group(1)
+        scripts = (
+            'document.documentElement.classList.add("js");',
+            'requestAnimationFrame(function(){requestAnimationFrame(function(){var link=document.getElementById("font-rest");if(link)link.media="all";});});',
+        )
+        for script in scripts:
+            digest = "sha256-" + base64.b64encode(hashlib.sha256(script.encode("utf-8")).digest()).decode("ascii")
+            self.assertIn(f"<script>{script}</script>", html)
+            self.assertIn("'" + digest + "'", policy)
+        inline = re.findall(r"<script\b([^>]*)>(.*?)</script>", html, flags=re.IGNORECASE | re.DOTALL)
+        hashed = 0
+        for attrs, body in inline:
+            if re.search(r"\bsrc\s*=", attrs, flags=re.IGNORECASE):
+                continue
+            if re.search(r"""\btype\s*=\s*['"]application/(?:json|ld\+json)['"]""", attrs, flags=re.IGNORECASE):
+                continue
+            digest = "sha256-" + base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode("ascii")
+            self.assertIn("'" + digest + "'", policy)
+            hashed += 1
+        self.assertGreaterEqual(hashed, len(scripts))
+        self.assertIn("default-src 'self'", policy)
+        self.assertIn("script-src 'self' https://challenges.cloudflare.com https://gc.zgo.at", policy)
+        self.assertIn("frame-src https://challenges.cloudflare.com", policy)
+        self.assertIn("connect-src 'self' https://financedatahub.goatcounter.com", policy)
+        self.assertNotIn("workers.dev", policy)
+        self.assertIn("img-src 'self' data:", policy)
+        self.assertIn("style-src 'self' 'unsafe-inline'", policy)
+        self.assertIn("object-src 'none'", policy)
+        self.assertIn("base-uri 'self'", policy)
+        self.assertIn("https://gc.zgo.at/count.js", html)
+        self.assertIn("https://financedatahub.goatcounter.com/count", html)
+        self.assertIn("font-rest.css", html)
+        self.assertNotIn("fonts.googleapis.com", html)
+        self.assertNotIn("fonts.gstatic.com", html)
+        home = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("font-rest.css", home)
+        self.assertNotIn("fonts.googleapis.com", home)
+        self.assertNotIn("fonts.gstatic.com", home)
+        self.assertNotIn('http-equiv="Content-Security-Policy"', home)
 
 
 if __name__ == "__main__":

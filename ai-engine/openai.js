@@ -23,6 +23,20 @@ function extractJson(text) {
   return JSON.parse(raw.slice(start, end + 1));
 }
 
+function maxTokens(env) {
+  var n = Number(env && env.MAX_TOKENS);
+  if (!isFinite(n) || n < 1) return 1500;
+  return Math.floor(n);
+}
+
+function usageFrom(body) {
+  if (!body || !body.usage || typeof body.usage !== "object") return null;
+  return {
+    promptTokens: Number(body.usage.prompt_tokens) || 0,
+    completionTokens: Number(body.usage.completion_tokens) || 0
+  };
+}
+
 async function complete(env, messages, fetchImpl) {
   var response = await fetchImpl("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -33,13 +47,14 @@ async function complete(env, messages, fetchImpl) {
     body: JSON.stringify({
       model: env.AI_MODEL || "gpt-4o-mini",
       temperature: 0,
+      max_tokens: maxTokens(env),
       messages: messages
     })
   });
   if (!response.ok) throw new Error("openai HTTP " + response.status);
   var body = await response.json();
   var text = body && body.choices && body.choices[0] && body.choices[0].message && body.choices[0].message.content;
-  return extractJson(text);
+  return { result: extractJson(text), usage: usageFrom(body) };
 }
 
 function userPayload(kind, input) {
@@ -68,11 +83,12 @@ function call(kind) {
       { role: "system", content: SYSTEM },
       { role: "user", content: userPayload(kind, input || {}) }
     ];
-    var result = await complete(env, messages, fetchImpl);
+    var done = await complete(env, messages, fetchImpl);
+    var result = done.result;
     result.provider = "openai";
     result.mock = false;
     if (!result.label) result.label = env.AI_MODEL || "gpt-4o-mini";
-    return result;
+    return { result: result, usage: done.usage };
   };
 }
 
@@ -86,14 +102,15 @@ async function repair(kind, input, previous, errors, env) {
       content: "The previous JSON was rejected: " + errors.join("; ") + ". Return only a corrected JSON object. Previous: " + JSON.stringify(previous)
     }
   ];
-  var result = await complete(env, messages, fetchImpl);
+  var done = await complete(env, messages, fetchImpl);
+  var result = done.result;
   result.provider = "openai";
   result.mock = false;
   if (!result.label) result.label = env.AI_MODEL || "gpt-4o-mini";
   if (validate.bannedKeys(result, "$", []).length) {
     throw new Error("openai response included a timing field");
   }
-  return result;
+  return { result: result, usage: done.usage };
 }
 
 module.exports = {

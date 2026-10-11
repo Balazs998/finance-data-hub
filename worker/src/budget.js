@@ -12,11 +12,20 @@ export class BudgetGate {
   async fetch(request) {
     var body = await request.json();
     var stored = await this.state.storage.get("gate");
-    var result = gate.applyCharge(stored, {
-      ip: body.ip,
-      tokens: body.tokens,
-      spend: body.spend
-    }, gate.limitsFrom(this.env), new Date());
+    var limits = gate.limitsFrom(this.env);
+    var now = new Date();
+    var result = body.op === "settle"
+      ? gate.applySettle(stored, {
+        reservedTokens: body.reservedTokens,
+        reservedSpend: body.reservedSpend,
+        actualTokens: body.actualTokens,
+        actualSpend: body.actualSpend
+      }, limits, now)
+      : gate.applyReserve(stored, {
+        ip: body.ip,
+        tokens: body.tokens,
+        spend: body.spend
+      }, limits, now);
     await this.state.storage.put("gate", result.state);
     return Response.json({
       ok: result.ok,

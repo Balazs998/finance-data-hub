@@ -1258,6 +1258,14 @@ html.js .reveal.reveal-wait.is-visible {
   max-width: none;
 }
 
+/* At phone width the Jedox intro is one word from wrapping. Inter 400 and the
+   fallback disagree at 0.95rem, which shifts the cards. 0.925rem fits both. */
+@media (max-width: 600px) {
+  .md-typeset .fdh-section--jedox .fdh-hero__intro {
+    font-size: 0.925rem;
+  }
+}
+
 /* li a underline (0, 2, 2) beats section.css .fdh-card__title a (0, 2, 1). */
 .md-typeset li .fdh-card__title a:not(.md-button) {
   text-decoration: none;

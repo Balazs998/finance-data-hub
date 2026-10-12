@@ -10,7 +10,7 @@ bindings = [
 
 [[migrations]]
 tag = "v1"
-new_classes = ["BudgetGate"]
+new_sqlite_classes = ["BudgetGate"]
 
 [vars]
 AI_PROVIDER = "mock"

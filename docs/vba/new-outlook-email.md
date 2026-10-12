@@ -24,12 +24,12 @@ Lots of finance workbooks send their own reports: a macro builds the mail with `
 ## Before you start
 
 !!! info "You'll need"
-    - Desktop Excel for Windows with classic Outlook installed.
+    - Desktop Excel for Windows. The macro sends only through classic Outlook; without it, it saves the mail as a file.
     - `recipients.csv` (10 cost centers, `@example.com` addresses). The addresses are made up.
 
 ## The sample scenario
 
-The demo workbook has a Report sheet and a macro that emails each cost center owner their numbers. Today it does that through Outlook.
+Your workbook has a macro that emails each cost center owner their numbers, here the 10 owners in `recipients.csv`. Today it does that through Outlook.
 
 ## 1. Which Outlook are you on?
 

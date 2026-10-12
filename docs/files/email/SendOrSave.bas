@@ -1,4 +1,4 @@
-Attribute VB_Name = "SendOrSave"
+Attribute VB_Name = "FDH_SendOrSave"
 Option Explicit
 
 Sub SendOrSave(toAddr As String, subj As String, body As String)

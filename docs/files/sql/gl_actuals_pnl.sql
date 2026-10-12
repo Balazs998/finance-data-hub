@@ -18,10 +18,10 @@
 -- calendar_date, fiscal_year, fiscal_period (1-12), period_status
 -- period_status is 'OPEN' or 'CLOSED'.
 
-with latest_line as (
+WITH latest_line AS (
     -- A restatement is a new load of the same journal line.
     -- Keep the latest load so a rerun does not double count.
-    select
+    SELECT
         journal_line_id,
         entity_code,
         cost_center_code,
@@ -31,16 +31,16 @@ with latest_line as (
         amount_gl,
         loaded_at,
         load_id
-    from FINANCE.GL_JOURNAL_LINE
-    qualify row_number() over (
-        partition by journal_line_id
-        order by loaded_at desc, load_id desc
+    FROM FINANCE.GL_JOURNAL_LINE
+    QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY journal_line_id
+        ORDER BY loaded_at DESC, load_id DESC
     ) = 1
 ),
-signed as (
-    select
-        coalesce(nullif(trim(l.entity_code), ''), '(none)') as entity_code,
-        coalesce(nullif(trim(l.cost_center_code), ''), '(none)') as cost_center_code,
+signed AS (
+    SELECT
+        COALESCE(NULLIF(TRIM(l.entity_code), ''), '(none)') AS entity_code,
+        COALESCE(NULLIF(TRIM(l.cost_center_code), ''), '(none)') AS cost_center_code,
         l.account_code,
         a.account_name,
         a.account_type,
@@ -50,23 +50,25 @@ signed as (
         l.amount_gl,
         -- P&L packs show revenue and costs as positive amounts.
         -- Flip revenue only. Do not hard-code account numbers.
-        case
-            when a.account_type = 'REVENUE' then -l.amount_gl
-            else l.amount_gl
-        end as amount_pnl
-    from latest_line as l
-    -- Unmapped account codes never reach the result, so this total can sit below the trial balance.
-    inner join FINANCE.DIM_ACCOUNT as a
-        on a.account_code = l.account_code
-    inner join FINANCE.DIM_FISCAL_CALENDAR as c
-        on c.calendar_date = cast(l.accounting_date as date)
-    where a.statement = 'PL'
-      and c.period_status = 'CLOSED'
-      -- and coalesce(nullif(trim(l.entity_code), ''), '(none)') not in ('E900') -- drop elimination entities
-      -- and c.fiscal_year = 2026
-      -- and c.fiscal_period = 9
+        CASE
+            WHEN a.account_type = 'REVENUE' THEN -l.amount_gl
+            ELSE l.amount_gl
+        END AS amount_pnl
+    FROM latest_line AS l
+    -- Unmapped account codes never reach the result, so this total
+    -- can sit below the trial balance.
+    INNER JOIN FINANCE.DIM_ACCOUNT AS a
+        ON a.account_code = l.account_code
+    INNER JOIN FINANCE.DIM_FISCAL_CALENDAR AS c
+        ON c.calendar_date = CAST(l.accounting_date AS DATE)
+    WHERE a.statement = 'PL'
+      AND c.period_status = 'CLOSED'
+      -- AND COALESCE(NULLIF(TRIM(l.entity_code), ''), '(none)') NOT IN ('E900')
+      -- drop elimination entities
+      -- AND c.fiscal_year = 2026
+      -- AND c.fiscal_period = 9
 )
-select
+SELECT
     entity_code,
     cost_center_code,
     account_code,
@@ -75,10 +77,10 @@ select
     fiscal_year,
     fiscal_period,
     currency_code,
-    sum(amount_pnl) as amount_pnl,
-    sum(amount_gl) as amount_gl
-from signed
-group by
+    SUM(amount_pnl) AS amount_pnl,
+    SUM(amount_gl) AS amount_gl
+FROM signed
+GROUP BY
     entity_code,
     cost_center_code,
     account_code,
@@ -87,7 +89,7 @@ group by
     fiscal_year,
     fiscal_period,
     currency_code
-order by
+ORDER BY
     fiscal_year,
     fiscal_period,
     entity_code,

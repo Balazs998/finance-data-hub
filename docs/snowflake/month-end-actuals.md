@@ -51,7 +51,7 @@ Change three object names: `FINANCE.GL_JOURNAL_LINE`, `FINANCE.DIM_ACCOUNT`, and
 
 ## 4. Know what the script protects you from
 
-**Restated loads.** Reopening a period and loading it again must replace the old rows, not add to them. `qualify` keeps the latest `loaded_at` for each `journal_line_id`. Without that, September grows every time the loader is rerun. If two loads can share a `loaded_at`, add `load_id`, your own load or batch id, as a tiebreaker: `order by loaded_at desc, load_id desc`.
+**Restated loads.** Reopening a period and loading it again must replace the old rows, not add to them. `QUALIFY` keeps the latest `loaded_at` for each `journal_line_id`. Without that, September grows every time the loader is rerun. If two loads can share a `loaded_at`, add `load_id`, your own load or batch id, as a tiebreaker: `ORDER BY loaded_at DESC, load_id DESC`.
 
 **Fiscal period versus calendar month.** `date_trunc('month', accounting_date)` is wrong for a fiscal year that does not start in January, and it is wrong for a 4-4-5 calendar. The fiscal calendar table is the only place that maps a posting date to a period.
 
@@ -68,14 +68,14 @@ A null or blank entity or cost center, including an empty string, becomes `(none
 
     - Tie `amount_gl` to the trial balance. `amount_pnl` will not tie on revenue accounts, because the sign is flipped.
     - Check a revenue account is positive in `amount_pnl` and negative in `amount_gl`.
-    - Decide whether elimination entities belong in this extract. The commented filter is `coalesce(nullif(trim(l.entity_code), ''), '(none)') not in ('E900')`. Use your own code.
+    - Decide whether elimination entities belong in this extract. The commented filter is `COALESCE(NULLIF(TRIM(l.entity_code), ''), '(none)') NOT IN ('E900')`. Use your own code.
 
 ## If it doesn't match
 
 - **The tie comes up short even though the sign is right:** the inner join to `DIM_ACCOUNT` drops postings on accounts that are not in that dimension. Add the missing accounts to the dimension.
 - **Postings are missing for some dates:** postings dated outside the fiscal calendar table are dropped by the inner join too. Check the calendar covers every `accounting_date`.
 - **Revenue is negative in `amount_pnl`:** the account is not tagged `REVENUE` in `account_type`. Fix the tag in `DIM_ACCOUNT`.
-- **A period grows on every rerun:** the restated rows aren't being deduplicated. Keep the `qualify` on the latest `loaded_at` per `journal_line_id`, with `load_id` as a tiebreaker if loads can share a `loaded_at`.
+- **A period grows on every rerun:** the restated rows aren't being deduplicated. Keep the `QUALIFY` on the latest `loaded_at` per `journal_line_id`, with `load_id` as a tiebreaker if loads can share a `loaded_at`.
 - **The total mixes currencies:** the query does not convert. Sum inside one `currency_code`, then apply your reporting rate.
 
 ## Wrap-up

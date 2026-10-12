@@ -696,18 +696,19 @@ class BuiltSiteTests(unittest.TestCase):
 
     def test_sample_sql_is_published_and_is_real(self):
         sql = (SITE / "files" / "sql" / "gl_actuals_pnl.sql").read_text(encoding="utf-8")
-        self.assertIn("qualify row_number()", sql)
+        self.assertIn("QUALIFY ROW_NUMBER()", sql)
         self.assertIn("amount_pnl", sql)
         article = (SITE / "snowflake" / "month-end-actuals" / "index.html").read_text(
             encoding="utf-8"
         )
-        self.assertIn(">qualify<", article)
-        self.assertIn("nullif(trim(l.entity_code), '')", sql)
-        self.assertIn("nullif(trim(l.cost_center_code), '')", sql)
+        self.assertIn(">QUALIFY<", article)
+        self.assertIn("NULLIF(TRIM(l.entity_code), '')", sql)
+        self.assertIn("NULLIF(TRIM(l.cost_center_code), '')", sql)
         self.assertIn(
-            "coalesce(nullif(trim(l.entity_code), ''), '(none)') not in ('E900')",
+            "COALESCE(NULLIF(TRIM(l.entity_code), ''), '(none)')",
             sql,
         )
+        self.assertIn("NOT IN ('E900')", sql)
         self.assertIn("download-gl_actuals_pnl.sql", article)
         self.assertIn("DIM_ACCOUNT", article)
         self.assertNotIn("lorem ipsum", article.lower())

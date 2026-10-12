@@ -1320,6 +1320,17 @@ body:has(#email-builder) .md-header__title {
     height: 64px;
   }
 
+  /* The sticky Preview bar covers the bottom of the viewport. Keep a
+     focused field, its validation message, and the last field above it,
+     including the home-indicator inset. */
+  html:has(#email-builder) {
+    scroll-padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  #email-builder {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+
   #email-builder .email-frame-wrap,
   #email-builder .email-frame-wrap iframe {
     min-height: 640px;

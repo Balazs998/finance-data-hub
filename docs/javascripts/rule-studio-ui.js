@@ -387,7 +387,7 @@ function ruleStudioPerformanceRisk(findings) {
       if (ai && ai.optimization) {
         html += '<div class="rs-grid2 equal" style="margin-top:14px"><div><div class="rs-label">Original</div>' +
           renderCode(ai.optimization.before, "") +
-          "</div><div><div class=\"rs-label\">Proposed</div>" + renderDiff(ai.optimization.before, ai.optimization.after) + "</div></div>";
+          "</div><div><div class=\"rs-label\">Improved</div>" + renderDiff(ai.optimization.before, ai.optimization.after) + "</div></div>";
         html += "<p class=\"rs-cnt\">" + esc(ai.optimization.note || "") + "</p>";
       }
       html += "</details>";

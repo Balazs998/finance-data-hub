@@ -1,5 +1,6 @@
 site/
 tools/codemirror/node_modules/
+tests/.browser/
 .cache/
 .venv/
 __pycache__/

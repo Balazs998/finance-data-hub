@@ -122,6 +122,11 @@
   font-weight: 600;
 }
 
+#rule-studio .rs-tabs button:focus-visible {
+  outline: 2px solid #38BDF8;
+  outline-offset: 2px;
+}
+
 #rule-studio .rs-tabs button[aria-selected="true"] {
   background: var(--dn-surface-2);
   color: var(--dn-text);
@@ -163,14 +168,33 @@
 
 #rule-studio .rs-grid2 {
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
 
-#rule-studio .rs-grid2.equal { grid-template-columns: 1fr 1fr; }
-#rule-studio .rs-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-#rule-studio .rs-grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+#rule-studio .rs-grid2.equal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+#rule-studio .rs-grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+#rule-studio .rs-grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+
+#rule-studio .rs-row,
+#rule-studio .rs-tabs,
+#rule-studio .rs-step,
+#rule-studio .rs-chips,
+#rule-studio .rs-seg,
+#rule-studio .rs-grid2,
+#rule-studio .rs-grid3,
+#rule-studio .rs-grid4,
+#rule-studio .rs-dimrow,
+#rule-studio .rs-kv,
+#rule-studio .rs-card,
+#rule-studio .rs-fg,
+#rule-studio .rs-finding,
+#rule-studio .rs-grid2 > *,
+#rule-studio .rs-grid3 > *,
+#rule-studio .rs-grid4 > * {
+  min-width: 0;
+}
 
 #rule-studio .rs-btn {
   all: unset;
@@ -209,7 +233,8 @@
   background: var(--dn-code-bg);
   border: 1px solid var(--dn-border);
   border-radius: 10px;
-  overflow: auto;
+  overflow-x: auto;
+  max-width: 100%;
   font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -247,7 +272,7 @@
 #rule-studio .rs-tile svg { width: 22px; height: 22px; }
 
 /* Finding groups are details, but they are not admonitions. Reset the
-   theme's note border, pencil icon, and disclosure chevron. */
+   theme's note border and pencil, then draw the studio's own chevron. */
 #rule-studio .rs-fg {
   display: block;
   margin: 0;
@@ -266,10 +291,12 @@
   list-style: none;
   cursor: pointer;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   position: static;
   min-height: 0;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   border: 0;
@@ -280,8 +307,14 @@
   font-size: inherit;
   overflow: visible;
 }
-#rule-studio .rs-fg > summary::before,
-#rule-studio .rs-fg > summary::after {
+#rule-studio .rs-finding .rs-row > b,
+#rule-studio .rs-fg > summary h3,
+#rule-studio .rs-cnt,
+#rule-studio .rs-foot {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+#rule-studio .rs-fg > summary::before {
   content: none;
   display: none;
   width: 0;
@@ -291,6 +324,32 @@
   background: none;
   mask-image: none;
   -webkit-mask-image: none;
+}
+#rule-studio .rs-fg > summary::after {
+  content: "";
+  display: block;
+  flex: 0 0 auto;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin: 0 0.15rem 0 0.35rem;
+  padding: 0;
+  border: 0;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  background: none;
+  mask-image: none;
+  -webkit-mask-image: none;
+  position: static;
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+#rule-studio .rs-fg[open] > summary::after {
+  transform: rotate(45deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  #rule-studio .rs-fg > summary::after {
+    transition: none;
+  }
 }
 #rule-studio .rs-fg > summary::marker,
 #rule-studio .rs-fg > summary::-webkit-details-marker { display: none; content: ""; }
@@ -463,8 +522,8 @@
 @media (max-width: 720px) {
   #rule-studio .rs-grid2,
   #rule-studio .rs-grid3,
-  #rule-studio .rs-grid2.equal { grid-template-columns: 1fr; }
-  #rule-studio .rs-grid4 { grid-template-columns: 1fr 1fr; }
+  #rule-studio .rs-grid2.equal { grid-template-columns: minmax(0, 1fr); }
+  #rule-studio .rs-grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #rule-studio .rs-card { padding: 18px; }
   #rule-studio .rs-tabs { display: flex; width: 100%; }
   #rule-studio .rs-tabs button { flex: 1; text-align: center; padding: 9px 6px; }

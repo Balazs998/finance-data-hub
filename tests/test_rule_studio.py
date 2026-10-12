@@ -9,6 +9,19 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class RuleStudioTests(unittest.TestCase):
+    def test_long_one_line_rule_stays_within_the_viewport(self):
+        completed = subprocess.run(
+            ["node", "--test", str(ROOT / "tests" / "rule-studio-overflow.test.js")],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            completed.returncode,
+            0,
+            completed.stdout + "\n" + completed.stderr,
+        )
+
     def test_node_suites(self):
         completed = subprocess.run(
             [

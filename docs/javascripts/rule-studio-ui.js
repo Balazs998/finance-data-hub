@@ -1,11 +1,27 @@
 /* Business Rule Studio page. Static checks stay in the browser. The worker
    is used only when FDH_RULE_STUDIO.endpoint is set. */
+
+/* Highest severity among performance and optimization findings.
+   error → High, warning → Medium, info/check/none → Low. */
+function ruleStudioPerformanceRisk(findings) {
+  var rank = 0;
+  (findings || []).forEach(function (item) {
+    if (!item || (item.group !== "performance" && item.group !== "optimization")) return;
+    var level = item.severity === "error" ? 3 : item.severity === "warning" ? 2 : 1;
+    if (level > rank) rank = level;
+  });
+  if (rank >= 3) return "High";
+  if (rank === 2) return "Medium";
+  return "Low";
+}
+
 (function () {
   var HISTORY_KEY = "fdh-rule-studio-history";
   var HISTORY_FLAG = "fdh-rule-studio-history-on";
   var ROLES = ["Time", "Version", "Measure/Value type", "Other"];
 
   function ready(fn) {
+    if (typeof document === "undefined") return;
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
     else fn();
   }
@@ -114,7 +130,7 @@
     function mountEditor() {
       var cm = window.EmailCodeMirror;
       if (!cm || !cm.jedox || !cm.EditorView) {
-        editorHost.innerHTML = '<textarea id="rs-fallback" class="rs-in" rows="8" aria-label="Rule editor" placeholder="Paste a Jedox rule."></textarea>';
+        editorHost.innerHTML = '<textarea id="rs-fallback" class="rs-in" rows="8" aria-label="Jedox rule editor" placeholder="Paste a Jedox rule."></textarea>';
         editorHost.querySelector("textarea").addEventListener("input", countLines);
         return;
       }
@@ -138,6 +154,7 @@
             cm.drawSelection(),
             cm.EditorView.lineWrapping,
             cm.jedox(),
+            cm.EditorView.contentAttributes.of({ "aria-label": "Jedox rule editor" }),
             cm.lintGutter(),
             cm.linter(lintSource),
             cm.keymap.of([].concat(cm.defaultKeymap, cm.historyKeymap)),
@@ -299,12 +316,7 @@
     }
 
     function performanceRisk(findings) {
-      var relevant = findings.filter(function (item) {
-        return item.group === "performance" || item.group === "optimization";
-      });
-      if (relevant.some(function (item) { return item.severity === "error"; })) return "High";
-      if (relevant.some(function (item) { return item.severity === "warning"; })) return "Medium";
-      return "Low";
+      return ruleStudioPerformanceRisk(findings);
     }
 
     function renderCode(text, mark) {
@@ -388,7 +400,7 @@
         html += '<div class="rs-finding"><div class="rs-row"><b>' + esc(scenario.title) + '</b><span class="rs-sp"></span>' +
           '<span class="rs-badge ' + cls + '">' + status + "</span>" + sourceBadge("simulated") +
           (scenario.status === "not_verifiable"
-            ? '<span class="rs-badge rs-b-jedox rs-tip" tabindex="0" aria-disabled="true">Confirmed in Jedox<span class="rs-tt">Not available yet. Confirming a result needs a real Jedox connection, planned for phase 3. Today, no rule is executed in Jedox.</span></span>'
+            ? '<button type="button" class="rs-badge rs-b-jedox rs-tip" aria-disabled="true">Confirmed in Jedox<span class="rs-tt">Not available yet. Confirming a result needs a real Jedox connection, planned for phase 3. Today, no rule is executed in Jedox.</span></button>'
             : "") +
           "</div>" + (scenario.detail ? "<p>" + esc(scenario.detail) + "</p>" : "") + "</div>";
       });
@@ -410,21 +422,21 @@
 
     function showEmpty() {
       results.innerHTML = '<div class="rs-card rs-state" style="align-items:center;justify-content:center;text-align:center">' +
-        '<h3>No rule yet</h3><p class="rs-cnt" style="max-width:40ch">Paste a Jedox rule above or load a fictional example to see syntax, performance and logic findings.</p>' +
+        '<h2>No rule yet</h2><p class="rs-cnt" style="max-width:40ch">Paste a Jedox rule above or load a fictional example to see syntax, performance and logic findings.</p>' +
         '<button type="button" class="rs-btn rs-sec" id="rs-empty-load">Load example</button></div>';
       var button = document.getElementById("rs-empty-load");
       if (button) button.addEventListener("click", loadFirstExample);
     }
 
     function showLoading() {
-      results.innerHTML = '<div class="rs-card rs-state" aria-busy="true"><div class="rs-row"><h3>Loading</h3><span class="rs-sp"></span><span class="rs-badge rs-b-static">Static check running</span></div>' +
+      results.innerHTML = '<div class="rs-card rs-state" aria-busy="true"><div class="rs-row"><h2>Loading</h2><span class="rs-sp"></span><span class="rs-badge rs-b-static">Static check running</span></div>' +
         '<p class="rs-cnt" role="status">Checking syntax, then asking the AI provider…</p>' +
         '<div class="rs-grid4"><div class="rs-sk" style="height:64px"></div><div class="rs-sk" style="height:64px"></div><div class="rs-sk" style="height:64px"></div><div class="rs-sk" style="height:64px"></div></div>' +
         '<div class="rs-sk" style="width:70%"></div><div class="rs-sk" style="width:90%"></div></div>';
     }
 
     function showError(message, detail) {
-      results.innerHTML = '<div class="rs-card rs-state rs-error" role="alert"><div class="rs-row"><h3>Error</h3><span class="rs-badge rs-sev-h">✕ Error</span></div>' +
+      results.innerHTML = '<div class="rs-card rs-state rs-error" role="alert"><div class="rs-row"><h2>Error</h2><span class="rs-badge rs-sev-h">✕ Error</span></div>' +
         "<p>" + esc(message) + "</p><p class=\"rs-cnt\">" + esc(detail || "Your rule was not stored.") + "</p>" +
         '<div class="rs-row"><button type="button" class="rs-btn rs-sec" id="rs-show-static">Show static results</button></div></div>';
       document.getElementById("rs-show-static").addEventListener("click", function () {
@@ -480,13 +492,43 @@
       });
     }
 
+    function studioTabs() {
+      return Array.prototype.slice.call(root.querySelectorAll("[role=tab]"));
+    }
+
     function selectTab(tab) {
-      root.querySelectorAll("[role=tab]").forEach(function (button) {
+      studioTabs().forEach(function (button) {
         var on = button === tab;
         button.setAttribute("aria-selected", on ? "true" : "false");
         button.tabIndex = on ? 0 : -1;
         document.getElementById(button.getAttribute("aria-controls")).hidden = !on;
       });
+    }
+
+    function moveTabFocus(current, target) {
+      if (!target || target === current) return;
+      studioTabs().forEach(function (button) {
+        button.tabIndex = button === target ? 0 : -1;
+      });
+      target.focus();
+    }
+
+    function onTabKey(event) {
+      var tabs = studioTabs();
+      var index = tabs.indexOf(event.currentTarget);
+      if (index < 0) return;
+      var target = null;
+      if (event.key === "ArrowRight") target = tabs[(index + 1) % tabs.length];
+      else if (event.key === "ArrowLeft") target = tabs[(index - 1 + tabs.length) % tabs.length];
+      else if (event.key === "Home") target = tabs[0];
+      else if (event.key === "End") target = tabs[tabs.length - 1];
+      else if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectTab(event.currentTarget);
+        return;
+      } else return;
+      event.preventDefault();
+      moveTabFocus(event.currentTarget, target);
     }
 
     function loadExample(id) {
@@ -583,7 +625,7 @@
       var box = document.getElementById("rs-clarify");
       var questions = (ai.clarification && ai.clarification.questions) || [];
       box.hidden = false;
-      box.innerHTML = '<h3>Needs your input</h3><span class="rs-badge rs-b-ai">? Clarification</span>' +
+      box.innerHTML = '<h2>Needs your input</h2><span class="rs-badge rs-b-ai">? Clarification</span>' +
         "<p>Before generating a rule the mock provider needs a few details. This is not a live model.</p>" +
         questions.map(function (question, index) {
           var choices = (question.choices || []).slice(0, 12).map(function (choice) {
@@ -610,7 +652,7 @@
         lastGenerated = null;
         box.hidden = true;
         showClarification(ai);
-        results.innerHTML = '<div class="rs-card rs-state"><h3>Waiting on your answers</h3>' +
+        results.innerHTML = '<div class="rs-card rs-state"><h2>Waiting on your answers</h2>' +
           '<p class="rs-cnt">The mock provider did not write a rule. Answer the questions above, then continue.</p></div>';
         say("The draft needs a clarification.");
         return;
@@ -619,7 +661,7 @@
       document.getElementById("rs-clarify").hidden = true;
       box.hidden = false;
       var mock = ai.mock !== false;
-      box.innerHTML = '<div class="rs-step"><span class="rs-num">3</span><h3>Draft rule</h3><span class="rs-sp"></span>' +
+      box.innerHTML = '<div class="rs-step"><span class="rs-num">3</span><h2>Draft rule</h2><span class="rs-sp"></span>' +
         (mock ? '<span class="rs-badge rs-b-mock">⚑ Mock provider – not real AI</span>' : '<span class="rs-badge rs-b-ai">AI assessment</span>') +
         "</div>" + renderCode(ai.rule, "") +
         '<dl class="rs-kv" style="margin-top:16px">' +
@@ -783,6 +825,7 @@
     function bind() {
       root.querySelectorAll("[role=tab]").forEach(function (tab) {
         tab.addEventListener("click", function () { selectTab(tab); });
+        tab.addEventListener("keydown", onTabKey);
       });
       versionSelect.addEventListener("change", function () {
         pack = selectedPack();
@@ -891,7 +934,11 @@
         countLines();
       })
       .catch(function () {
-        results.innerHTML = '<div class="rs-card rs-error" role="alert"><h3>Error</h3><p>The knowledge pack did not load. The page needs the pack files next to this article.</p></div>';
+        results.innerHTML = '<div class="rs-card rs-error" role="alert"><h2>Error</h2><p>The knowledge pack did not load. The page needs the pack files next to this article.</p></div>';
       });
   });
 })();
+
+if (typeof module === "object" && module.exports) {
+  module.exports = { performanceRisk: ruleStudioPerformanceRisk };
+}

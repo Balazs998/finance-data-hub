@@ -18,7 +18,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <p class="rs-cnt" id="rs-mode-note"></p>
 
 <div class="rs-row" style="margin:18px 0">
-<div role="tablist" class="rs-tabs" aria-label="Studio mode">
+<div role="tablist" class="rs-tabs" aria-label="Studio mode" aria-orientation="horizontal">
 <button type="button" role="tab" id="t-test" aria-selected="true" aria-controls="p-test">Test &amp; Optimize</button>
 <button type="button" role="tab" id="t-gen" aria-selected="false" aria-controls="p-gen" tabindex="-1">Generate Rule</button>
 </div>
@@ -39,7 +39,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <span class="rs-sp"></span>
 <span class="rs-cnt" id="rs-lines">0 lines</span>
 </div>
-<div id="rs-editor" class="rs-editor-host" aria-label="Rule editor"></div>
+<div id="rs-editor" class="rs-editor-host"></div>
 <div class="rs-row" style="margin-top:16px">
 <button type="button" class="rs-btn rs-pri" id="rs-analyze">Analyze rule</button>
 <label class="rs-sr" for="rs-example">Examples</label>
@@ -52,7 +52,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <p class="rs-cnt" style="margin-top:8px">Fictional data only. Examples are loaded from the demo pack.</p>
 </div>
 <div class="rs-card">
-<h3 style="margin-top:0">What gets sent</h3>
+<h2 style="margin-top:0">What gets sent</h2>
 <div class="rs-privacy">Your rule text and any metadata you enter are sent to our server and the AI provider only when a worker endpoint is configured. In the default offline mode nothing leaves this page. Nothing is stored or logged on the server; a configured worker records request counts only. History is off unless you turn it on below, and then it stays in this browser only.</div>
 <div id="rs-turnstile" style="margin-top:12px"></div>
 </div>
@@ -60,7 +60,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 </section>
 
 <section id="p-gen" role="tabpanel" aria-labelledby="t-gen" class="rs-card" hidden>
-<div class="rs-step"><span class="rs-num">1</span><h3>Environment</h3></div>
+<div class="rs-step"><span class="rs-num">1</span><h2>Environment</h2></div>
 <div class="rs-grid3">
 <div><label for="rs-database">Database</label><input id="rs-database" class="rs-in" autocomplete="off"></div>
 <div><label for="rs-target">Target cube</label><input id="rs-target" class="rs-in" list="rs-cube-list" autocomplete="off"></div>
@@ -81,7 +81,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <button type="button" class="rs-btn rs-sec" id="rs-meta-apply" style="margin-top:8px">Apply metadata</button>
 </div>
 
-<div class="rs-step" style="margin-top:28px"><span class="rs-num">2</span><h3>Your business story</h3></div>
+<div class="rs-step" style="margin-top:28px"><span class="rs-num">2</span><h2>Your business story</h2></div>
 <label for="rs-story">Describe what you want your business rule to calculate.</label>
 <textarea id="rs-story" class="rs-in" placeholder="For example: calculate Variance as Actual minus Budget on base cells."></textarea>
 <div class="rs-row" style="margin-top:14px">
@@ -91,7 +91,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <div id="rs-clarify" class="rs-card rs-clarify rs-state" hidden style="margin-top:16px"></div>
 <div id="rs-draft" hidden style="margin-top:22px"></div>
 
-<div class="rs-step" style="margin-top:28px"><span class="rs-num">4</span><h3>Refine</h3></div>
+<div class="rs-step" style="margin-top:28px"><span class="rs-num">4</span><h2>Refine</h2></div>
 <div class="rs-chips" role="group" aria-label="Quick refinements">
 <button type="button" class="rs-chip" aria-pressed="false">Only actuals</button>
 <button type="button" class="rs-chip" aria-pressed="false">Exclude intercompany</button>
@@ -110,7 +110,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 
 <section class="rs-card" style="margin-top:18px" aria-labelledby="rs-history-title">
 <div class="rs-row">
-<h3 id="rs-history-title" style="margin:0">History</h3>
+<h2 id="rs-history-title" style="margin:0">History</h2>
 <span class="rs-sp"></span>
 <button type="button" class="rs-switch" id="rs-history-switch" role="switch" aria-checked="false" aria-labelledby="rs-history-label"></button>
 <span id="rs-history-label">Save history in this browser</span>

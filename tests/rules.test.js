@@ -138,3 +138,25 @@ test("version switching loads the 2025.1 pack and marks unverified findings", fu
   assert.match(ui, /Jedox 2025\.1: rules are checked against the 2026\.1 reference; Jedox's public docs list no rule changes between these versions\./);
   assert.match(ui, /packs\["2026\.1"\]\) versionSelect\.value = "2026\.1"/);
 });
+
+test("performance tile stays Low when the only performance finding is a repeated PALO.DATA", function () {
+  const studio = require("../docs/javascripts/rule-studio-ui.js");
+  assert.equal(studio.performanceRisk([
+    { code: "REPEATED_SUBEXPRESSION", group: "optimization", severity: "info", source: "static" }
+  ]), "Low");
+  const repeated = cases.filter(function (ruleCase) { return ruleCase.id === "perf-02"; })[0];
+  const result = runCase(repeated);
+  assert.ok(result.findings.some(function (item) {
+    return item.code === "REPEATED_SUBEXPRESSION" && item.group === "optimization" && item.severity === "info";
+  }));
+  assert.equal(result.findings.some(function (item) {
+    return (item.group === "performance" || item.group === "optimization") && item.severity !== "info";
+  }), false);
+  assert.equal(studio.performanceRisk(result.findings), "Low");
+  assert.equal(studio.performanceRisk(result.findings.concat([
+    { group: "performance", severity: "warning", source: "static" }
+  ])), "Medium");
+  assert.equal(studio.performanceRisk(result.findings.concat([
+    { group: "optimization", severity: "error", source: "static" }
+  ])), "High");
+});

@@ -32,7 +32,24 @@
   margin-bottom: 6px;
 }
 
-#rule-studio h1 {
+#rule-studio h1,
+#rule-studio h2,
+#rule-studio h3 {
+  font-family: "Space Grotesk", "Space Grotesk Fallback", "Inter", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--dn-text);
+  line-height: 1.35;
+}
+#rule-studio h2,
+#rule-studio h3 {
+  font-size: 1.05rem;
+  margin: 0 0 0.4rem;
+}
+#rule-studio .rs-step h2,
+#rule-studio .rs-row h2,
+#rule-studio .rs-row h3,
+#rule-studio .rs-fg > summary h3 {
   margin: 0;
 }
 
@@ -74,6 +91,12 @@
   background: transparent;
   border-style: dashed;
   cursor: not-allowed;
+}
+#rule-studio button.rs-badge {
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 #rule-studio .rs-b-ill { color: #fdba74; border-color: #8a4b1c; background: #2e1d10; }
 #rule-studio .rs-b-mock { color: #0f1720; background: #fdba74; border-color: #fdba74; }
@@ -223,15 +246,55 @@
 #rule-studio .rs-tile .rs-v { color: var(--dn-text-muted); font-size: 13.5px; }
 #rule-studio .rs-tile svg { width: 22px; height: 22px; }
 
-#rule-studio .rs-fg { border-top: 1px solid var(--dn-border); padding: 16px 0 4px; }
+/* Finding groups are details, but they are not admonitions. Reset the
+   theme's note border, pencil icon, and disclosure chevron. */
+#rule-studio .rs-fg {
+  display: block;
+  margin: 0;
+  padding: 16px 0 4px;
+  border: 0;
+  border-top: 1px solid var(--dn-border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-size: inherit;
+  overflow: visible;
+}
+#rule-studio .rs-fg:focus-within { box-shadow: none; }
 #rule-studio .rs-fg > summary {
   list-style: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
+  position: static;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-size: inherit;
+  overflow: visible;
 }
-#rule-studio .rs-fg > summary::-webkit-details-marker { display: none; }
+#rule-studio .rs-fg > summary::before,
+#rule-studio .rs-fg > summary::after {
+  content: none;
+  display: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+#rule-studio .rs-fg > summary::marker,
+#rule-studio .rs-fg > summary::-webkit-details-marker { display: none; content: ""; }
+#rule-studio .rs-fg > :last-child { margin-bottom: 0; }
 #rule-studio .rs-finding {
   margin-top: 14px;
   background: var(--dn-surface-2);

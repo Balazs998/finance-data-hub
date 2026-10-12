@@ -319,6 +319,14 @@ class SectionPageTests(unittest.TestCase):
             self.assertTrue(all_downloads.is_file())
             self.assertIn('href="../downloads/">All downloads →<', html)
             self.assertIn("stylesheets/section.css", full)
+            self.assertRegex(
+                full,
+                r'href="\.\./stylesheets/section\.css\?v=[^"]+" media="print"',
+            )
+            head, _, body = full.partition("</head>")
+            self.assertNotIn("section.css", head)
+            extra_css = (SITE / "stylesheets" / "extra.css").read_text(encoding="utf-8")
+            self.assertIn(".fdh-section{--tool:#38BDF8;--tool-rgb:56,189,248}", extra_css)
             self.assertRegex(full, r'data-md-type="toc"[^>]*hidden|hidden[^>]*data-md-type="toc"')
             sidebar = full.split('class="md-sidebar md-sidebar--primary"', 1)[1]
             self.assertNotIn(" hidden", sidebar[:80])

@@ -174,6 +174,27 @@ def rule_studio_csp(page_html: str, config) -> str:
         ]
     )
 
+
+def _defer_section_stylesheet(output: str) -> str:
+    """Move section.css out of the head.
+
+    The rules are copied onto the built extra.css, which is already on the
+    critical path. A print link at the end of the body keeps the file
+    addressable without holding up the first paint.
+    """
+    match = re.search(
+        r'\s*<link rel="stylesheet" href="((?:\.\./)*stylesheets/section\.css\?v=[^"]+)">\s*',
+        output,
+    )
+    if not match:
+        return output
+    href = match.group(1)
+    output = output[: match.start()] + "\n" + output[match.end() :]
+    tag = f'<link rel="stylesheet" href="{href}" media="print">'
+    return output.replace("</body>", tag + "\n</body>", 1)
+
+
+
 def on_post_page(output, page, config):
     version = asset_version()
     output = _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
@@ -181,8 +202,21 @@ def on_post_page(output, page, config):
         policy = rule_studio_csp(output, config)
         tag = f'<meta http-equiv="Content-Security-Policy" content="{policy}">'
         output = output.replace("<head>", "<head>\n    " + tag, 1)
-    return output
+    return _defer_section_stylesheet(output)
 
+
+def on_post_build(config):
+    """Append section.css to the built extra.css so the first paint has it."""
+    site = Path(config["site_dir"]) / "stylesheets" / "extra.css"
+    section = Path(config["docs_dir"]) / "stylesheets" / "section.css"
+    marker = "/* section index rules, kept with extra.css for the first paint */"
+    styles = site.read_text(encoding="utf-8")
+    if marker in styles:
+        return
+    site.write_text(
+        styles.rstrip() + "\n\n" + marker + "\n" + section.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
 
 
 def copy_rule_studio(config):

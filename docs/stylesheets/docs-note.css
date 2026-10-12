@@ -1,0 +1,12 @@
+/* Docs-based note box (Web Designer, POST-TEMPLATE.md). Spec tokens mapped to site tokens:
+   --accent -> --dn-link, --surface -> --dn-surface, --text -> --dn-text, --text-muted -> --dn-text-muted. */
+.md-typeset .docs-note {
+  border-left: 3px solid var(--dn-link);
+  background: var(--dn-surface);
+  border-radius: 0.5rem;
+  padding: .75rem 1rem;
+  margin: 1rem 0 1.5rem;
+  max-width: 68ch;
+}
+.md-typeset .docs-note .docs-note__title { font: 600 1rem var(--md-text-font); color: var(--dn-text); margin: 0 0 .25rem; }
+.md-typeset .docs-note p { margin: 0; color: var(--dn-text-muted); font-size: .95rem; }

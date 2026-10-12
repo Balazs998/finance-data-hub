@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 480" width="840" height="480" role="img" aria-labelledby="t d">
+  <title id="t">Which Outlook are you on?</title>
+  <desc id="d">An Excel VBA email macro that uses CreateObject("Outlook.Application"). Check: is there a Settings button at the top right of Outlook? Yes means New Outlook, no means classic Outlook. Classic Outlook: your existing VBA email macro keeps working. New Outlook: VBA and macros aren't supported, so the macro needs a new route. Microsoft names three alternatives: Power Automate, with the Office 365 Outlook action Send an email (V2); Microsoft Graph sendMail, which needs the Mail.Send permission and returns 202 Accepted, meaning accepted, not delivered; and Office.js, for web add-ins for Outlook. For a report macro, the realistic choices are Power Automate or Graph.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#38BDF8"/></marker>
+    <marker id="v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8B7CF6"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A3E635"/></marker>
+  </defs>
+  <style>
+    .h{font:700 22px 'Space Grotesk',system-ui,sans-serif;fill:#E6EDF3}
+    .b{font:600 16px Inter,system-ui,sans-serif;fill:#E6EDF3}
+    .m{font:400 15px Inter,system-ui,sans-serif;fill:#B7C5D3}
+    .q{font:400 15px Inter,system-ui,sans-serif;fill:#9AA7B4}
+    .c{font:500 15px 'JetBrains Mono',ui-monospace,monospace;fill:#38BDF8}
+    .l{font:600 15px Inter,system-ui,sans-serif;fill:#A3E635}
+    .p{font:600 15px Inter,system-ui,sans-serif;fill:#A78BFA}
+  </style>
+  <rect width="840" height="480" fill="#0F1720"/>
+  <text x="16" y="38" class="h">Which Outlook are you on?</text>
+
+  <!-- Macro -->
+  <rect x="16" y="160" width="140" height="140" rx="12" fill="#18222E" stroke="#2A3847"/>
+  <text x="28" y="186" class="q">Excel VBA</text>
+  <text x="28" y="210" class="b">Email macro</text>
+  <text x="23" y="244" class="c">CreateObject(</text>
+  <text x="23" y="264" class="c">"Outlook.</text>
+  <text x="23" y="284" class="c">Application")</text>
+  <line x1="156" y1="230" x2="172" y2="230" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- Check -->
+  <rect x="176" y="170" width="140" height="120" rx="10" fill="#1F2B39" stroke="#38BDF8" stroke-dasharray="6 5"/>
+  <text x="188" y="196" class="q">Check</text>
+  <text x="188" y="222" class="b">Settings</text>
+  <text x="188" y="244" class="b">button at</text>
+  <text x="188" y="266" class="b">top right?</text>
+
+  <!-- Fork -->
+  <path d="M316 230 H330 V115 H342" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M330 230 V345 H342" fill="none" stroke="#8B7CF6" stroke-width="2" marker-end="url(#v)"/>
+  <text x="300" y="155" class="q">No</text>
+  <text x="292" y="318" class="q">Yes</text>
+
+  <!-- Classic -->
+  <rect x="346" y="75" width="132" height="80" rx="10" fill="#1F2B39" stroke="#38BDF8"/>
+  <text x="358" y="110" class="b">Classic</text><text x="358" y="132" class="b">Outlook</text>
+  <line x1="478" y1="115" x2="496" y2="115" stroke="#A3E635" stroke-width="2" marker-end="url(#g)"/>
+  <rect x="500" y="75" width="324" height="80" rx="10" fill="#18222E" stroke="#A3E635"/>
+  <circle cx="524" cy="115" r="11" fill="#A3E635"/>
+  <path d="M519 115 l4 4 l7 -8" fill="none" stroke="#0F1720" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="544" y="110" class="l">Your existing VBA email</text>
+  <text x="544" y="132" class="m">macro keeps working.</text>
+
+  <!-- New -->
+  <rect x="346" y="305" width="132" height="80" rx="10" fill="#1F2B39" stroke="#8B7CF6"/>
+  <text x="358" y="340" class="b">New</text><text x="358" y="362" class="b">Outlook</text>
+  <line x1="478" y1="345" x2="496" y2="345" stroke="#8B7CF6" stroke-width="2" marker-end="url(#v)"/>
+  <rect x="500" y="290" width="132" height="110" rx="10" fill="#18222E" stroke="#8B7CF6" stroke-dasharray="6 5"/>
+  <text x="512" y="318" class="p">VBA and</text>
+  <text x="512" y="340" class="p">macros aren't</text>
+  <text x="512" y="362" class="p">supported</text>
+  <text x="512" y="388" class="q">New route</text>
+
+  <!-- Alternatives -->
+  <path d="M632 345 H642 V230 H652" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M642 345 H652" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M642 345 V440 H654" fill="none" stroke="#9AA7B4" stroke-width="2" stroke-dasharray="4 4"/>
+  <text x="656" y="192" class="q">Microsoft names three</text>
+
+  <rect x="656" y="200" width="168" height="64" rx="10" fill="#1F2B39" stroke="#38BDF8"/>
+  <text x="668" y="225" class="b">Power Automate</text>
+  <text x="668" y="248" class="m">Send an email (V2)</text>
+
+  <rect x="656" y="274" width="168" height="134" rx="10" fill="#1F2B39" stroke="#38BDF8"/>
+  <text x="668" y="299" class="b">Microsoft Graph</text>
+  <text x="668" y="322" class="c">sendMail</text>
+  <text x="668" y="346" class="m">needs <tspan class="c">Mail.Send</tspan></text>
+  <text x="668" y="370" class="m"><tspan class="c">202</tspan> = accepted,</text>
+  <text x="668" y="392" class="m">not delivered</text>
+
+  <rect x="656" y="418" width="168" height="44" rx="10" fill="#18222E" stroke="#2A3847"/>
+  <text x="668" y="445" class="q">Office.js: add-ins</text>
+
+  <text x="16" y="445" class="q">For a report macro: Power Automate or Graph.</text>
+</svg>

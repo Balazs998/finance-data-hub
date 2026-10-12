@@ -14,8 +14,9 @@ hide:
     <p class="fdh-hero__intro">Snowflake is where the actuals live after the general ledger closes. This section is about getting a finance-shaped extract out of Snowflake, not about warehouses, roles, or loading pipelines.</p>
   </div>
   <picture class="fdh-hero__mascot">
-    <source srcset="../assets/mascots/section/snowflake-pointing.webp" type="image/webp">
-    <img src="../assets/mascots/section/snowflake-pointing.png" alt="Snowflake mascot in a blue hoodie pointing toward the introduction" width="426" height="721" loading="lazy" decoding="async">
+    <source media="(max-width: 600px)" srcset="../assets/mascots/section/snowflake-pointing-phone.webp 1x, ../assets/mascots/section/snowflake-pointing-phone-2x.webp 2x" type="image/webp">
+    <source srcset="../assets/mascots/section/snowflake-pointing.webp 1x, ../assets/mascots/section/snowflake-pointing-2x.webp 2x" type="image/webp">
+    <img src="../assets/mascots/section/snowflake-pointing.png" alt="Snowflake mascot in a blue hoodie pointing toward the introduction" width="154" height="260" fetchpriority="high" loading="eager" decoding="async">
   </picture>
 </header>
 

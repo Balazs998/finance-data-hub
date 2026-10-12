@@ -14,8 +14,9 @@ hide:
     <p class="fdh-hero__intro">The pack is still finished in Excel. The modules here are standard .bas files: import them, save as .xlsm, and run them yourself. Nothing on this site runs when a workbook opens.</p>
   </div>
   <picture class="fdh-hero__mascot">
-    <source srcset="../assets/mascots/section/vba-laptop.webp" type="image/webp">
-    <img src="../assets/mascots/section/vba-laptop.png" alt="VBA mascot in a green cardigan sitting with an open laptop" width="551" height="682" loading="lazy" decoding="async">
+    <source media="(max-width: 600px)" srcset="../assets/mascots/section/vba-laptop-phone.webp 1x, ../assets/mascots/section/vba-laptop-phone-2x.webp 2x" type="image/webp">
+    <source srcset="../assets/mascots/section/vba-laptop.webp 1x, ../assets/mascots/section/vba-laptop-2x.webp 2x" type="image/webp">
+    <img src="../assets/mascots/section/vba-laptop.png" alt="VBA mascot in a green cardigan sitting with an open laptop" width="210" height="260" fetchpriority="high" loading="eager" decoding="async">
   </picture>
 </header>
 

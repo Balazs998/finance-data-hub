@@ -14,8 +14,9 @@ hide:
     <p class="fdh-hero__intro">Jedox holds the plan and the management report. Excel is where the pack is annotated. The fragile step is the file that travels between them.</p>
   </div>
   <picture class="fdh-hero__mascot">
-    <source srcset="../assets/mascots/section/jedox-cube.webp" type="image/webp">
-    <img src="../assets/mascots/section/jedox-cube.png" alt="Jedox mascot in a purple blazer holding a purple cube" width="388" height="704" loading="lazy" decoding="async">
+    <source media="(max-width: 600px)" srcset="../assets/mascots/section/jedox-cube-phone.webp 1x, ../assets/mascots/section/jedox-cube-phone-2x.webp 2x" type="image/webp">
+    <source srcset="../assets/mascots/section/jedox-cube.webp 1x, ../assets/mascots/section/jedox-cube-2x.webp 2x" type="image/webp">
+    <img src="../assets/mascots/section/jedox-cube.png" alt="Jedox mascot in a purple blazer holding a purple cube" width="143" height="260" fetchpriority="high" loading="eager" decoding="async">
   </picture>
 </header>
 

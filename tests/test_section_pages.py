@@ -21,7 +21,7 @@ SECTIONS = {
         "few": False,
         "mascot": "snowflake-pointing",
         "alt": "Snowflake mascot in a blue hoodie pointing toward the introduction",
-        "size": (426, 721),
+        "size": (154, 260),
         "cards": (
             (
                 "Month-end actuals",
@@ -66,7 +66,7 @@ SECTIONS = {
         "few": False,
         "mascot": "jedox-cube",
         "alt": "Jedox mascot in a purple blazer holding a purple cube",
-        "size": (388, 704),
+        "size": (143, 260),
         "cards": (
             (
                 "Management report export",
@@ -138,7 +138,7 @@ SECTIONS = {
         "few": True,
         "mascot": "vba-laptop",
         "alt": "VBA mascot in a green cardigan sitting with an open laptop",
-        "size": (551, 682),
+        "size": (210, 260),
         "cards": (
             (
                 "Month-close checks",
@@ -204,6 +204,13 @@ class SectionPageTests(unittest.TestCase):
         self.assertIn("grid-template-columns:1fr", css)
         listed = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
         self.assertIn("stylesheets/section.css", listed)
+        extra = (ROOT / "docs" / "stylesheets" / "extra.css").read_text(encoding="utf-8")
+        self.assertIn(".md-typeset li .fdh-card__title a:not(.md-button)", extra)
+        self.assertIn(
+            'a[download="FPNA_MonthCloseChecks.bas"]',
+            extra,
+        )
+        self.assertIn("white-space: nowrap", extra)
 
     def test_section_pages_cards_mascots_and_downloads(self):
         load_summaries = []
@@ -235,34 +242,50 @@ class SectionPageTests(unittest.TestCase):
             self.assertEqual(len(pictures), 1, slug)
             block = pictures[0]
             self.assertIn('class="fdh-hero__mascot"', block)
-            source = re.search(r'<source\b[^>]*>', block)
+            sources = re.findall(r"<source\b[^>]*>", block)
             image = re.search(r"<img\b[^>]*>", block)
-            self.assertIsNotNone(source)
+            self.assertEqual(len(sources), 2, slug)
             self.assertIsNotNone(image)
-            source_attrs = attrs(source.group(0))
+            phone_attrs = attrs(sources[0])
+            desk_attrs = attrs(sources[1])
             image_attrs = attrs(image.group(0))
+            stem = f"../assets/mascots/section/{spec['mascot']}"
+            self.assertEqual(phone_attrs.get("media"), "(max-width: 600px)")
+            self.assertEqual(phone_attrs.get("type"), "image/webp")
+            self.assertEqual(desk_attrs.get("type"), "image/webp")
+            self.assertNotIn("media", desk_attrs)
             self.assertEqual(
-                source_attrs.get("srcset"),
-                f"../assets/mascots/section/{spec['mascot']}.webp",
+                phone_attrs.get("srcset"),
+                f"{stem}-phone.webp 1x, {stem}-phone-2x.webp 2x",
             )
-            self.assertEqual(source_attrs.get("type"), "image/webp")
             self.assertEqual(
-                image_attrs.get("src"),
-                f"../assets/mascots/section/{spec['mascot']}.png",
+                desk_attrs.get("srcset"),
+                f"{stem}.webp 1x, {stem}-2x.webp 2x",
             )
+            self.assertEqual(image_attrs.get("src"), f"{stem}.png")
             self.assertEqual(image_attrs.get("alt"), spec["alt"])
             self.assertTrue(image_attrs["alt"].strip())
-            self.assertEqual(image_attrs.get("loading"), "lazy")
+            self.assertEqual(image_attrs.get("loading"), "eager")
+            self.assertEqual(image_attrs.get("fetchpriority"), "high")
+            self.assertEqual(image_attrs.get("decoding"), "async")
             self.assertEqual(image_attrs.get("width"), str(spec["size"][0]))
             self.assertEqual(image_attrs.get("height"), str(spec["size"][1]))
             png = local_target(page, image_attrs["src"])
-            webp = local_target(page, source_attrs["srcset"])
             self.assertIsNotNone(png)
-            self.assertIsNotNone(webp)
             self.assertTrue(png.is_file(), image_attrs["src"])
-            self.assertTrue(webp.is_file(), source_attrs["srcset"])
             self.assertEqual(png_size(png), spec["size"])
-            self.assertEqual(webp_size(webp), spec["size"])
+            expected_sizes = {
+                f"{stem}-phone.webp": (round(132 * spec["size"][0] / spec["size"][1]), 132),
+                f"{stem}-phone-2x.webp": (round(132 * spec["size"][0] / spec["size"][1]) * 2, 264),
+                f"{stem}.webp": spec["size"],
+                f"{stem}-2x.webp": (spec["size"][0] * 2, spec["size"][1] * 2),
+            }
+            for href, expected in expected_sizes.items():
+                target = local_target(page, href)
+                self.assertIsNotNone(target, href)
+                self.assertTrue(target.is_file(), href)
+                self.assertEqual(webp_size(target), expected, href)
+            self.assertEqual(webp_size(local_target(page, f"{stem}.webp")), png_size(png))
 
             cards = re.findall(r"<article class=\"fdh-card[^\"]*\">.*?</article>", html, re.S)
             self.assertEqual(len(cards), len(spec["cards"]), slug)

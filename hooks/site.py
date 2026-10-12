@@ -175,6 +175,20 @@ def rule_studio_csp(page_html: str, config) -> str:
     )
 
 
+def _defer_section_stylesheet(output: str) -> str:
+    """section.css is folded into extra.css for the first paint.
+
+    The standalone file stays linked so the page still ships it, but it is
+    not render-blocking.
+    """
+    return re.sub(
+        r'(href="(?:\.\./)*stylesheets/section\.css\?v=[^"]+")>',
+        r'\1 media="print">',
+        output,
+        count=1,
+    )
+
+
 def on_post_page(output, page, config):
     version = asset_version()
     output = _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
@@ -182,7 +196,21 @@ def on_post_page(output, page, config):
         policy = rule_studio_csp(output, config)
         tag = f'<meta http-equiv="Content-Security-Policy" content="{policy}">'
         output = output.replace("<head>", "<head>\n    " + tag, 1)
-    return output
+    return _defer_section_stylesheet(output)
+
+
+def on_post_build(config):
+    """Append section.css to the built extra.css so the first paint has it."""
+    site = Path(config["site_dir"]) / "stylesheets" / "extra.css"
+    section = Path(config["docs_dir"]) / "stylesheets" / "section.css"
+    marker = "/* section index rules, kept with extra.css for the first paint */"
+    styles = site.read_text(encoding="utf-8")
+    if marker in styles:
+        return
+    site.write_text(
+        styles.rstrip() + "\n\n" + marker + "\n" + section.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
 
 
 def copy_rule_studio(config):

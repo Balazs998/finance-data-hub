@@ -653,10 +653,11 @@ class BuiltSiteTests(unittest.TestCase):
         for relative in sample_files:
             self.assertIn(f"files/{relative}", sample_section, relative)
 
-        # Every other file sits in the group of the note that links it.
+        # Every other file sits in the group of the first note, in nav order, that links it.
         rest = article[first_note_heading:]
+        claimed = set(sample_files)
         for src, files in notes:
-            own = [rel for rel in files if rel not in sample_files]
+            own = [rel for rel in files if rel not in claimed]
             if not own:
                 continue
             href = f'href="{_note_href(src)}"'
@@ -666,6 +667,7 @@ class BuiltSiteTests(unittest.TestCase):
             section = rest[pos : next_heading if next_heading >= 0 else len(rest)]
             for relative in own:
                 self.assertIn(f"files/{relative}", section, f"{relative} is missing from the {src} group")
+            claimed.update(own)
 
     def test_download_events_are_named_per_file_and_the_files_exist(self):
         page = SITE / "downloads" / "index.html"

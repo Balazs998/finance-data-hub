@@ -24,8 +24,8 @@ Lots of finance workbooks send their own reports: a macro builds the mail with `
 ## Before you start
 
 !!! info "You'll need"
-    - Desktop Excel with macros enabled.
-    - The fictional demo workbook `FDH_Email_Demo.xlsm` and `recipients.csv` (10 cost centers, `@example.com` addresses). Both are made up.
+    - Desktop Excel for Windows with classic Outlook installed.
+    - `recipients.csv` (10 cost centers, `@example.com` addresses). The addresses are made up.
 
 ## The sample scenario
 
@@ -44,6 +44,8 @@ The demo workbook has a Report sheet and a macro that emails each cost center ow
 - **Classic Outlook:** your existing VBA email macro keeps working.
 - **New Outlook:** VBA and macros aren't supported, so the macro needs one of the alternatives in step 3 ([source](https://learn.microsoft.com/en-us/microsoft-365-apps/outlook/get-started/vba-alternatives)).
 
+If classic Outlook is still installed, `CreateObject` usually succeeds even when you work in New Outlook and send through classic, so the fallback only kicks in when classic is missing or broken.
+
 To check, look at the top right corner of Outlook. If there's a **Settings** button, you're on New Outlook. If it's missing, you're on classic Outlook. New Outlook's ribbon also only has the Home, View and Help tabs ([What version of Outlook do I have?, Microsoft Support](https://support.microsoft.com/en-us/Outlook/getstarted/what-version-of-outlook-do-i-have)).
 
 ## 2. Don't fail silently: save a draft file
@@ -52,29 +54,42 @@ If the macro can't reach Outlook, save the message as a file so nothing gets los
 
 ```vba
 Sub SendOrSave(toAddr As String, subj As String, body As String)
-    Dim ol As Object
+    Static n As Long
+    Dim ol As Object, folder As String, f As Integer
     On Error Resume Next
     Set ol = CreateObject("Outlook.Application")
-    On Error GoTo 0
-    If ol Is Nothing Then
-        Dim f As Integer
-        f = FreeFile
-        Open ThisWorkbook.Path & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & ".txt" For Output As #f
-        Print #f, "To: " & toAddr
-        Print #f, "Subject: " & subj
-        Print #f, body
-        Close #f
-        MsgBox "Outlook isn't available. The mail was saved next to the workbook.", vbExclamation
-        Exit Sub
+    If Not ol Is Nothing Then
+        With ol.CreateItem(0)
+            .To = toAddr
+            .Subject = subj
+            .Body = body
+            .Send
+        End With
+        If Err.Number = 0 Then Exit Sub
     End If
-    With ol.CreateItem(0)
-        .To = toAddr
-        .Subject = subj
-        .Body = body
-        .Send
-    End With
+    On Error GoTo 0
+    folder = ThisWorkbook.Path
+    If Len(folder) = 0 Or InStr(folder, "://") > 0 Then folder = Environ$("TEMP")
+    n = n + 1
+    f = FreeFile
+    Open folder & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & "_" & n & ".txt" For Output As #f
+    Print #f, "To: " & toAddr
+    Print #f, "Subject: " & subj
+    Print #f, body
+    Close #f
+    MsgBox "The mail couldn't be sent. It was saved in " & folder & ".", vbExclamation
 End Sub
 ```
+
+```vba
+' This sends a REAL email through your Outlook. The example.com address will bounce;
+' replace it with your own address if you want to see the mail arrive.
+Sub TestSendOrSave()
+    SendOrSave "owner.cc1000@example.com", "FDH test", "Test body"
+End Sub
+```
+
+The saved `.txt` files hold the full mail body in plain text; delete each once the mail has been resent, and never point the fallback at a shared folder.
 
 ## 3. Pick an alternative
 
@@ -84,7 +99,7 @@ Microsoft names three ([source](https://learn.microsoft.com/en-us/microsoft-365-
 - **Microsoft Graph**, for advanced flows and email integrations.
 - **Office.js**, for building web add-ins for Outlook.
 
-For a report macro, the realistic choices are Power Automate or Graph. Graph's `sendMail` call needs the `Mail.Send` permission. It returns `202 Accepted`, which only means the request was accepted, not that the mail was delivered, and by default it saves a copy in Sent Items ([user: sendMail, Microsoft Learn](https://learn.microsoft.com/en-us/graph/api/user-sendmail?view=graph-rest-1.0)).
+For a report macro, the realistic choices are Power Automate or Graph. Graph's `sendMail` call needs the `Mail.Send` permission. It returns `202 Accepted`, which only means the request was accepted, not that the mail was delivered, and by default it saves a copy in Sent Items ([user: sendMail, Microsoft Learn](https://learn.microsoft.com/en-us/graph/api/user-sendmail?view=graph-rest-1.0)). For a macro or flow sending as one person, use delegated `Mail.Send`. If IT grants application `Mail.Send`, limit it to the one sending mailbox with [RBAC for Applications in Exchange Online](https://learn.microsoft.com/en-us/exchange/permissions-exo/application-rbac).
 
 In Power Automate, the Office 365 Outlook connector's action is **Send an email (V2)**. It needs To, Subject and Body, and the Body is HTML. The older "Send an email" action is deprecated ([Office 365 Outlook connector, Microsoft Learn](https://learn.microsoft.com/en-us/connectors/office365connector/)). For a step-by-step guide, see [Create flows for popular email scenarios](https://learn.microsoft.com/en-us/power-automate/email-top-scenarios).
 
@@ -102,7 +117,7 @@ In Power Automate, the Office 365 Outlook connector's action is **Send an email 
 
 ## If it doesn't match
 
-- No file appears: check that the workbook is saved in a folder you can write to.
+- No file appears: check that the workbook is saved in a folder you can write to, and check the `%TEMP%` folder.
 - The macro can't find Outlook even though it's open: check whether you're on New Outlook (step 1). One user in [a Microsoft Q&A thread](https://learn.microsoft.com/en-us/answers/questions/5286064/excel-vba-macros-new-outlook) reports that their macro worked again after switching back to classic Outlook. That's one user's report, not a statement from Microsoft.
 
 ## Wrap-up
@@ -111,4 +126,7 @@ New Outlook doesn't run VBA, so treat Outlook automation as something you'll nee
 
 ## Downloads
 
-All files use synthetic sample data and placeholder names. The demo workbook `FDH_Email_Demo.xlsm` and `recipients.csv` are still being prepared and will be added here.
+All files use synthetic sample data and placeholder names.
+
+[[download:email/SendOrSave.bas|Download SendOrSave.bas]]
+[[download:email/recipients.csv|Download recipients.csv]]

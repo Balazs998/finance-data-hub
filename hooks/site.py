@@ -12,11 +12,14 @@ once.
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import html
 import os
 import posixpath
 import re
 import subprocess
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
@@ -49,7 +52,7 @@ SAMPLE_DATA_FILES = (
 
 _ASSET_VERSION = ""
 _VERSIONED_ASSET = re.compile(
-    r'((?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool|font-rest)\.css|javascripts/[^"?]+\.js))"'
+    r'((?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool|font-rest|rule-studio)\.css|javascripts/[^"?]+\.js))"'
 )
 
 
@@ -79,12 +82,146 @@ def asset_version() -> str:
     return out
 
 
+_INLINE_SCRIPT = re.compile(r"<script\b([^>]*)>(.*?)</script>", re.IGNORECASE | re.DOTALL)
+_ENDPOINT = re.compile(r"""endpoint\s*:\s*["']([^"']*)["']""")
+_BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
+_LINE_COMMENT = re.compile(r"//.*?$", re.MULTILINE)
+_JSON_SCRIPT = re.compile(
+    r"""\btype\s*=\s*['"]application/(?:json|ld\+json)['"]""",
+    re.IGNORECASE,
+)
+def _sha256_source(source: str) -> str:
+    digest = hashlib.sha256(source.encode("utf-8")).digest()
+    return "'sha256-" + base64.b64encode(digest).decode("ascii") + "'"
+
+
+def _is_rule_studio(page) -> bool:
+    file = getattr(page, "file", None)
+    src = ""
+    if file is not None:
+        src = str(getattr(file, "src_uri", None) or getattr(file, "src_path", "") or "")
+    return src.replace("\\", "/") == "jedox/rule-studio/index.md"
+
+
+def _worker_origin() -> str:
+    """Origin from docs/javascripts/rule-studio-config.js, ignoring comments."""
+    path = Path(__file__).resolve().parents[1] / "docs" / "javascripts" / "rule-studio-config.js"
+    if not path.is_file():
+        return ""
+    text = _LINE_COMMENT.sub("", _BLOCK_COMMENT.sub("", path.read_text(encoding="utf-8")))
+    found = _ENDPOINT.findall(text)
+    endpoint = found[-1].strip() if found else ""
+    if not endpoint:
+        return ""
+    parsed = urllib.parse.urlparse(endpoint)
+    if parsed.scheme not in {"https", "http"} or not parsed.netloc:
+        return ""
+    if parsed.username or parsed.password:
+        return ""
+    origin = f"{parsed.scheme}://{parsed.netloc}"
+    if not re.fullmatch(r"https?://[A-Za-z0-9._:-]+", origin):
+        return ""
+    return origin
+
+
+def _inline_script_hashes(page_html: str) -> list[str]:
+    hashes: list[str] = []
+    seen: set[str] = set()
+    for attrs, body in _INLINE_SCRIPT.findall(page_html):
+        if re.search(r"\bsrc\s*=", attrs, re.IGNORECASE):
+            continue
+        if _JSON_SCRIPT.search(attrs):
+            continue
+        digest = _sha256_source(body)
+        if digest not in seen:
+            seen.add(digest)
+            hashes.append(digest)
+    return hashes
+
+
+def rule_studio_csp(page_html: str, config) -> str:
+    """CSP for the Rule Studio page.
+
+    Every inline script in the built page is hashed, including both scripts
+    in overrides/main.html and the theme's inline scripts. The policy stays
+    free of script 'unsafe-inline'.
+    """
+    code = str(config.extra.get("goatcounter_code") or "").strip()
+    connect = ["'self'"]
+    worker = _worker_origin()
+    if worker:
+        connect.append(worker)
+    if code and CODE_PATTERN.fullmatch(code):
+        connect.append(f"https://{code}.goatcounter.com")
+    script = " ".join(
+        [
+            "'self'",
+            "https://challenges.cloudflare.com",
+            "https://gc.zgo.at",
+            *_inline_script_hashes(page_html),
+        ]
+    )
+    return "; ".join(
+        [
+            "default-src 'self'",
+            f"script-src {script}",
+            "frame-src https://challenges.cloudflare.com",
+            "connect-src " + " ".join(connect),
+            "img-src 'self' data:",
+            "style-src 'self' 'unsafe-inline'",
+            "object-src 'none'",
+            "base-uri 'self'",
+        ]
+    )
+
+
 def on_post_page(output, page, config):
     version = asset_version()
-    return _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
+    output = _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
+    if _is_rule_studio(page):
+        policy = rule_studio_csp(output, config)
+        tag = f'<meta http-equiv="Content-Security-Policy" content="{policy}">'
+        output = output.replace("<head>", "<head>\n    " + tag, 1)
+    return output
+
+
+def copy_rule_studio(config):
+    """Publish the shared checker, mock provider, and knowledge pack with the site.
+
+    The canonical copies live in ``static-checks/``, ``ai-engine/``, and
+    ``knowledge/``. The page loads the copies under ``docs/``.
+    """
+    import shutil
+
+    try:
+        docs_dir = config["docs_dir"]
+    except (TypeError, KeyError):
+        docs_dir = getattr(config, "docs_dir", None)
+    if not docs_dir:
+        return
+
+    root = Path(__file__).resolve().parents[1]
+    docs = Path(docs_dir)
+    scripts = docs / "javascripts"
+    pack = docs / "jedox" / "rule-studio" / "pack"
+    scripts.mkdir(parents=True, exist_ok=True)
+    pack.mkdir(parents=True, exist_ok=True)
+    mapping = {
+        root / "static-checks" / "checks.js": scripts / "rule-checks.js",
+        root / "ai-engine" / "mock.js": scripts / "rule-mock.js",
+        root / "ai-engine" / "diff.js": scripts / "rule-diff.js",
+        root / "knowledge" / "jedox-rules-2026.1.json": pack / "jedox-rules-2026.1.json",
+        root / "knowledge" / "jedox-rules-2025.1.json": pack / "jedox-rules-2025.1.json",
+        root / "knowledge" / "examples-2026.1.json": pack / "examples-2026.1.json",
+    }
+    for source, dest in mapping.items():
+        if not source.is_file():
+            raise PluginError(f"Rule Studio asset is missing: {source}")
+        shutil.copyfile(source, dest)
 
 
 def on_config(config):
+    copy_rule_studio(config)
     code = str(config.extra.get("goatcounter_code") or "").strip()
     config.extra["goatcounter_code"] = code
     if code and not CODE_PATTERN.fullmatch(code):

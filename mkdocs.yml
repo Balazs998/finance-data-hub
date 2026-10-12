@@ -11,6 +11,7 @@ extra:
 extra_css:
   - stylesheets/extra.css
   - stylesheets/email-tool.css
+  - stylesheets/rule-studio.css
 
 extra_javascript:
   - javascripts/reveal.js
@@ -25,6 +26,11 @@ extra_javascript:
   - javascripts/codemirror-bundle.js
   - javascripts/email-builder-ui.js
   - javascripts/email-checker-ui.js
+  - javascripts/rule-checks.js
+  - javascripts/rule-diff.js
+  - javascripts/rule-mock.js
+  - javascripts/rule-studio-config.js
+  - javascripts/rule-studio-ui.js
 
 theme:
   name: material
@@ -89,6 +95,8 @@ nav:
       - Create your own email:
           - Builder: jedox/email-builder.md
           - Check your email script: jedox/email-checker.md
+      - Business Rule Studio: jedox/rule-studio/index.md
+      - Rule Studio worker setup: WORKER-SETUP.md
   - VBA:
       - vba/index.md
       - Month-close checks: vba/month-close-checks.md

@@ -1,0 +1,156 @@
+{
+  "schema": {
+    "$comment": "expected_findings: static findings only (SPEC: source=static). Empty list = no findings. Codes are proposed for static-checks/ (Grok Bot may rename).",
+    "metadata_file": "../../knowledge/examples-2026.1.json#metadata"
+  },
+  "cases": [
+    {
+      "id": "perf-01",
+      "category": "inefficient",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "[] = B: ['Version':'Actual'] * 1.1",
+      "expected_findings": [
+        {
+          "code": "BROAD_TARGET",
+          "group": "performance",
+          "severity": "warning",
+          "source": "static",
+          "message": "Empty target covers the whole cube; restrict the target area"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rules-dimensions-rule-targets-strings.htm"
+      ]
+    },
+    {
+      "id": "perf-02",
+      "category": "inefficient",
+      "jedox_version": "2026.1",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: ['Measure':'Amount'] * PALO.DATA(\"FDH_DEMO\",\"FX_RATE\",!'Currency',!'Period',\"Rate\") + ['Measure':'Amount'] * PALO.DATA(\"FDH_DEMO\",\"FX_RATE\",!'Currency',!'Period',\"Rate\") * 0.1",
+      "expected_findings": [
+        {
+          "code": "REPEATED_SUBEXPRESSION",
+          "group": "optimization",
+          "severity": "info",
+          "source": "static",
+          "message": "PALO.DATA(\"FDH_DEMO\",\"FX_RATE\",...) repeated; factor to ['Measure':'Amount'] * PALO.DATA(...) * 1.1"
+        },
+        {
+          "code": "CROSS_CUBE_COUNT",
+          "group": "performance",
+          "severity": "info",
+          "source": "static",
+          "message": "2 cross-cube references"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engine-data-driven.htm"
+      ]
+    },
+    {
+      "id": "perf-03",
+      "category": "inefficient",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: SUM(['Version':'Actual','Period':'2026-07'],['Version':'Budget','Period':'2026-08'])",
+      "expected_findings": [
+        {
+          "code": "NON_UNIFORM_LOOKUP",
+          "group": "performance",
+          "severity": "warning",
+          "source": "static",
+          "message": "Non-uniform lookups inside SUM are not supported by DDE"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engines.htm"
+      ]
+    },
+    {
+      "id": "perf-04",
+      "category": "inefficient",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: IF(NOW() > 0, ['Version':'Budget'], null)",
+      "expected_findings": [
+        {
+          "code": "VOLATILE_NOW",
+          "group": "performance",
+          "severity": "warning",
+          "source": "static",
+          "message": "NOW()-dependent results are not cached"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm"
+      ]
+    },
+    {
+      "id": "perf-05",
+      "category": "inefficient",
+      "jedox_version": "2026.1",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: ['Measure':'Amount'] * PALO.DATA(\"FDH_FX_DEMO\",\"FX_RATE\",!'Currency',!'Period',\"Rate\")",
+      "expected_findings": [
+        {
+          "code": "OTHER_DATABASE_REF",
+          "group": "performance",
+          "severity": "warning",
+          "source": "static",
+          "message": "Reference to another OLAP database is not DDE-supported; large areas fall back to slower engines - consider a marker on Amount"
+        },
+        {
+          "code": "UNKNOWN_DATABASE",
+          "group": "syntax",
+          "severity": "error",
+          "source": "static",
+          "message": "Database FDH_FX_DEMO not in metadata"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engine-data-driven.htm"
+      ],
+      "note": "FDH_FX_DEMO is deliberately not in the dictionary."
+    },
+    {
+      "id": "perf-06",
+      "category": "inefficient",
+      "jedox_version": "2026.1",
+      "cube": "PnL_FX",
+      "rule": "['Measure':'Amount EUR'] = B: COS(0) * ['Measure':'Amount']",
+      "expected_findings": [
+        {
+          "code": "DDE_UNSUPPORTED_FUNCTION",
+          "group": "performance",
+          "severity": "info",
+          "source": "static",
+          "message": "Trigonometric functions are not DDE-supported"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/rule-engine-data-driven.htm"
+      ]
+    },
+    {
+      "id": "perf-07",
+      "category": "inefficient",
+      "jedox_version": "2026.1",
+      "cube": "PnL",
+      "rule": "['Version':'Forecast'] = B: [['Version':'Budget']]",
+      "expected_findings": [
+        {
+          "code": "UNNEEDED_MARKER",
+          "group": "performance",
+          "severity": "info",
+          "source": "static",
+          "message": "Simple rule is DDE-compliant; marker likely ignored and unnecessary unless an analyzed issue exists"
+        }
+      ],
+      "sources": [
+        "https://knowledgebase.jedox.com/jedox/in-memory-db/markers.htm"
+      ]
+    }
+  ]
+}

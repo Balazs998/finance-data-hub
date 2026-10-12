@@ -52,7 +52,7 @@ SAMPLE_DATA_FILES = (
 
 _ASSET_VERSION = ""
 _VERSIONED_ASSET = re.compile(
-    r'((?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool|font-rest|rule-studio|section)\.css|javascripts/[^"?]+\.js))"'
+    r'((?:href|src)="(?:\.\./)*(?:stylesheets/(?:extra|email-tool|font-rest|rule-studio|section|docs-note)\.css|javascripts/[^"?]+\.js))"'
 )
 
 

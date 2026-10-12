@@ -41,10 +41,8 @@ Your workbook has a macro that emails each cost center owner their numbers, here
 <span class="diagram-chevron" aria-hidden="true">›</span>
 </div>
 
-- **Classic Outlook:** your existing VBA email macro keeps working.
+- **Classic Outlook:** If classic Outlook is still installed, `CreateObject` usually succeeds even when you work in New Outlook, so the fallback only kicks in when classic is missing or broken.
 - **New Outlook:** VBA and macros aren't supported, so the macro needs one of the alternatives in step 3 ([source](https://learn.microsoft.com/en-us/microsoft-365-apps/outlook/get-started/vba-alternatives)).
-
-If classic Outlook is still installed, `CreateObject` usually succeeds even when you work in New Outlook and send through classic, so the fallback only kicks in when classic is missing or broken.
 
 To check, look at the top right corner of Outlook. If there's a **Settings** button, you're on New Outlook. If it's missing, you're on classic Outlook. New Outlook's ribbon also only has the Home, View and Help tabs ([What version of Outlook do I have?, Microsoft Support](https://support.microsoft.com/en-us/Outlook/getstarted/what-version-of-outlook-do-i-have)).
 
@@ -53,6 +51,8 @@ To check, look at the top right corner of Outlook. If there's a **Settings** but
 If the macro can't reach Outlook, save the message as a file so nothing gets lost. This is a pattern, not something we tested.
 
 ```vba
+Option Explicit
+
 Sub SendOrSave(toAddr As String, subj As String, body As String)
     Static n As Long
     Dim ol As Object, folder As String, f As Integer

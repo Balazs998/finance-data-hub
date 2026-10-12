@@ -327,6 +327,9 @@ class SectionPageTests(unittest.TestCase):
             self.assertNotIn("section.css", head)
             extra_css = (SITE / "stylesheets" / "extra.css").read_text(encoding="utf-8")
             self.assertIn(".fdh-section{--tool:#38BDF8;--tool-rgb:56,189,248}", extra_css)
+            self.assertNotIn("stylesheets/email-tool.css", full)
+            self.assertNotIn("codemirror-bundle.js", full)
+            self.assertIn("javascripts/reveal.js", full)
             self.assertRegex(full, r'data-md-type="toc"[^>]*hidden|hidden[^>]*data-md-type="toc"')
             sidebar = full.split('class="md-sidebar md-sidebar--primary"', 1)[1]
             self.assertNotIn(" hidden", sidebar[:80])

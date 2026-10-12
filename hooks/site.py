@@ -194,6 +194,22 @@ def _defer_section_stylesheet(output: str) -> str:
     return output.replace("</body>", tag + "\n</body>", 1)
 
 
+def _drop_unused_email_assets(output: str) -> str:
+    """Section indexes do not use the email builder or checker."""
+    if "fdh-section" not in output:
+        return output
+    output = re.sub(
+        r'\s*<link rel="stylesheet" href="(?:\.\./)*stylesheets/email-tool\.css\?v=[^"]+">\s*',
+        "\n",
+        output,
+        count=1,
+    )
+    return re.sub(
+        r'\s*<script src="(?:\.\./)*javascripts/(?:email-[^"/]+\.js|codemirror-bundle\.js)\?v=[^"]+"></script>\s*',
+        "\n",
+        output,
+    )
+
 
 def on_post_page(output, page, config):
     version = asset_version()
@@ -202,7 +218,8 @@ def on_post_page(output, page, config):
         policy = rule_studio_csp(output, config)
         tag = f'<meta http-equiv="Content-Security-Policy" content="{policy}">'
         output = output.replace("<head>", "<head>\n    " + tag, 1)
-    return _defer_section_stylesheet(output)
+    output = _defer_section_stylesheet(output)
+    return _drop_unused_email_assets(output)
 
 
 def on_post_build(config):

@@ -49,16 +49,16 @@ To check, look at the top right corner of Outlook. If there's a **Settings** but
 
 ## 2. Don't fail silently: save the mail as a text file
 
-If the macro can't reach Outlook, save the message as a file so nothing gets lost. This is a pattern, not something we tested. After the sends, call `ShowUnsentMails` once. It shows one message listing every saved file.
+If the macro can't reach Outlook, save the message as a file so nothing gets lost. This is a pattern, not something we tested. After the sends, call `ShowUnsentMails` once. There's one message at the end with how many mails were saved as `unsent_*.txt` and the folder they're in.
 
 ```vba
 Option Explicit
 
-Private mUnsent As String
+Private mCount As Long, mFolder As String
 
 Sub SendOrSave(toAddr As String, subj As String, body As String)
     Static n As Long
-    Dim ol As Object, folder As String, f As Integer, path As String
+    Dim ol As Object, folder As String, f As Integer, filePath As String
     On Error Resume Next
     Set ol = CreateObject("Outlook.Application")
     If Not ol Is Nothing Then
@@ -74,21 +74,21 @@ Sub SendOrSave(toAddr As String, subj As String, body As String)
     folder = ThisWorkbook.Path
     If Len(folder) = 0 Or InStr(folder, "://") > 0 Then folder = Environ$("TEMP")
     n = n + 1
-    path = folder & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & "_" & n & ".txt"
+    filePath = folder & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & "_" & n & ".txt"
     f = FreeFile
-    Open path For Output As #f
+    Open filePath For Output As #f
     Print #f, "To: " & toAddr
     Print #f, "Subject: " & subj
     Print #f, body
     Close #f
-    If Len(mUnsent) > 0 Then mUnsent = mUnsent & vbCrLf
-    mUnsent = mUnsent & path
+    mCount = mCount + 1
+    mFolder = folder
 End Sub
 
 Sub ShowUnsentMails()
-    If Len(mUnsent) = 0 Then Exit Sub
-    MsgBox "The mail couldn't be sent. Saved files:" & vbCrLf & mUnsent, vbExclamation
-    mUnsent = ""
+    If mCount = 0 Then Exit Sub
+    MsgBox mCount & " mail(s) couldn't be sent. They were saved as unsent_*.txt in " & mFolder & ".", vbExclamation
+    mCount = 0
 End Sub
 ```
 
@@ -125,7 +125,7 @@ In Power Automate, the Office 365 Outlook connector's action is **Send an email 
 ## Check the result
 
 !!! success "Expected: no mail lost"
-    With Outlook unavailable, one message at the end listing the saved `unsent_...txt` files. This is the intended behavior. We haven't tested it on a live install.
+    With Outlook unavailable, there's one message at the end with how many mails were saved as `unsent_*.txt` and the folder they're in. This is the intended behavior. We haven't tested it on a live install.
 
 ## If it doesn't match
 

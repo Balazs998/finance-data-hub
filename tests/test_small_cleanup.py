@@ -25,13 +25,13 @@ class PlanVsActualsSwipeTests(unittest.TestCase):
         self.assertEqual(
             labels,
             [
-                "Match status counts on the sample files, scroll sideways on small screens",
                 "March 2026 totals by account type, scroll sideways on small screens",
+                "Match status counts on the sample files, scroll sideways on small screens",
             ],
         )
         bodies = [panel.group("body") for panel in panels]
-        self.assertIn("| match_status | cells | budget | actual |", bodies[0])
-        self.assertIn("| account_type | budget | actual | variance |", bodies[1])
+        self.assertIn("| account_type | budget | actual | variance |", bodies[0])
+        self.assertIn("| match_status | cells | budget | actual |", bodies[1])
         launch = (DOCS / "jedox" / "snowflake-to-jedox.md").read_text(encoding="utf-8")
         self.assertIn('<div class="diagram-frame" markdown="block">', launch)
         self.assertIn('<span class="diagram-chevron" aria-hidden="true">›</span>', launch)

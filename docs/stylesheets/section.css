@@ -1,0 +1,79 @@
+/* docs/stylesheets/section.css — Finance Data Hub section index pages (Data Night) */
+.fdh-section{--tool:#38BDF8;--tool-rgb:56,189,248}
+.fdh-section--jedox{--tool:#8B7CF6;--tool-text:#A78BFA;--tool-rgb:139,124,246}
+.fdh-section--snowflake{--tool:#38BDF8;--tool-text:#38BDF8;--tool-rgb:56,189,248}
+.fdh-section--vba{--tool:#A3E635;--tool-text:#A3E635;--tool-rgb:163,230,53}
+
+/* Hero */
+.fdh-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:2rem;align-items:end;
+  padding:2.5rem 2rem 0;margin:0 0 2rem;border:1px solid #2A3847;border-radius:12px;overflow:hidden;
+  background:radial-gradient(60% 90% at 85% 70%,rgba(var(--tool-rgb),.22),transparent 70%),#18222E}
+.fdh-hero__text{padding-bottom:2rem}
+.fdh-hero__eyebrow{margin:0 0 .4rem;font:600 .75rem/1.2 var(--font-body,Inter,sans-serif);letter-spacing:.08em;text-transform:uppercase;color:var(--tool-text)}
+.md-typeset .fdh-hero h1{margin:0 0 .75rem;font:700 2.4rem/1.15 var(--font-heading,'Space Grotesk',sans-serif);color:#E6EDF3}
+.fdh-hero__intro{margin:0;max-width:56ch;color:#9AA7B4;font-size:1.0625rem;line-height:1.65}
+.fdh-hero__mascot{align-self:end;justify-self:center}
+.fdh-hero__mascot img{display:block;height:260px;width:auto;filter:drop-shadow(0 0 28px rgba(var(--tool-rgb),.35))}
+
+/* Post cards */
+.md-typeset .fdh-label{margin:2.25rem 0 .9rem;font:600 1.25rem/1.3 var(--font-heading,'Space Grotesk',sans-serif)}
+.fdh-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;list-style:none;margin:0;padding:0}
+.md-typeset .fdh-cards>li{margin:0}
+.fdh-card{position:relative;display:flex;flex-direction:column;gap:.4rem;height:100%;box-sizing:border-box;padding:1.25rem 1.25rem 1.1rem;
+  background:#18222E;border:1px solid #2A3847;border-top:3px solid var(--tool);border-radius:12px;
+  transition:border-color .2s,transform .2s,box-shadow .2s}
+.fdh-card:hover{border-color:var(--tool);transform:translateY(-2px);box-shadow:0 0 24px rgba(var(--tool-rgb),.18)}
+.fdh-card:focus-within{outline:2px solid #38BDF8;outline-offset:2px}
+.fdh-card__tools{margin:0;font-size:.8rem;color:#9AA7B4;letter-spacing:.02em}
+.md-typeset .fdh-card__title{margin:0;font:600 1.2rem/1.3 var(--font-heading,'Space Grotesk',sans-serif)}
+.md-typeset .fdh-card__title a{color:#E6EDF3;text-decoration:none}
+.fdh-card__title a::after{content:"";position:absolute;inset:0;border-radius:12px} /* whole card clickable */
+.fdh-card__title a:focus-visible{outline:none}
+.fdh-card__summary{margin:0;color:#9AA7B4;font-size:.95rem;line-height:1.55;flex:1}
+.fdh-card__meta{margin:.35rem 0 0;font-size:.8rem;color:#9AA7B4}
+.fdh-card__meta span[aria-hidden]{color:var(--tool-text)}
+.fdh-card--tool{border-top-style:dashed}
+
+/* Start here */
+.fdh-card--start{background:linear-gradient(180deg,rgba(var(--tool-rgb),.10),transparent 60%),#18222E;border-color:rgba(var(--tool-rgb),.55);border-top-color:var(--tool)}
+.fdh-start{align-self:flex-start;margin:0 0 .2rem;padding:.15rem .55rem;border-radius:999px;font:600 .72rem/1.4 var(--font-body,Inter,sans-serif);
+  letter-spacing:.06em;text-transform:uppercase;color:#0F1720;background:var(--tool)}
+
+/* Few posts (1-2): wide horizontal card + "coming next" note instead of empty grid */
+.fdh-cards--few{grid-template-columns:1fr}
+.fdh-cards--few .fdh-card{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:2rem;align-items:center;padding:1.5rem 1.75rem}
+.fdh-cards--few .fdh-card>*{grid-column:1}
+.fdh-cards--few .fdh-start{justify-self:start}
+.fdh-downloads__all a{display:inline-block;min-height:44px;line-height:44px}
+.fdh-cards--few .fdh-card__go{grid-column:2;grid-row:1/span 5;font:600 .95rem/1 var(--font-body,Inter,sans-serif);color:var(--tool-text);white-space:nowrap}
+.fdh-card__go{display:none}
+.fdh-cards--few .fdh-card__go{display:block}
+.fdh-next{margin:1rem 0 0;padding:1rem 1.25rem;border:1px dashed #2A3847;border-radius:12px;color:#9AA7B4;font-size:.95rem}
+.fdh-next strong{color:#E6EDF3}
+
+/* Downloads strip */
+.fdh-downloads{margin:2.5rem 0 0;padding:1.25rem 1.25rem 1rem;background:#111B26;border:1px solid #2A3847;border-radius:12px}
+.md-typeset .fdh-downloads h2{margin:0 0 .75rem;font:600 1.1rem/1.3 var(--font-heading,'Space Grotesk',sans-serif)}
+.fdh-downloads ul{display:flex;flex-wrap:wrap;gap:.6rem;list-style:none;margin:0;padding:0}
+.md-typeset .fdh-downloads li{margin:0}
+.md-typeset .fdh-downloads ul a{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;box-sizing:border-box;padding:.5rem .9rem;
+  border:1px solid #2A3847;border-radius:8px;background:#18222E;color:#E6EDF3;font:500 .85rem/1.2 var(--font-code,'JetBrains Mono',monospace);text-decoration:none}
+.md-typeset .fdh-downloads ul a:hover{border-color:var(--tool)}
+.md-typeset .fdh-downloads a:focus-visible{outline:2px solid #38BDF8;outline-offset:2px}
+.fdh-downloads a span[aria-hidden]{color:var(--tool-text)}
+.fdh-downloads__all{margin:.75rem 0 0;font-size:.85rem}
+
+/* 390px / phones */
+@media (max-width:600px){
+  .fdh-hero{grid-template-columns:minmax(0,1fr) 96px;gap:.75rem;padding:1.25rem 1rem 0}
+  .fdh-hero__text{padding-bottom:1.25rem}
+  .md-typeset .fdh-hero h1{font-size:1.75rem}
+  .fdh-hero__intro{font-size:.95rem}
+  .fdh-hero__mascot img{height:132px}
+  .fdh-cards{grid-template-columns:1fr}
+  .fdh-cards--few .fdh-card{display:flex;align-items:stretch;text-align:left;padding:1.25rem}
+  .fdh-cards--few .fdh-card__go{display:none}
+  .fdh-downloads ul{flex-direction:column}
+  .md-typeset .fdh-downloads ul a{width:100%}
+}
+@media (prefers-reduced-motion:reduce){.fdh-card,.fdh-card:hover{transition:none;transform:none}}

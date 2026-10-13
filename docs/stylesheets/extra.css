@@ -149,6 +149,9 @@
   --reveal-duration: 0.55s;
   --md-text-font: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
   --md-code-font: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
+  --font-body: "Inter", "Inter Fallback", "Segoe UI", sans-serif;
+  --font-heading: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
+  --font-code: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
 }
 
 [data-md-color-scheme="slate"][data-md-color-primary="black"] {
@@ -1193,5 +1196,96 @@ html.js .reveal.reveal-wait.is-visible {
     max-width: 100%;
     min-width: 0;
     height: auto;
+  }
+}
+
+/* Section indexes need about 1080px of article width for three cards at 1440. */
+@media screen and (min-width: 76.25em) {
+  .md-grid:has(.fdh-section) {
+    max-width: 68.1rem;
+  }
+}
+
+/* Material's list rules outrank section.css (display:flow-root, discs, indent). */
+[dir] .md-typeset ul.fdh-cards:not([hidden]) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[dir] .md-typeset ul.fdh-cards--few:not([hidden]) {
+  grid-template-columns: 1fr;
+}
+
+[dir] .md-typeset .fdh-downloads ul:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[dir] .md-typeset .fdh-cards > li,
+[dir] .md-typeset .fdh-downloads li {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  [dir] .md-typeset ul.fdh-cards:not([hidden]) {
+    grid-template-columns: 1fr;
+  }
+
+  [dir] .md-typeset .fdh-downloads ul:not([hidden]) {
+    flex-direction: column;
+  }
+}
+
+.md-typeset .fdh-card p {
+  margin: 0;
+}
+
+.md-typeset .fdh-card .fdh-card__meta {
+  margin: 0.35rem 0 0;
+}
+
+/* Keep the mascot's width/height ratio. Material's img max-width would squash
+   the VBA pose inside the 96px phone column. The hero clips the overflow. */
+.md-typeset .fdh-hero__mascot img {
+  max-width: none;
+}
+
+/* At phone width the Jedox intro is one word from wrapping. Inter 400 and the
+   fallback disagree at 0.95rem, which shifts the cards. 0.925rem fits both. */
+@media (max-width: 600px) {
+  .md-typeset .fdh-section--jedox .fdh-hero__intro {
+    font-size: 0.925rem;
+  }
+}
+
+/* li a underline (0, 2, 2) beats section.css .fdh-card__title a (0, 2, 1). */
+.md-typeset li .fdh-card__title a:not(.md-button) {
+  text-decoration: none;
+}
+
+.md-typeset li .fdh-card__title a:not(.md-button):hover,
+.md-typeset li .fdh-card__title a:not(.md-button):focus-visible {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(56, 189, 248, 1);
+}
+
+/* Phone chips are width:100%. Keep this filename on one line at 390. */
+@media (max-width: 600px) {
+  [dir] .md-typeset .fdh-downloads ul a[download="FPNA_MonthCloseChecks.bas"] {
+    white-space: nowrap;
+    gap: 0.35rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    font-size: clamp(0.58rem, 3.15vw, 0.85rem);
   }
 }

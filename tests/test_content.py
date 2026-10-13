@@ -44,6 +44,92 @@ class ContentTests(unittest.TestCase):
         self.assertNotIn("account   :", article)
         self.assertNotIn("account   :", script)
 
+    def test_rewritten_posts_keep_labels_and_one_warehouse_note(self):
+        plan = (ROOT / "docs/snowflake/plan-vs-actuals.md").read_text(encoding="utf-8")
+        load = (ROOT / "docs/jedox/snowflake-to-jedox.md").read_text(encoding="utf-8")
+        relational = (ROOT / "docs/jedox/relational-extracts.md").read_text(encoding="utf-8")
+        sql = (ROOT / "docs/files/sql/plan_vs_actual.sql").read_text(encoding="utf-8")
+
+        self.assertEqual(plan.count('!!! info "Why SYSADMIN here"'), 1)
+        self.assertEqual(
+            plan.count(
+                "`JEDOX_ETL_WH` is created in the "
+                "[From Snowflake to Jedox](../jedox/snowflake-to-jedox.md) post; "
+                "use any warehouse you can use."
+            ),
+            1,
+        )
+        self.assertNotIn("-- JEDOX_ETL_WH is created", plan)
+        self.assertEqual(
+            sql.count(
+                "-- JEDOX_ETL_WH is created in the Snowflake to Jedox post; "
+                "use any warehouse you can use."
+            ),
+            1,
+        )
+
+        self.assertIn(
+            'title: "Plan vs. actuals in Snowflake SQL, without losing rows"',
+            plan,
+        )
+        self.assertIn("FULL OUTER JOIN", plan.split("---", 2)[1])
+        self.assertIn('social_image: plan-vs-actuals.png', plan)
+        self.assertIn('<p class="post-meta">Snowflake</p>', plan)
+        self.assertIn('social_image: snowflake-to-jedox.png', load)
+        self.assertIn('<p class="post-meta">Snowflake · Jedox</p>', load)
+        self.assertIn('social_image: relational-extracts.png', relational)
+        self.assertIn('<p class="post-meta">Snowflake · Jedox</p>', relational)
+        self.assertIn('src="../02-join-coverage.svg"', plan)
+        self.assertIn('src="../01-pipeline-diagram.svg"', load)
+        self.assertIn('src="../relational-extract-diagram.svg"', relational)
+
+        for page, labels in {
+            plan: (
+                "[[download:samples/fact_budget.csv|Download fact_budget.csv]]",
+                "[[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]",
+                "[[download:samples/dim_account.csv|Download dim_account.csv]]",
+                "[[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]",
+                "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
+                "[[download:sql/plan_vs_actual.sql|Download plan_vs_actual.sql]]",
+            ),
+            load: (
+                "[[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]",
+                "[[download:samples/dim_account.csv|Download dim_account.csv]]",
+                "[[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]",
+                "[[download:samples/fact_budget.csv|Download fact_budget.csv]]",
+                "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
+            ),
+            relational: (
+                "[[download:relational/v_fact_actuals.sql|Download v_fact_actuals.sql]]",
+                "[[download:relational/v_fact_actuals.sql|Download v_fact_actuals.sql (setup view and grant)]]",
+                "[[download:relational/relational_extract_actuals.sql|Download relational_extract_actuals.sql]]",
+                "[[download:relational/v_jedox_actuals_by_group.sql|Download v_jedox_actuals_by_group.sql (optional view)]]",
+                "[[download:relational/query_history_lookup.sql|Download query_history_lookup.sql]]",
+                "[[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]",
+                "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
+            ),
+        }.items():
+            found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+            self.assertEqual(tuple(found), labels)
+
+        for figure in (
+            "14,896.50",
+            "14,968,531.49",
+            "15,431,676.59",
+            "2,284,689.40",
+            "500000",
+            "CC3010",
+            "CC6000",
+            "701",
+            "696",
+            "605",
+            "91",
+        ):
+            self.assertIn(figure, plan)
+        for figure in ("1,466,143.86", "58", "2026-03"):
+            self.assertIn(figure, load)
+            self.assertIn(figure, relational)
+
 
 if __name__ == "__main__":
     unittest.main()

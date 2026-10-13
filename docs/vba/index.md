@@ -32,8 +32,8 @@ hide:
   </article></li>
   <li><article class="fdh-card">
     <p class="fdh-card__tools">VBA · Outlook</p>
-    <h3 class="fdh-card__title"><a href="new-outlook-email/">New Outlook email macros</a></h3>
-    <p class="fdh-card__summary">Why New Outlook breaks Excel VBA email macros, and a send-or-save fallback that keeps month-end mails moving.</p>
+    <h3 class="fdh-card__title"><a href="new-outlook-email/">Your VBA email macro after New Outlook</a></h3>
+    <p class="fdh-card__summary">Classic or New Outlook? What to switch to when VBA can't send, and a fallback so no month-end mail is lost.</p>
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 5 min read</p>
     <span class="fdh-card__go" aria-hidden="true">Read →</span>
   </article></li>

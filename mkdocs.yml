@@ -10,6 +10,7 @@ extra:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/docs-note.css
   - stylesheets/email-tool.css
   - stylesheets/rule-studio.css
   - stylesheets/section.css
@@ -101,5 +102,6 @@ nav:
   - VBA:
       - vba/index.md
       - Month-close checks: vba/month-close-checks.md
+      - New Outlook email macros: vba/new-outlook-email.md
   - Downloads: downloads.md
   - About: about.md

@@ -20,7 +20,7 @@ hide:
   </picture>
 </header>
 
-<h2 class="fdh-label">The post</h2>
+<h2 class="fdh-label">Posts</h2>
 <ul class="fdh-cards fdh-cards--few">
   <li><article class="fdh-card fdh-card--start">
     <span class="fdh-start">Start here</span>
@@ -30,6 +30,13 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 12 min read</p>
     <span class="fdh-card__go" aria-hidden="true">Read →</span>
   </article></li>
+  <li><article class="fdh-card">
+    <p class="fdh-card__tools">VBA · Outlook</p>
+    <h3 class="fdh-card__title"><a href="new-outlook-email/">New Outlook email macros</a></h3>
+    <p class="fdh-card__summary">Why New Outlook breaks Excel VBA email macros, and a send-or-save fallback that keeps month-end mails moving.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 5 min read</p>
+    <span class="fdh-card__go" aria-hidden="true">Read →</span>
+  </article></li>
 </ul>
 <p class="fdh-next"><strong>More VBA modules are on the way.</strong> Until then, the <a href="../jedox/">Jedox</a> and <a href="../snowflake/">Snowflake</a> sections show where the numbers in the pack come from.</p>
 
@@ -37,6 +44,7 @@ hide:
   <h2 id="dl-vba">VBA and Excel downloads</h2>
   <ul>
     <li><a href="../files/vba/FPNA_MonthCloseChecks.bas" download="FPNA_MonthCloseChecks.bas" data-goatcounter-click="download-FPNA_MonthCloseChecks.bas" data-goatcounter-title="Download FPNA_MonthCloseChecks.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> FPNA_MonthCloseChecks.bas</a></li>
+    <li><a href="../files/email/SendOrSave.bas" download="SendOrSave.bas" data-goatcounter-click="download-SendOrSave.bas" data-goatcounter-title="Download SendOrSave.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> SendOrSave.bas</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

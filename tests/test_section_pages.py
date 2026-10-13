@@ -134,7 +134,7 @@ SECTIONS = {
     "vba": {
         "modifier": "fdh-section--vba",
         "h1": "VBA and Excel",
-        "label": "The post",
+        "label": "Posts",
         "few": True,
         "mascot": "vba-laptop",
         "alt": "VBA mascot in a green cardigan sitting with an open laptop",
@@ -149,9 +149,19 @@ SECTIONS = {
                 True,
                 False,
             ),
+            (
+                "New Outlook email macros",
+                "new-outlook-email/",
+                "VBA · Outlook",
+                "Why New Outlook breaks Excel VBA email macros, and a send-or-save fallback that keeps month-end mails moving.",
+                "5 min read",
+                False,
+                False,
+            ),
         ),
         "downloads": (
             ("../files/vba/FPNA_MonthCloseChecks.bas", "FPNA_MonthCloseChecks.bas"),
+            ("../files/email/SendOrSave.bas", "SendOrSave.bas"),
         ),
         "downloads_heading": "VBA and Excel downloads",
     },
@@ -297,6 +307,7 @@ class SectionPageTests(unittest.TestCase):
                 self.assertIn(f'href="{href}"', card)
                 self.assertIn(f">{title}</a>", card)
                 self.assertIn(summary, html_lib.unescape(card))
+                self.assertIn(summary, (ROOT / "card-summaries.md").read_text(encoding="utf-8"))
                 self.assertIn(meta, card)
                 if meta != "Interactive tool":
                     self.assertIn('aria-hidden="true">◷<', card)
@@ -310,6 +321,9 @@ class SectionPageTests(unittest.TestCase):
             for href, filename in spec["downloads"]:
                 self.assertIn(f'href="{href}"', html)
                 self.assertIn(f'download="{filename}"', html)
+                self.assertIn(f'data-goatcounter-click="download-{filename}"', html)
+                self.assertIn(f'data-goatcounter-title="Download {filename}"', html)
+                self.assertIn('data-goatcounter-no-session="1"', html)
                 target = local_target(page, href)
                 self.assertIsNotNone(target, href)
                 self.assertTrue(target.is_file(), f"{slug} {href}")

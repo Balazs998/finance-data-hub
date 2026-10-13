@@ -29,6 +29,7 @@ class RuleStudioTests(unittest.TestCase):
                 "--test",
                 str(ROOT / "tests" / "rules.test.js"),
                 str(ROOT / "tests" / "worker-contract.test.js"),
+                str(ROOT / "tests" / "worker-entry.test.js"),
             ],
             check=False,
             capture_output=True,

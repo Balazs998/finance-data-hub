@@ -1,6 +1,11 @@
 site/
 tools/codemirror/node_modules/
 tests/.browser/
+tests/.tools/
+worker/dist/
+worker/.wrangler/
+worker/node_modules/
+node_modules/
 .cache/
 .venv/
 __pycache__/

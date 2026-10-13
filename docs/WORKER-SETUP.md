@@ -34,7 +34,9 @@ cd worker
 npx wrangler deploy
 ```
 
-Wrangler reads `worker/wrangler.toml`. The first deploy creates the `BudgetGate` Durable Object (migration `v1`). That object stores hourly request counts and the daily token and spend totals. It does not store rule text.
+Wrangler reads `worker/wrangler.toml`. The first deploy creates the `BudgetGate` Durable Object (migration `v1`, `new_sqlite_classes`). The Workers free plan only accepts SQLite-backed Durable Objects. That object stores hourly request counts and the daily token and spend totals. It does not store rule text.
+
+The worker entry imports the handler, the AI engine, the static checks, and the knowledge packs. Wrangler bundles those into the upload. The worker does not read files at runtime.
 
 The default vars keep `AI_PROVIDER` as `mock`, so a deploy is safe before you add a model key. Mock responses are labelled and are not a live model.
 

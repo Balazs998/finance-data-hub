@@ -1,7 +1,4 @@
-import { createRequire } from "node:module";
-
-var require = createRequire(import.meta.url);
-var gate = require("./gate.cjs");
+import gate from "./gate.cjs";
 
 export class BudgetGate {
   constructor(state, env) {

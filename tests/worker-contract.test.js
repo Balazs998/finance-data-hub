@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
-const handler = require("../worker/src/handler.cjs");
+
+let handler;
 
 const ORIGIN = "https://balazs998.github.io";
 const SECRET_RULE = "SUPER_SECRET_RULE_TEXT ['Version':'Variance'] = B: ['Version':'Actual']";
@@ -60,6 +61,10 @@ function post(pathname, body, env, headers) {
 }
 
 test.describe("worker contract", { concurrency: 1 }, function () {
+  test.before(async function () {
+    handler = await import("../worker/src/handler.js");
+  });
+
   test.beforeEach(function () {
     handler.resetGate();
   });

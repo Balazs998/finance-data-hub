@@ -1,17 +1,16 @@
 /* Worker request handler. Logs counts only. Rule text is not stored or logged. */
-var fs = require("fs");
-var path = require("path");
-var checks = require("../../static-checks/checks.js");
-var engine = require("../../ai-engine/index.js");
-var schemas = require("../../ai-engine/schemas.js");
-var validate = require("../../ai-engine/validate.js");
-var gate = require("./gate.cjs");
+import checks from "../../static-checks/checks.js";
+import engine from "../../ai-engine/index.js";
+import schemas from "../../ai-engine/schemas.js";
+import validate from "../../ai-engine/validate.js";
+import gate from "./gate.cjs";
+import examples from "../../knowledge/examples-2026.1.json" with { type: "json" };
+import pack2026 from "../../knowledge/jedox-rules-2026.1.json" with { type: "json" };
+import pack2025 from "../../knowledge/jedox-rules-2025.1.json" with { type: "json" };
 
-var root = path.resolve(__dirname, "../..");
-var examples = JSON.parse(fs.readFileSync(path.join(root, "knowledge/examples-2026.1.json"), "utf8"));
 var packs = {
-  "2026.1": JSON.parse(fs.readFileSync(path.join(root, "knowledge/jedox-rules-2026.1.json"), "utf8")),
-  "2025.1": JSON.parse(fs.readFileSync(path.join(root, "knowledge/jedox-rules-2025.1.json"), "utf8"))
+  "2026.1": pack2026,
+  "2025.1": pack2025
 };
 
 function packFor(version) {
@@ -367,12 +366,22 @@ async function handleRequest(request, env) {
   }, cors);
 }
 
-module.exports = {
-  handleRequest: handleRequest,
-  resetGate: gate.resetMemory,
-  quote: quote,
-  gateSnapshot: gate.snapshot,
-  examples: examples,
-  pack: packs["2026.1"],
-  packs: packs
+var pack = packs["2026.1"];
+
+function resetGate() {
+  return gate.resetMemory();
+}
+
+function gateSnapshot() {
+  return gate.snapshot();
+}
+
+export {
+  handleRequest,
+  resetGate,
+  quote,
+  gateSnapshot,
+  examples,
+  pack,
+  packs
 };

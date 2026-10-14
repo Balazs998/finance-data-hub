@@ -1,6 +1,6 @@
 # Rule Studio worker setup
 
-The site works without this worker. Leave `endpoint` empty in `docs/javascripts/rule-studio-config.js` and the page stays in offline mock mode: static checks run in the browser, and the draft is labelled **Mock provider – not real AI**.
+The published page calls the deployed mock worker at `https://fdh-rule-studio.balazs998.workers.dev`. `AI_PROVIDER` stays `mock`, so results are the stand-in AI (test mode, not a live model). Clear `endpoint` in `docs/javascripts/rule-studio-config.js` and the page stays in offline mock mode: static checks run in the browser, and the draft is labelled **Mock provider – not real AI**. If the worker can't be reached, the page falls back to that offline mock.
 
 Deploy the worker only when you want `/analyze`, `/generate`, and `/refine` on Cloudflare. Do not commit API keys.
 
@@ -106,16 +106,9 @@ The client address is `CF-Connecting-IP` only. `x-forwarded-for` is ignored. A P
 
 ## 6. Point the site at the worker
 
-Edit `docs/javascripts/rule-studio-config.js`:
+`docs/javascripts/rule-studio-config.js` already sets `endpoint` to `https://fdh-rule-studio.balazs998.workers.dev` and the public Turnstile site key. The Turnstile secret stays on the worker. It is not in this repository.
 
-```javascript
-window.FDH_RULE_STUDIO = {
-  endpoint: "https://fdh-rule-studio.<account>.workers.dev",
-  turnstileSiteKey: "<turnstile site key>"
-};
-```
-
-Publish the site after that change. The Rule Studio page's Content-Security-Policy is built from this `endpoint` and from `extra.goatcounter_code`, so a new endpoint is allowed only after the next site build. Clearing `endpoint` returns the page to offline mock mode without undeploying the worker.
+Publish the site after any change to that file. The Rule Studio page's Content-Security-Policy is built from this `endpoint` and from `extra.goatcounter_code`, so a new endpoint is allowed only after the next site build. Clearing `endpoint` returns the page to offline mock mode without undeploying the worker.
 
 ## 7. Check
 

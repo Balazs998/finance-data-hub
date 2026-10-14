@@ -7,7 +7,7 @@ hide:
 
 # Business Rule Studio
 
-Test, explain and improve Jedox business rules, or describe a calculation and get a draft rule. Analysis combines static checks and an AI assessment; nothing runs in Jedox.
+Test, explain and improve Jedox business rules, or describe a calculation and get a draft rule. Analysis combines static checks with the stand-in AI (mock / test mode, not real AI). Nothing runs in Jedox.
 { .rs-lead }
 
 <div id="rule-studio">
@@ -53,7 +53,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 </div>
 <div class="rs-card">
 <h2 style="margin-top:0">What gets sent</h2>
-<div class="rs-privacy">Your rule text and any metadata you enter are sent to our server and the AI provider only when a worker endpoint is configured. In the default offline mode nothing leaves this page. Nothing is stored or logged on the server; a configured worker records request counts only. History is off unless you turn it on below, and then it stays in this browser only.</div>
+<div class="rs-privacy">Your rule text and any metadata you enter are sent to the test worker only. That worker is the stand-in AI (mock / test mode, not real AI). Nothing is stored or logged on the server; the worker records request counts only. If the worker can't be reached, the page falls back to the offline mock in this browser and nothing further is sent. History is off unless you turn it on below, and then it stays in this browser only.</div>
 <div id="rs-turnstile" style="margin-top:12px"></div>
 </div>
 </div>

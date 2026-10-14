@@ -87,7 +87,7 @@ class RuleStudioPageTests(unittest.TestCase):
         if not cls.page.is_file():
             raise AssertionError("Rule Studio page was not built. Run mkdocs build first.")
 
-    def test_page_is_offline_by_default_and_uses_the_demo_model(self):
+    def test_page_uses_the_mock_worker_and_the_demo_model(self):
         html = self.page.read_text(encoding="utf-8")
         self.assertIn("Business Rule Studio", html)
         self.assertIn("Mock provider", html)
@@ -121,7 +121,16 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertNotIn("PLAN_VS_ACTUAL", html)
         self.assertNotIn("FX_RATES", html)
         config = (ROOT / "docs/javascripts/rule-studio-config.js").read_text(encoding="utf-8")
-        self.assertIn('endpoint: ""', config)
+        self.assertIn('endpoint: "https://fdh-rule-studio.balazs998.workers.dev"', config)
+        self.assertIn('turnstileSiteKey: "0x4AAAAAAFVul5wxe6CirVtR"', config)
+        self.assertIn("stand-in AI", html)
+        self.assertIn("mock / test mode, not real AI", html)
+        self.assertIn("Static check", ui)
+        self.assertIn("AI assessment", ui)
+        self.assertIn("Simulated test", ui)
+        self.assertIn("Confirmed in Jedox", ui)
+        self.assertIn("workerUnreachable", ui)
+        self.assertIn("offline stand-in", ui)
 
     def test_rule_studio_content_security_policy(self):
         html = self.page.read_text(encoding="utf-8")
@@ -151,8 +160,11 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertIn("default-src 'self'", policy)
         self.assertIn("script-src 'self' https://challenges.cloudflare.com https://gc.zgo.at", policy)
         self.assertIn("frame-src https://challenges.cloudflare.com", policy)
-        self.assertIn("connect-src 'self' https://financedatahub.goatcounter.com", policy)
-        self.assertNotIn("workers.dev", policy)
+        self.assertIn(
+            "connect-src 'self' https://fdh-rule-studio.balazs998.workers.dev https://financedatahub.goatcounter.com",
+            policy,
+        )
+        self.assertIn("https://challenges.cloudflare.com", policy)
         self.assertIn("img-src 'self' data:", policy)
         self.assertIn("style-src 'self' 'unsafe-inline'", policy)
         self.assertIn("object-src 'none'", policy)

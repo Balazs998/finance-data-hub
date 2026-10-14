@@ -288,11 +288,12 @@ function ruleStudioPerformanceRisk(findings) {
       });
       dims = dimsFromCube(cubeSelect.value);
       drawDims();
-      mockBadge.hidden = !offline();
+      /* The wired worker is the stand-in. Keep the mock badge up even when an endpoint is set. */
+      mockBadge.hidden = false;
       var note = document.getElementById("rs-mode-note");
       note.textContent = offline()
         ? "Offline mock. The page checks the rule here and the draft is labelled mock. Nothing is sent."
-        : "This page sends the rule to the configured worker for an AI assessment. Static checks still run here too.";
+        : "Test mode. Results come from the stand-in AI (mock, not a live model). Static checks still run in this browser. If the worker can't be reached, the page uses that same offline mock.";
     }
 
     function severityClass(severity) {
@@ -408,9 +409,14 @@ function ruleStudioPerformanceRisk(findings) {
       html += '<div class="rs-foot">No rule has been executed in Jedox. Badges show where each finding comes from: <b>Static check</b> (rule parser), <b>AI assessment</b>' +
         (mock ? " (mock provider, not a live model)" : " (model opinion)") +
         ', <b>Simulated test</b> (fictional values). <span class="rs-badge rs-b-jedox">Confirmed in Jedox</span> is disabled until phase 3.</div></article>';
+      if (mode === "fallback") html = fallbackNote() + html;
       results.innerHTML = html;
       if (view && view._setLint) view._setLint(staticFindings);
-      say(mode === "error" ? "Showing static checks." : "Analysis ready. " + suggestions + " findings. No rule was executed in Jedox.");
+      say(mode === "error"
+        ? "Showing static checks."
+        : mode === "fallback"
+          ? FALLBACK_SAY
+          : "Analysis ready. " + suggestions + " findings. No rule was executed in Jedox.");
     }
 
     function section(title, items, badge, severity) {
@@ -554,6 +560,17 @@ function ruleStudioPerformanceRisk(findings) {
       });
     }
 
+    var FALLBACK_NOTE = '<p class="rs-cnt" role="status">The worker could not be reached. This result is the offline stand-in (mock / test mode, not real AI).</p>';
+    var FALLBACK_SAY = "The worker could not be reached. Showing the offline stand-in (mock / test mode, not real AI).";
+
+    function fallbackNote() {
+      return FALLBACK_NOTE;
+    }
+
+    function workerUnreachable(error) {
+      return !!(error && error.unreachable);
+    }
+
     async function turnstileToken() {
       if (offline()) return "offline";
       var config = cfg();
@@ -569,19 +586,45 @@ function ruleStudioPerformanceRisk(findings) {
       var token = await turnstileToken();
       body.turnstileToken = token;
       body.version = versionSelect.value;
-      var response = await fetch(String(cfg().endpoint).replace(/\/$/, "") + path, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body)
-      });
-      var payload = await response.json();
+      var response;
+      try {
+        response = await fetch(String(cfg().endpoint).replace(/\/$/, "") + path, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body)
+        });
+      } catch (networkError) {
+        var down = new Error("The worker could not be reached.");
+        down.unreachable = true;
+        throw down;
+      }
+      var payload;
+      try {
+        payload = await response.json();
+      } catch (parseError) {
+        var bad = new Error("The worker could not be reached.");
+        bad.unreachable = true;
+        throw bad;
+      }
       if (!response.ok || payload.ok === false) {
         var error = new Error(payload.message || "The request was not accepted.");
         error.payload = payload;
         error.status = response.status;
+        error.unreachable = response.status >= 500;
         throw error;
       }
       return payload;
+    }
+
+    function offlineAnalyze(rule, cube, local) {
+      return window.RuleMock.analyzeSync({
+        rule: rule,
+        cube: cube,
+        version: versionSelect.value,
+        pack: pack,
+        examples: examplesDoc.examples,
+        staticFindings: local.findings
+      });
     }
 
     async function analyze() {
@@ -603,16 +646,23 @@ function ruleStudioPerformanceRisk(findings) {
       lastStatic = local.findings;
       try {
         var ai;
+        var fallback = false;
         if (offline()) {
           await wait(280);
-          ai = window.RuleMock.analyzeSync({ rule: rule, cube: cube, version: versionSelect.value, pack: pack, examples: examplesDoc.examples, staticFindings: local.findings });
+          ai = offlineAnalyze(rule, cube, local);
         } else {
-          var payload = await post("/analyze", { cube: cube, rule: rule, metadata: metadataForChecks() });
-          ai = payload.ai;
-          lastStatic = payload.staticFindings || local.findings;
+          try {
+            var payload = await post("/analyze", { cube: cube, rule: rule, metadata: metadataForChecks() });
+            ai = payload.ai;
+            lastStatic = payload.staticFindings || local.findings;
+          } catch (error) {
+            if (!workerUnreachable(error)) throw error;
+            fallback = true;
+            ai = offlineAnalyze(rule, cube, local);
+          }
         }
         lastAi = ai;
-        renderResults(lastStatic, ai);
+        renderResults(lastStatic, ai, fallback ? "fallback" : undefined);
         remember({ kind: "test", title: cube + " rule", cube: cube, rule: rule, note: lastStatic.length + " static", at: Date.now() });
       } catch (error) {
         var payload = error.payload || {};
@@ -646,22 +696,24 @@ function ruleStudioPerformanceRisk(findings) {
       });
     }
 
-    function renderDraft(ai) {
+    function renderDraft(ai, fallback) {
       var box = document.getElementById("rs-draft");
       if (ai.clarification) {
         lastGenerated = null;
         box.hidden = true;
         showClarification(ai);
-        results.innerHTML = '<div class="rs-card rs-state"><h2>Waiting on your answers</h2>' +
+        results.innerHTML = (fallback ? fallbackNote() : "") +
+          '<div class="rs-card rs-state"><h2>Waiting on your answers</h2>' +
           '<p class="rs-cnt">The mock provider did not write a rule. Answer the questions above, then continue.</p></div>';
-        say("The draft needs a clarification.");
+        say(fallback ? FALLBACK_SAY : "The draft needs a clarification.");
         return;
       }
       lastGenerated = ai;
       document.getElementById("rs-clarify").hidden = true;
       box.hidden = false;
       var mock = ai.mock !== false;
-      box.innerHTML = '<div class="rs-step"><span class="rs-num">3</span><h2>Draft rule</h2><span class="rs-sp"></span>' +
+      box.innerHTML = (fallback ? fallbackNote() : "") +
+        '<div class="rs-step"><span class="rs-num">3</span><h2>Draft rule</h2><span class="rs-sp"></span>' +
         (mock ? '<span class="rs-badge rs-b-mock">⚑ Mock provider – not real AI</span>' : '<span class="rs-badge rs-b-ai">AI assessment</span>') +
         "</div>" + renderCode(ai.rule, "") +
         '<dl class="rs-kv" style="margin-top:16px">' +
@@ -693,8 +745,10 @@ function ruleStudioPerformanceRisk(findings) {
         version: versionSelect.value,
         pack: pack,
         examples: examplesDoc.examples
-      }));
-      say("Draft ready. It is labelled mock and has not been executed in Jedox.");
+      }), fallback ? "fallback" : undefined);
+      say(fallback
+        ? FALLBACK_SAY
+        : "Draft ready. It is labelled mock and has not been executed in Jedox.");
     }
 
     async function generate(answers) {
@@ -703,6 +757,7 @@ function ruleStudioPerformanceRisk(findings) {
       showLoading();
       try {
         var ai;
+        var fallback = false;
         pack = selectedPack();
         var input = {
           version: versionSelect.value,
@@ -720,20 +775,26 @@ function ruleStudioPerformanceRisk(findings) {
           await wait(280);
           ai = window.RuleMock.generateSync(input);
         } else {
-          var request = {
-            version: input.version,
-            database: input.database,
-            cube: input.cube,
-            sourceCubes: input.sourceCubes,
-            dimensions: input.dimensions,
-            story: input.story,
-            answers: input.answers,
-            metadata: input.metadata
-          };
-          var payload = await post("/generate", request);
-          ai = payload.ai;
+          try {
+            var request = {
+              version: input.version,
+              database: input.database,
+              cube: input.cube,
+              sourceCubes: input.sourceCubes,
+              dimensions: input.dimensions,
+              story: input.story,
+              answers: input.answers,
+              metadata: input.metadata
+            };
+            var payload = await post("/generate", request);
+            ai = payload.ai;
+          } catch (error) {
+            if (!workerUnreachable(error)) throw error;
+            fallback = true;
+            ai = window.RuleMock.generateSync(input);
+          }
         }
-        renderDraft(ai);
+        renderDraft(ai, fallback);
         if (ai.rule) {
           remember({ kind: "generate", title: story.slice(0, 80) || cube, cube: cube, rule: ai.rule, story: story, note: "1 rule", at: Date.now() });
         }
@@ -750,12 +811,20 @@ function ruleStudioPerformanceRisk(findings) {
       var cube = document.getElementById("rs-target").value.trim() || selectedCube();
       try {
         var ai;
+        var fallback = false;
         if (offline()) {
           pack = selectedPack();
           ai = window.RuleMock.refineSync({ rule: before, chips: chips, instruction: instruction, cube: cube, version: versionSelect.value, pack: pack, examples: examplesDoc.examples });
         } else {
-          var payload = await post("/refine", { rule: before, chips: chips, instruction: instruction, cube: cube });
-          ai = payload.ai;
+          try {
+            var payload = await post("/refine", { rule: before, chips: chips, instruction: instruction, cube: cube });
+            ai = payload.ai;
+          } catch (error) {
+            if (!workerUnreachable(error)) throw error;
+            fallback = true;
+            pack = selectedPack();
+            ai = window.RuleMock.refineSync({ rule: before, chips: chips, instruction: instruction, cube: cube, version: versionSelect.value, pack: pack, examples: examplesDoc.examples });
+          }
         }
         if (ai.mock === false) {
           /* A live provider may return a rule. The badge stays off only then. */
@@ -765,15 +834,16 @@ function ruleStudioPerformanceRisk(findings) {
           renderDraft(Object.assign({}, lastGenerated, {
             rule: next,
             explanation: ai.explanation || lastGenerated.explanation
-          }));
+          }), fallback);
         }
         setRule(next);
         var host = document.getElementById("rs-refine-diff");
         host.hidden = false;
-        host.innerHTML = '<div class="rs-grid2 equal"><div><div class="rs-label">Before</div>' + renderCode(before, "rs-del") +
+        host.innerHTML = (fallback ? fallbackNote() : "") +
+          '<div class="rs-grid2 equal"><div><div class="rs-label">Before</div>' + renderCode(before, "rs-del") +
           '</div><div><div class="rs-label">After</div>' + renderDiff(before, ai.rule || before) + "</div></div>" +
           '<p class="rs-cnt">' + esc(ai.explanation || "") + (ai.mock !== false ? " Mock provider – not real AI." : "") + "</p>";
-        say("Refine draft ready.");
+        say(fallback ? FALLBACK_SAY : "Refine draft ready.");
       } catch (error) {
         showError((error.payload && error.payload.message) || error.message);
       }

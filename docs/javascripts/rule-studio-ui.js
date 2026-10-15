@@ -18,13 +18,74 @@ function ruleStudioPerformanceRisk(findings) {
 /* Fixed copy. Worker reply text is never copied into these two messages. */
 var RULE_STUDIO_TURNSTILE_FAILED = "The bot check failed or expired. Please complete it again and retry.";
 var RULE_STUDIO_RATE_LIMIT = "Too many requests right now. Please wait and try again.";
+var RULE_STUDIO_INVALID = "The request was not accepted.";
+var RULE_STUDIO_VERSIONS = ["2026.1", "2025.1"];
+var RULE_STUDIO_MAX_FIELDS = 3;
+var RULE_STUDIO_MAX_PATH = 40;
+
+/* Field paths only, from strings like "$.answers should be object".
+   Anything else in a worker detail is dropped. */
+function ruleStudioFieldPaths(details) {
+  var found = [];
+  var list = Array.isArray(details) ? details : [];
+  var pattern = /\$[A-Za-z0-9_.[\]]{1,80}/g;
+  for (var i = 0; i < list.length && found.length < RULE_STUDIO_MAX_FIELDS; i++) {
+    if (typeof list[i] !== "string") continue;
+    var text = list[i].length > 200 ? list[i].slice(0, 200) : list[i];
+    pattern.lastIndex = 0;
+    var match;
+    while ((match = pattern.exec(text)) && found.length < RULE_STUDIO_MAX_FIELDS) {
+      var path = match[0].slice(0, RULE_STUDIO_MAX_PATH);
+      if (path !== "$" && found.indexOf(path) < 0) found.push(path);
+    }
+  }
+  return found;
+}
 
 function ruleStudioShownError(error) {
   var payload = error && error.payload;
   var status = error && error.status;
   if (payload && payload.error === "turnstile") return RULE_STUDIO_TURNSTILE_FAILED;
   if (status === 429) return RULE_STUDIO_RATE_LIMIT;
-  return (payload && payload.message) || (error && error.message) || "The request was not accepted.";
+  if (payload && payload.error === "invalid_request") {
+    var paths = ruleStudioFieldPaths(payload.details);
+    if (!paths.length) return RULE_STUDIO_INVALID;
+    return RULE_STUDIO_INVALID + " Check " + paths.join(", ") + ".";
+  }
+  return (payload && payload.message) || (error && error.message) || RULE_STUDIO_INVALID;
+}
+
+function ruleStudioAnalyzeRequest(input) {
+  input = input || {};
+  return {
+    cube: input.cube,
+    rule: input.rule,
+    metadata: input.metadata
+  };
+}
+
+function ruleStudioGenerateRequest(input) {
+  input = input || {};
+  return {
+    version: input.version,
+    database: input.database,
+    cube: input.cube,
+    sourceCubes: input.sourceCubes,
+    dimensions: input.dimensions,
+    story: input.story,
+    answers: input.answers || {},
+    metadata: input.metadata
+  };
+}
+
+function ruleStudioRefineRequest(input) {
+  input = input || {};
+  return {
+    rule: input.rule,
+    chips: input.chips || [],
+    instruction: input.instruction || "",
+    cube: input.cube
+  };
 }
 
 /* 403 and 429 are answers from the worker, so they stay errors.
@@ -389,7 +450,7 @@ function createRuleStudioTransport(deps) {
 
     function fillChrome() {
       versionSelect.innerHTML = "";
-      ["2026.1", "2025.1"].concat(Object.keys(packs)).forEach(function (version) {
+      RULE_STUDIO_VERSIONS.concat(Object.keys(packs)).forEach(function (version) {
         if (!packs[version] || versionSelect.querySelector('option[value="' + version + '"]')) return;
         var option = document.createElement("option");
         option.value = version;
@@ -755,7 +816,11 @@ function createRuleStudioTransport(deps) {
           ai = offlineAnalyze(rule, cube, local);
         } else {
           try {
-            var payload = await post("/analyze", { cube: cube, rule: rule, metadata: metadataForChecks() });
+            var payload = await post("/analyze", ruleStudioAnalyzeRequest({
+              cube: cube,
+              rule: rule,
+              metadata: metadataForChecks()
+            }));
             ai = payload.ai;
             lastStatic = payload.staticFindings || local.findings;
           } catch (error) {
@@ -870,7 +935,7 @@ function createRuleStudioTransport(deps) {
           sourceCubes: document.getElementById("rs-sources").value.trim(),
           dimensions: dimensionPayload(),
           story: story,
-          answers: answers || null,
+          answers: answers || {},
           examples: examplesDoc.examples,
           metadata: metadataForChecks()
         };
@@ -879,16 +944,7 @@ function createRuleStudioTransport(deps) {
           ai = window.RuleMock.generateSync(input);
         } else {
           try {
-            var request = {
-              version: input.version,
-              database: input.database,
-              cube: input.cube,
-              sourceCubes: input.sourceCubes,
-              dimensions: input.dimensions,
-              story: input.story,
-              answers: input.answers,
-              metadata: input.metadata
-            };
+            var request = ruleStudioGenerateRequest(input);
             var payload = await post("/generate", request);
             ai = payload.ai;
           } catch (error) {
@@ -920,7 +976,12 @@ function createRuleStudioTransport(deps) {
           ai = window.RuleMock.refineSync({ rule: before, chips: chips, instruction: instruction, cube: cube, version: versionSelect.value, pack: pack, examples: examplesDoc.examples });
         } else {
           try {
-            var payload = await post("/refine", { rule: before, chips: chips, instruction: instruction, cube: cube });
+            var payload = await post("/refine", ruleStudioRefineRequest({
+              rule: before,
+              chips: chips,
+              instruction: instruction,
+              cube: cube
+            }));
             ai = payload.ai;
           } catch (error) {
             if (!ruleStudioUseOffline(error)) throw error;
@@ -1119,6 +1180,10 @@ if (typeof module === "object" && module.exports) {
     shownError: ruleStudioShownError,
     useOffline: ruleStudioUseOffline,
     TURNSTILE_FAILED: RULE_STUDIO_TURNSTILE_FAILED,
-    RATE_LIMIT: RULE_STUDIO_RATE_LIMIT
+    RATE_LIMIT: RULE_STUDIO_RATE_LIMIT,
+    VERSIONS: RULE_STUDIO_VERSIONS,
+    analyzeRequest: ruleStudioAnalyzeRequest,
+    generateRequest: ruleStudioGenerateRequest,
+    refineRequest: ruleStudioRefineRequest
   };
 }

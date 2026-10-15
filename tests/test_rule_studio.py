@@ -30,6 +30,7 @@ class RuleStudioTests(unittest.TestCase):
                 str(ROOT / "tests" / "rules.test.js"),
                 str(ROOT / "tests" / "worker-contract.test.js"),
                 str(ROOT / "tests" / "worker-entry.test.js"),
+                str(ROOT / "tests" / "rule-studio-turnstile.test.js"),
             ],
             check=False,
             capture_output=True,
@@ -131,7 +132,8 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertIn("AI assessment", ui)
         self.assertIn("Simulated test", ui)
         self.assertIn("Confirmed in Jedox", ui)
-        self.assertIn("workerUnreachable", ui)
+        self.assertIn("ruleStudioUseOffline", ui)
+        self.assertIn(".reset(", ui)
         self.assertIn("offline stand-in", ui)
 
     def test_rule_studio_content_security_policy(self):

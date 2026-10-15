@@ -15,6 +15,142 @@ function ruleStudioPerformanceRisk(findings) {
   return "Low";
 }
 
+/* Fixed copy. Worker reply text is never copied into these two messages. */
+var RULE_STUDIO_TURNSTILE_FAILED = "The bot check failed or expired. Please complete it again and retry.";
+var RULE_STUDIO_RATE_LIMIT = "Too many requests right now. Please wait and try again.";
+
+function ruleStudioShownError(error) {
+  var payload = error && error.payload;
+  var status = error && error.status;
+  if (payload && payload.error === "turnstile") return RULE_STUDIO_TURNSTILE_FAILED;
+  if (status === 429) return RULE_STUDIO_RATE_LIMIT;
+  return (payload && payload.message) || (error && error.message) || "The request was not accepted.";
+}
+
+/* 403 and 429 are answers from the worker, so they stay errors.
+   A missing Turnstile script, or a network failure, can use the offline mock. */
+function ruleStudioUseOffline(error) {
+  if (!error) return false;
+  if (error.status === 403 || error.status === 429) return false;
+  if (error.payload && error.payload.error === "turnstile") return false;
+  if (error.turnstileUnavailable) return true;
+  return !!error.unreachable;
+}
+
+/* One worker POST. The Turnstile token is single-use: it is read for this
+   request only, then deleted, and the widget is reset. It is not stored or logged. */
+function createRuleStudioTransport(deps) {
+  deps = deps || {};
+
+  function pause(ms) {
+    return deps.wait ? deps.wait(ms) : Promise.resolve();
+  }
+
+  function turnstileApi() {
+    try {
+      return deps.turnstile ? deps.turnstile() : null;
+    } catch (ignore) {
+      return null;
+    }
+  }
+
+  function currentWidget() {
+    try {
+      return deps.widgetId ? deps.widgetId() : null;
+    } catch (ignore) {
+      return null;
+    }
+  }
+
+  function resetWidget() {
+    var api = turnstileApi();
+    var id = currentWidget();
+    if (!api || typeof api.reset !== "function" || id == null) return;
+    try {
+      api.reset(id);
+    } catch (ignore) {}
+  }
+
+  function readToken() {
+    var api = turnstileApi();
+    var id = currentWidget();
+    if (!api || typeof api.getResponse !== "function" || id == null) return "";
+    try {
+      var value = api.getResponse(id);
+      return value ? String(value) : "";
+    } catch (ignore) {
+      return "";
+    }
+  }
+
+  async function waitUntil(check, limit) {
+    var deadline = Date.now() + limit;
+    var value = check();
+    while (!value && Date.now() < deadline) {
+      await pause(deps.pollMs == null ? 50 : deps.pollMs);
+      value = check();
+    }
+    return value;
+  }
+
+  async function post(path, body) {
+    var sent = false;
+    try {
+      var ready = deps.ready ? deps.ready() : false;
+      if (!ready) {
+        ready = await waitUntil(function () {
+          return !!(deps.ready && deps.ready());
+        }, deps.readyWaitMs == null ? 1200 : deps.readyWaitMs);
+      }
+      if (!ready) {
+        var unavailable = new Error("Turnstile is not ready. Add the site key or clear the endpoint to stay offline.");
+        unavailable.turnstileUnavailable = true;
+        throw unavailable;
+      }
+      var fresh = readToken();
+      if (!fresh) fresh = await waitUntil(readToken, deps.tokenWaitMs == null ? 2500 : deps.tokenWaitMs);
+      if (!fresh) throw new Error("Complete the Turnstile check, then try again.");
+      body.turnstileToken = fresh;
+      fresh = "";
+      if (deps.version) body.version = deps.version();
+      sent = true;
+      var response;
+      try {
+        response = await deps.fetch(deps.url(path), {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body)
+        });
+      } catch (networkError) {
+        var down = new Error("The worker could not be reached.");
+        down.unreachable = true;
+        throw down;
+      }
+      var payload;
+      try {
+        payload = await response.json();
+      } catch (parseError) {
+        var bad = new Error("The worker could not be reached.");
+        bad.unreachable = true;
+        throw bad;
+      }
+      if (!response.ok || payload.ok === false) {
+        var error = new Error(ruleStudioShownError({ payload: payload, status: response.status }));
+        error.payload = payload;
+        error.status = response.status;
+        error.unreachable = response.status >= 500;
+        throw error;
+      }
+      return payload;
+    } finally {
+      if (body) delete body.turnstileToken;
+      if (sent) resetWidget();
+    }
+  }
+
+  return { post: post };
+}
+
 (function () {
   var HISTORY_KEY = "fdh-rule-studio-history";
   var HISTORY_FLAG = "fdh-rule-studio-history-on";
@@ -567,53 +703,20 @@ function ruleStudioPerformanceRisk(findings) {
       return FALLBACK_NOTE;
     }
 
-    function workerUnreachable(error) {
-      return !!(error && error.unreachable);
-    }
+    var transport = createRuleStudioTransport({
+      turnstile: function () { return window.turnstile; },
+      widgetId: function () { return widgetId; },
+      ready: function () {
+        return !!(cfg().turnstileSiteKey && window.turnstile && widgetId != null);
+      },
+      version: function () { return versionSelect.value; },
+      url: function (path) { return String(cfg().endpoint).replace(/\/$/, "") + path; },
+      fetch: function (url, init) { return fetch(url, init); },
+      wait: wait
+    });
 
-    async function turnstileToken() {
-      if (offline()) return "offline";
-      var config = cfg();
-      if (!config.turnstileSiteKey || !window.turnstile || widgetId == null) {
-        throw new Error("Turnstile is not ready. Add the site key or clear the endpoint to stay offline.");
-      }
-      var token = window.turnstile.getResponse(widgetId);
-      if (!token) throw new Error("Complete the Turnstile check, then try again.");
-      return token;
-    }
-
-    async function post(path, body) {
-      var token = await turnstileToken();
-      body.turnstileToken = token;
-      body.version = versionSelect.value;
-      var response;
-      try {
-        response = await fetch(String(cfg().endpoint).replace(/\/$/, "") + path, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(body)
-        });
-      } catch (networkError) {
-        var down = new Error("The worker could not be reached.");
-        down.unreachable = true;
-        throw down;
-      }
-      var payload;
-      try {
-        payload = await response.json();
-      } catch (parseError) {
-        var bad = new Error("The worker could not be reached.");
-        bad.unreachable = true;
-        throw bad;
-      }
-      if (!response.ok || payload.ok === false) {
-        var error = new Error(payload.message || "The request was not accepted.");
-        error.payload = payload;
-        error.status = response.status;
-        error.unreachable = response.status >= 500;
-        throw error;
-      }
-      return payload;
+    function post(path, body) {
+      return transport.post(path, body);
     }
 
     function offlineAnalyze(rule, cube, local) {
@@ -656,7 +759,7 @@ function ruleStudioPerformanceRisk(findings) {
             ai = payload.ai;
             lastStatic = payload.staticFindings || local.findings;
           } catch (error) {
-            if (!workerUnreachable(error)) throw error;
+            if (!ruleStudioUseOffline(error)) throw error;
             fallback = true;
             ai = offlineAnalyze(rule, cube, local);
           }
@@ -667,7 +770,7 @@ function ruleStudioPerformanceRisk(findings) {
       } catch (error) {
         var payload = error.payload || {};
         lastStatic = payload.staticFindings || lastStatic;
-        showError(payload.message || error.message, "Static checks still ran. Your rule was not stored.");
+        showError(ruleStudioShownError(error), "Static checks still ran. Your rule was not stored.");
       }
     }
 
@@ -789,7 +892,7 @@ function ruleStudioPerformanceRisk(findings) {
             var payload = await post("/generate", request);
             ai = payload.ai;
           } catch (error) {
-            if (!workerUnreachable(error)) throw error;
+            if (!ruleStudioUseOffline(error)) throw error;
             fallback = true;
             ai = window.RuleMock.generateSync(input);
           }
@@ -799,7 +902,7 @@ function ruleStudioPerformanceRisk(findings) {
           remember({ kind: "generate", title: story.slice(0, 80) || cube, cube: cube, rule: ai.rule, story: story, note: "1 rule", at: Date.now() });
         }
       } catch (error) {
-        showError((error.payload && error.payload.message) || error.message, "No rule was stored.");
+        showError(ruleStudioShownError(error), "No rule was stored.");
       }
     }
 
@@ -820,7 +923,7 @@ function ruleStudioPerformanceRisk(findings) {
             var payload = await post("/refine", { rule: before, chips: chips, instruction: instruction, cube: cube });
             ai = payload.ai;
           } catch (error) {
-            if (!workerUnreachable(error)) throw error;
+            if (!ruleStudioUseOffline(error)) throw error;
             fallback = true;
             pack = selectedPack();
             ai = window.RuleMock.refineSync({ rule: before, chips: chips, instruction: instruction, cube: cube, version: versionSelect.value, pack: pack, examples: examplesDoc.examples });
@@ -845,7 +948,7 @@ function ruleStudioPerformanceRisk(findings) {
           '<p class="rs-cnt">' + esc(ai.explanation || "") + (ai.mock !== false ? " Mock provider – not real AI." : "") + "</p>";
         say(fallback ? FALLBACK_SAY : "Refine draft ready.");
       } catch (error) {
-        showError((error.payload && error.payload.message) || error.message);
+        showError(ruleStudioShownError(error));
       }
     }
 
@@ -1010,5 +1113,12 @@ function ruleStudioPerformanceRisk(findings) {
 })();
 
 if (typeof module === "object" && module.exports) {
-  module.exports = { performanceRisk: ruleStudioPerformanceRisk };
+  module.exports = {
+    performanceRisk: ruleStudioPerformanceRisk,
+    createTransport: createRuleStudioTransport,
+    shownError: ruleStudioShownError,
+    useOffline: ruleStudioUseOffline,
+    TURNSTILE_FAILED: RULE_STUDIO_TURNSTILE_FAILED,
+    RATE_LIMIT: RULE_STUDIO_RATE_LIMIT
+  };
 }

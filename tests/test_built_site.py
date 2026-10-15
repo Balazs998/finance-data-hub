@@ -418,6 +418,7 @@ SOCIAL_PAGES = {
     "jedox/email-builder/index.html": "email-builder.png",
     "jedox/email-checker/index.html": "email-checker.png",
     "jedox/relational-extracts/index.html": "relational-extracts.png",
+    "vba/new-outlook-email/index.html": "new-outlook-email.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
 }
@@ -429,6 +430,7 @@ SOCIAL_FILES = (
     "email-builder.png",
     "email-checker.png",
     "relational-extracts.png",
+    "new-outlook-email.png",
 )
 
 

@@ -1,6 +1,7 @@
 ---
 title: Your VBA email macro after New Outlook
 description: Why Excel macros that send mail through Outlook stop working in New Outlook for Windows, and what to switch to.
+social_image: new-outlook-email.png
 ---
 
 # Your VBA email macro after New Outlook
@@ -17,7 +18,7 @@ Lots of finance workbooks send their own reports: a macro builds the mail with `
 ## What you'll build
 
 - A quick way to tell which Outlook you're on.
-- A macro that saves a draft file instead of failing silently.
+- A macro that saves the mail as a text file instead of failing silently.
 - A short look at the three alternatives Microsoft names: Power Automate, Microsoft Graph and Office.js.
 - A checklist for moving your existing report macros.
 
@@ -46,16 +47,18 @@ Your workbook has a macro that emails each cost center owner their numbers, here
 
 To check, look at the top right corner of Outlook. If there's a **Settings** button, you're on New Outlook. If it's missing, you're on classic Outlook. New Outlook's ribbon also only has the Home, View and Help tabs ([What version of Outlook do I have?, Microsoft Support](https://support.microsoft.com/en-us/Outlook/getstarted/what-version-of-outlook-do-i-have)).
 
-## 2. Don't fail silently: save a draft file
+## 2. Don't fail silently: save the mail as a text file
 
-If the macro can't reach Outlook, save the message as a file so nothing gets lost. This is a pattern, not something we tested.
+If the macro can't reach Outlook, save the message as a file so nothing gets lost. This is a pattern, not something we tested. After the sends, call `ShowUnsentMails` once. There's one message at the end with how many mails were saved as `unsent_*.txt` and the folder they're in.
 
 ```vba
 Option Explicit
 
+Private mCount As Long, mFolder As String
+
 Sub SendOrSave(toAddr As String, subj As String, body As String)
     Static n As Long
-    Dim ol As Object, folder As String, f As Integer
+    Dim ol As Object, folder As String, f As Integer, filePath As String
     On Error Resume Next
     Set ol = CreateObject("Outlook.Application")
     If Not ol Is Nothing Then
@@ -71,13 +74,21 @@ Sub SendOrSave(toAddr As String, subj As String, body As String)
     folder = ThisWorkbook.Path
     If Len(folder) = 0 Or InStr(folder, "://") > 0 Then folder = Environ$("TEMP")
     n = n + 1
+    filePath = folder & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & "_" & n & ".txt"
     f = FreeFile
-    Open folder & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & "_" & n & ".txt" For Output As #f
+    Open filePath For Output As #f
     Print #f, "To: " & toAddr
     Print #f, "Subject: " & subj
     Print #f, body
     Close #f
-    MsgBox "The mail couldn't be sent. It was saved in " & folder & ".", vbExclamation
+    mCount = mCount + 1
+    mFolder = folder
+End Sub
+
+Sub ShowUnsentMails()
+    If mCount = 0 Then Exit Sub
+    MsgBox mCount & " mail(s) couldn't be sent. They were saved as unsent_*.txt in " & mFolder & ".", vbExclamation
+    mCount = 0
 End Sub
 ```
 
@@ -86,6 +97,7 @@ End Sub
 ' replace it with your own address if you want to see the mail arrive.
 Sub TestSendOrSave()
     SendOrSave "owner.cc1000@example.com", "FDH test", "Test body"
+    ShowUnsentMails
 End Sub
 ```
 
@@ -106,14 +118,14 @@ In Power Automate, the Office 365 Outlook connector's action is **Send an email 
 ## 4. Migration checklist
 
 - List every workbook that calls `Outlook.Application`.
-- Add the save-a-draft fallback from step 2 so nothing fails quietly.
+- Add the fallback from step 2 that saves the mail as a text file so nothing fails quietly.
 - Choose Power Automate or Graph for each one, then ask IT about the permission it needs.
 - Don't treat a Graph `202` as proof of delivery.
 
 ## Check the result
 
 !!! success "Expected: no mail lost"
-    With Outlook unavailable, the macro saves an `unsent_...txt` file instead of ending without a word. This is the intended behavior. We haven't tested it on a live install.
+    With Outlook unavailable, there's one message at the end with how many mails were saved as `unsent_*.txt` and the folder they're in. This is the intended behavior. We haven't tested it on a live install.
 
 ## If it doesn't match
 

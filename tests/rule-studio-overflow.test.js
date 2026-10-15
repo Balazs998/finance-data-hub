@@ -75,6 +75,11 @@ test("a long one-line rule stays within the viewport", { timeout: 120000 }, asyn
   try {
     const port = server.address().port;
     const page = await browser.newPage();
+    // Layout only. The wired page loads Turnstile when an endpoint is set, so
+    // this check keeps the offline mock that the viewport measurement was written for.
+    await page.evaluateOnNewDocument(function () {
+      window.FDH_RULE_STUDIO = { endpoint: "", turnstileSiteKey: "" };
+    });
     for (const width of [1440, 390, 320]) {
       await page.setViewport({ width: width, height: 900, deviceScaleFactor: 1 });
       await page.goto("http://127.0.0.1:" + port + "/jedox/rule-studio/", { waitUntil: "domcontentloaded", timeout: 30000 });

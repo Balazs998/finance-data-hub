@@ -84,8 +84,6 @@ def asset_version() -> str:
 
 _INLINE_SCRIPT = re.compile(r"<script\b([^>]*)>(.*?)</script>", re.IGNORECASE | re.DOTALL)
 _ENDPOINT = re.compile(r"""endpoint\s*:\s*["']([^"']*)["']""")
-_BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
-_LINE_COMMENT = re.compile(r"//.*?$", re.MULTILINE)
 _JSON_SCRIPT = re.compile(
     r"""\btype\s*=\s*['"]application/(?:json|ld\+json)['"]""",
     re.IGNORECASE,
@@ -103,12 +101,53 @@ def _is_rule_studio(page) -> bool:
     return src.replace("\\", "/") == "jedox/rule-studio/index.md"
 
 
+def _js_without_comments(text: str) -> str:
+    """Drop JS comments without treating // inside a string as a comment.
+
+    An https endpoint contains //. A line-comment regex would erase the URL
+    and the Content-Security-Policy would miss the worker origin.
+    """
+    out: list[str] = []
+    i = 0
+    n = len(text)
+    while i < n:
+        if text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            if end < 0:
+                break
+            i = end + 2
+            continue
+        if text.startswith("//", i):
+            end = text.find("\n", i + 2)
+            i = n if end < 0 else end
+            continue
+        if text[i] in {'"', "'"}:
+            quote = text[i]
+            out.append(quote)
+            i += 1
+            while i < n:
+                ch = text[i]
+                out.append(ch)
+                i += 1
+                if ch == "\\":
+                    if i < n:
+                        out.append(text[i])
+                        i += 1
+                    continue
+                if ch == quote:
+                    break
+            continue
+        out.append(text[i])
+        i += 1
+    return "".join(out)
+
+
 def _worker_origin() -> str:
     """Origin from docs/javascripts/rule-studio-config.js, ignoring comments."""
     path = Path(__file__).resolve().parents[1] / "docs" / "javascripts" / "rule-studio-config.js"
     if not path.is_file():
         return ""
-    text = _LINE_COMMENT.sub("", _BLOCK_COMMENT.sub("", path.read_text(encoding="utf-8")))
+    text = _js_without_comments(path.read_text(encoding="utf-8"))
     found = _ENDPOINT.findall(text)
     endpoint = found[-1].strip() if found else ""
     if not endpoint:

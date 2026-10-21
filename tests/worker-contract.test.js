@@ -209,8 +209,7 @@ test.describe("worker contract", { concurrency: 1 }, function () {
     assert.equal(typed.status, 200);
     assert.equal(typedBody.ai.mock, true);
     assert.equal(typedBody.ai.rule, rule);
-    assert.match(typedBody.ai.explanation, /Free-text edits need the live model/);
-    assert.match(typedBody.ai.explanation, /only the chips apply/);
+    assert.match(typedBody.ai.explanation, /In this demo, only the chips change the rule\. Typed requests need the live model\./);
 
     const chipped = await post("/refine", {
       version: "2026.1",
@@ -224,7 +223,7 @@ test.describe("worker contract", { concurrency: 1 }, function () {
     assert.equal(chipped.status, 200);
     assert.equal(chippedBody.ai.rule, "['Account':'Revenue','Version':'Actual'] = B: ['Account':'Sales']");
     assert.equal(chippedBody.ai.rule.includes("period"), false);
-    assert.match(chippedBody.ai.explanation, /only the chips apply/);
+    assert.match(chippedBody.ai.explanation, /In this demo, only the chips change the rule\. Typed requests need the live model\./);
   });
 
   test("zero variance passes because 0 and empty are equal", async function () {
@@ -235,7 +234,7 @@ test.describe("worker contract", { concurrency: 1 }, function () {
     });
     assert.ok(scenario);
     assert.equal(scenario.status, "passed");
-    assert.equal(scenario.title, "Budget 0 and Actual 0 → Variance 0, shown empty");
+    assert.equal(scenario.title, "Budget 0 and Actual 0 → Variance 0 (shows as blank in Jedox)");
     assert.match(scenario.detail, /Passes only because 0 and empty are equal in Jedox/);
     assert.equal(scenario.title.includes("Variance blank"), false);
     assert.equal(scenario.detail.includes("blank branch"), false);

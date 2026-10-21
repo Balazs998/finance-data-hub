@@ -137,7 +137,7 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertIn(".reset(", ui)
         self.assertIn("offline stand-in", ui)
         self.assertIn(
-            "Free-text edits need the live model. In test mode, only the chips apply.",
+            "In this demo, only the chips change the rule. Typed requests need the live model.",
             html,
         )
 

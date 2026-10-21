@@ -103,7 +103,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <input id="rs-instruction" class="rs-in" style="flex:1;min-width:220px" placeholder="Or type a change, for example also limit the period">
 <button type="button" class="rs-btn rs-pri" id="rs-refine">Refine</button>
 </div>
-<p class="rs-hint">Free-text edits need the live model. In test mode, only the chips apply.</p>
+<p class="rs-hint">In this demo, only the chips change the rule. Typed requests need the live model.</p>
 <div id="rs-refine-diff" hidden style="margin-top:14px"></div>
 </section>
 

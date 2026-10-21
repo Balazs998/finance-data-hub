@@ -165,7 +165,7 @@
         source: "simulated"
       });
       rows.push({
-        title: "Budget 0 and Actual 0 → Variance 0, shown empty",
+        title: "Budget 0 and Actual 0 → Variance 0 (shows as blank in Jedox)",
         status: "passed",
         detail: "Passes only because 0 and empty are equal in Jedox. A zero result is displayed as an empty cell.",
         source: "simulated"
@@ -306,7 +306,7 @@
       ? "Mock summary: the rule writes a calculated element from other elements in the same cube. It has not been run in Jedox."
       : "Mock edit from the selected chips. Not a live model.";
     if (instruction) {
-      explanation += " Free-text edits need the live model. In test mode, only the chips apply.";
+      explanation += " In this demo, only the chips change the rule. Typed requests need the live model.";
     }
     var diff = loadDiff();
     return base({

@@ -101,7 +101,7 @@ nav:
       - Rule Studio worker setup: WORKER-SETUP.md
   - VBA:
       - vba/index.md
-      - New Outlook email macros: vba/new-outlook-email.md
+      - Email macros after New Outlook: vba/new-outlook-email.md
       - Month-close checks: vba/month-close-checks.md
   - Downloads: downloads.md
   - About: about.md

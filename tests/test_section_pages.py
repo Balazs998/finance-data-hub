@@ -150,10 +150,10 @@ SECTIONS = {
                 False,
             ),
             (
-                "New Outlook email macros",
+                "Your VBA email macro after New Outlook",
                 "new-outlook-email/",
                 "VBA · Outlook",
-                "Why New Outlook breaks Excel VBA email macros, and a send-or-save fallback that keeps month-end mails moving.",
+                "Classic or New Outlook? What to switch to when VBA can't send, and a fallback so no month-end mail is lost.",
                 "5 min read",
                 False,
                 False,

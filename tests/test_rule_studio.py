@@ -136,6 +136,10 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertIn("ruleStudioUseOffline", ui)
         self.assertIn(".reset(", ui)
         self.assertIn("offline stand-in", ui)
+        self.assertIn(
+            "Free-text edits need the live model. In test mode, only the chips apply.",
+            html,
+        )
 
     def test_rule_studio_content_security_policy(self):
         html = self.page.read_text(encoding="utf-8")

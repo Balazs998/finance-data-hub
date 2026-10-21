@@ -195,6 +195,52 @@ test.describe("worker contract", { concurrency: 1 }, function () {
     assert.match(body.ai.label, /not real AI/);
   });
 
+  test("mock refine ignores free text and applies chips only", async function () {
+    const rule = "['Account':'Revenue'] = B: ['Account':'Sales']";
+    const typed = await post("/refine", {
+      version: "2026.1",
+      cube: "PnL",
+      rule: rule,
+      chips: [],
+      instruction: "also limit the period, and only actuals",
+      turnstileToken: "ok"
+    }, baseEnv());
+    const typedBody = await typed.json();
+    assert.equal(typed.status, 200);
+    assert.equal(typedBody.ai.mock, true);
+    assert.equal(typedBody.ai.rule, rule);
+    assert.match(typedBody.ai.explanation, /Free-text edits need the live model/);
+    assert.match(typedBody.ai.explanation, /only the chips apply/);
+
+    const chipped = await post("/refine", {
+      version: "2026.1",
+      cube: "PnL",
+      rule: rule,
+      chips: ["Only actuals"],
+      instruction: "also limit the period",
+      turnstileToken: "ok"
+    }, baseEnv());
+    const chippedBody = await chipped.json();
+    assert.equal(chipped.status, 200);
+    assert.equal(chippedBody.ai.rule, "['Account':'Revenue','Version':'Actual'] = B: ['Account':'Sales']");
+    assert.equal(chippedBody.ai.rule.includes("period"), false);
+    assert.match(chippedBody.ai.explanation, /only the chips apply/);
+  });
+
+  test("zero variance passes because 0 and empty are equal", async function () {
+    const response = await post("/analyze", SAMPLE, baseEnv());
+    const body = await response.json();
+    const scenario = body.ai.scenarios.find(function (row) {
+      return row.title.indexOf("Budget 0 and Actual 0") === 0;
+    });
+    assert.ok(scenario);
+    assert.equal(scenario.status, "passed");
+    assert.equal(scenario.title, "Budget 0 and Actual 0 → Variance 0, shown empty");
+    assert.match(scenario.detail, /Passes only because 0 and empty are equal in Jedox/);
+    assert.equal(scenario.title.includes("Variance blank"), false);
+    assert.equal(scenario.detail.includes("blank branch"), false);
+  });
+
   test("analyze uses the pack for the selected version", async function () {
     const older = await post("/analyze", {
       version: "2025.1",

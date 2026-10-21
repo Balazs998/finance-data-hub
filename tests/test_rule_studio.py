@@ -31,6 +31,7 @@ class RuleStudioTests(unittest.TestCase):
                 str(ROOT / "tests" / "worker-contract.test.js"),
                 str(ROOT / "tests" / "worker-entry.test.js"),
                 str(ROOT / "tests" / "rule-studio-turnstile.test.js"),
+                str(ROOT / "tests" / "rule-studio-request.test.js"),
             ],
             check=False,
             capture_output=True,

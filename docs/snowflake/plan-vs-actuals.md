@@ -29,7 +29,7 @@ This post uses the site's made-up sample data: 10 cost centers and 8 accounts. T
 
 The sample data has both kinds of rows that go missing, on purpose:
 
-- **Budget only.** 91 cells have a budget but no actual. 58 of them are September 2026, which hasn't closed yet. The other 33 are cells where nothing was posted.
+- **Budget only.** 91 cells have a budget but no actual. 58 of them are September 2026, the month after the sample's last actuals. The other 33 are cells where nothing was posted.
 - **Actual only.** 5 postings of Material Cost (account `500000`) land on cost centers CC3010 and CC6000, which have no budget for that account at all. Together they're 14,896.50 of unbudgeted spend.
 
 The second group is the one that matters most. Unbudgeted spend is exactly what a controller wants to see, and it's exactly what a budget-driven join throws away.

@@ -165,9 +165,9 @@
         source: "simulated"
       });
       rows.push({
-        title: "Budget 0 and Actual 0 → Variance blank",
+        title: "Budget 0 and Actual 0 → Variance 0 (shows as blank in Jedox)",
         status: "passed",
-        detail: "Both inputs are empty cells. 0 and a blank cell are the same here, so this is not a failure.",
+        detail: "Passes only because 0 and empty are equal in Jedox. A zero result is displayed as an empty cell.",
         source: "simulated"
       });
     } else if (/PALO\.DATA/.test(text) || /FX_RATE/.test(text)) {
@@ -299,20 +299,21 @@
     var after = before;
     chips.forEach(function (chip) { after = applyChip(after, chip); });
     var instruction = String(input.instruction || "").trim();
-    if (instruction && /actual/i.test(instruction)) after = applyChip(after, "only actuals");
-    if (instruction && /budget/i.test(instruction)) after = applyChip(after, "budget versions");
-    if (instruction && /intercompany/i.test(instruction)) after = applyChip(after, "exclude intercompany");
-    if (instruction && /simpler|explain/i.test(instruction)) {
-      /* The rule stays; the explanation is the change. */
+    var simpler = chips.some(function (chip) {
+      return String(chip || "").toLowerCase() === "simpler explanation";
+    });
+    var explanation = simpler
+      ? "Mock summary: the rule writes a calculated element from other elements in the same cube. It has not been run in Jedox."
+      : "Mock edit from the selected chips. Not a live model.";
+    if (instruction) {
+      explanation += " In this demo, only the chips change the rule. Typed requests need the live model.";
     }
     var diff = loadDiff();
     return base({
       rule: after,
       before: before,
       after: after,
-      explanation: chips.indexOf("simpler explanation") >= 0 || /simpler|explain/i.test(instruction)
-        ? "Mock summary: the rule writes a calculated element from other elements in the same cube. It has not been run in Jedox."
-        : "Mock edit from the selected chips. Not a live model.",
+      explanation: explanation,
       optimization: before === after ? null : {
         before: before,
         after: after,

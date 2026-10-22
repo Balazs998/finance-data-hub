@@ -299,15 +299,15 @@
     var after = before;
     chips.forEach(function (chip) { after = applyChip(after, chip); });
     var instruction = String(input.instruction || "").trim();
+    if (instruction) {
+      /* Ignored on purpose. The helper under the Refine box says typed requests need the live model. */
+    }
     var simpler = chips.some(function (chip) {
       return String(chip || "").toLowerCase() === "simpler explanation";
     });
     var explanation = simpler
       ? "Mock summary: the rule writes a calculated element from other elements in the same cube. It has not been run in Jedox."
       : "Mock edit from the selected chips. Not a live model.";
-    if (instruction) {
-      explanation += " In this demo, only the chips change the rule. Typed requests need the live model.";
-    }
     var diff = loadDiff();
     return base({
       rule: after,

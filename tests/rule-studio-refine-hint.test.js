@@ -104,7 +104,7 @@ test("the refine hint stays on the page once", { timeout: 120000 }, async functi
     await page.evaluate(function () {
       const editor = document.querySelector(".cm-content");
       editor.focus();
-      document.execCommand("insertText", false, "['Account':'Revenue'] = B: ['Account':'Sales']");
+      document.execCommand("insertText", false, "['Account':'400000'] = B: ['Account':'410000']");
       document.getElementById("rs-instruction").value = "also limit the period";
       document.getElementById("rs-refine").click();
     });

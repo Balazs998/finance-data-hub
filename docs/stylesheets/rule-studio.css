@@ -25,9 +25,12 @@
    it inside the box, so a 320px page does not scroll sideways and the
    challenge stays intact inside the iframe. */
 #rs-turnstile {
+  display: block;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
+  contain: inline-size;
 }
 
 #rs-turnstile iframe {

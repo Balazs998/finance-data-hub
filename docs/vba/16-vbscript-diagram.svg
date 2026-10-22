@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="420" viewBox="0 0 840 420" role="img" aria-labelledby="t d"><title id="t">Does VBScript deprecation affect my macro?</title><desc id="d">Decision flow. If the macro calls a .vbs script, that stops being supported once VBScript is off. If it uses VBScript RegExp and Office is Version 2508 or later, it keeps working; on older Office it breaks once VBScript is off. If it uses neither, this change doesn't affect it.</desc>
+<style>.b{font:600 16px 'Space Grotesk',sans-serif;fill:#E6EDF3}.s{font:400 15px Inter,sans-serif;fill:#B7C5D3}.l{font:600 15px Inter,sans-serif}.m{font:500 15px 'JetBrains Mono',monospace;fill:#E6EDF3}</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B7B"/></marker></defs>
+<rect width="840" height="420" fill="#0F1720"/>
+<g stroke="#5B6B7B" stroke-width="2" fill="none" marker-end="url(#a)">
+<path d="M150 80H188"/><path d="M392 80H438"/><path d="M642 80H688"/>
+<path d="M291 120V198"/><path d="M541 120V198"/><path d="M755 120V198"/></g>
+<rect x="20" y="40" width="130" height="80" rx="10" fill="#18222E" stroke="#38BDF8" stroke-width="2"/><text x="85" y="76" text-anchor="middle" class="b">Your macro</text><text x="85" y="98" text-anchor="middle" class="s">exported modules</text>
+<rect x="190" y="40" width="202" height="80" rx="10" fill="#18222E" stroke="#8B7CF6" stroke-width="2"/><text x="291" y="73" text-anchor="middle" class="b">Calls a .vbs script?</text><text x="291" y="97" text-anchor="middle" class="m">cleanup.vbs</text>
+<rect x="440" y="40" width="202" height="80" rx="10" fill="#18222E" stroke="#8B7CF6" stroke-width="2"/><text x="541" y="73" text-anchor="middle" class="b">Uses VBScript RegExp?</text><text x="541" y="97" text-anchor="middle" class="m">VBScript.RegExp</text>
+<rect x="690" y="40" width="130" height="80" rx="10" fill="#18222E" stroke="#8B7CF6" stroke-width="2"/><text x="755" y="73" text-anchor="middle" class="b">Office 2508</text><text x="755" y="97" text-anchor="middle" class="b">or later?</text>
+<text x="415" y="70" text-anchor="middle" class="l" fill="#9AA7B4">No</text><text x="665" y="70" text-anchor="middle" class="l" fill="#9AA7B4">Yes</text>
+<text x="302" y="165" class="l" fill="#9AA7B4">Yes</text><text x="552" y="165" class="l" fill="#9AA7B4">No</text>
+<rect x="190" y="200" width="202" height="96" rx="10" fill="#18222E" stroke="#F87171" stroke-width="2"/><text x="291" y="232" text-anchor="middle" class="b" fill="#F87171" style="fill:#F87171">Not supported</text><text x="291" y="256" text-anchor="middle" class="s">once VBScript is off.</text><text x="291" y="278" text-anchor="middle" class="s">Replace the script.</text>
+<rect x="440" y="200" width="202" height="96" rx="10" fill="#18222E" stroke="#A3E635" stroke-width="2"/><text x="541" y="232" text-anchor="middle" class="b" style="fill:#A3E635">Not affected</text><text x="541" y="256" text-anchor="middle" class="s">by this change.</text>
+<g><rect x="690" y="200" width="130" height="172" rx="10" fill="#18222E" stroke="#5B6B7B" stroke-width="2"/>
+<text x="702" y="228" class="l" style="fill:#A3E635">Yes: keeps</text><text x="702" y="250" class="s">working with</text><text x="702" y="272" class="s">VBA's RegExp</text>
+<line x1="702" y1="288" x2="808" y2="288" stroke="#2A3746"/>
+<text x="702" y="314" class="l" style="fill:#F87171">No: breaks</text><text x="702" y="336" class="s">when VBScript</text><text x="702" y="356" class="s">is off</text></g>
+<text x="20" y="404" class="s" style="fill:#9AA7B4">Phase 2 (off by default) is "approximately 2026 or 2027", per Microsoft. No exact date.</text>
+</svg>

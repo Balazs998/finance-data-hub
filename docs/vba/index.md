@@ -37,6 +37,13 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 5 min read</p>
     <span class="fdh-card__go" aria-hidden="true">Read →</span>
   </article></li>
+  <li><article class="fdh-card">
+    <p class="fdh-card__tools">VBA · Excel</p>
+    <h3 class="fdh-card__title"><a href="vbscript-deprecation/">Is your finance workbook hit by VBScript deprecation?</a></h3>
+    <p class="fdh-card__summary">Find the macros that use VBScript RegExp or call a .vbs script before Windows turns VBScript off.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 10 min read</p>
+    <span class="fdh-card__go" aria-hidden="true">Read →</span>
+  </article></li>
 </ul>
 <p class="fdh-next"><strong>More VBA modules are on the way.</strong> Until then, the <a href="../jedox/">Jedox</a> and <a href="../snowflake/">Snowflake</a> sections show where the numbers in the pack come from.</p>
 
@@ -45,6 +52,10 @@ hide:
   <ul>
     <li><a href="../files/vba/FPNA_MonthCloseChecks.bas" download="FPNA_MonthCloseChecks.bas" data-goatcounter-click="download-FPNA_MonthCloseChecks.bas" data-goatcounter-title="Download FPNA_MonthCloseChecks.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> FPNA_MonthCloseChecks.bas</a></li>
     <li><a href="../files/email/SendOrSave.bas" download="SendOrSave.bas" data-goatcounter-click="download-SendOrSave.bas" data-goatcounter-title="Download SendOrSave.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> SendOrSave.bas</a></li>
+    <li><a href="../files/vba/ScanVBScript.bas" download="ScanVBScript.bas" data-goatcounter-click="download-ScanVBScript.bas" data-goatcounter-title="Download ScanVBScript.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> ScanVBScript.bas</a></li>
+    <li><a href="../files/vba/modChecks.bas" download="modChecks.bas" data-goatcounter-click="download-modChecks.bas" data-goatcounter-title="Download modChecks.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> modChecks.bas</a></li>
+    <li><a href="../files/vba/modValidate.bas" download="modValidate.bas" data-goatcounter-click="download-modValidate.bas" data-goatcounter-title="Download modValidate.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> modValidate.bas</a></li>
+    <li><a href="../files/vba/modCleanup.bas" download="modCleanup.bas" data-goatcounter-click="download-modCleanup.bas" data-goatcounter-title="Download modCleanup.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> modCleanup.bas</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

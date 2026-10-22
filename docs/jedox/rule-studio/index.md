@@ -37,7 +37,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <label for="rs-cube" style="margin:0">Cube</label>
 <select id="rs-cube" class="rs-in" style="max-width:220px"></select>
 <span class="rs-sp"></span>
-<span class="rs-cnt" id="rs-lines">0 lines</span>
+<span class="rs-cnt" id="rs-lines" hidden>0 lines</span>
 </div>
 <div id="rs-editor" class="rs-editor-host"></div>
 <div class="rs-row" style="margin-top:16px">
@@ -100,7 +100,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <button type="button" class="rs-chip" aria-pressed="false">Simpler explanation</button>
 </div>
 <div class="rs-row" style="margin-top:12px">
-<input id="rs-instruction" class="rs-in" style="flex:1;min-width:220px" placeholder="Or type a change, for example also limit the period">
+<input id="rs-instruction" class="rs-in" style="flex:1;min-width:220px" placeholder="Typed changes need the live model. Use the chips in this demo.">
 <button type="button" class="rs-btn rs-pri" id="rs-refine">Refine</button>
 </div>
 <p class="rs-hint">In this demo, only the chips change the rule. Typed requests need the live model.</p>

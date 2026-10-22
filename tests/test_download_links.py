@@ -116,8 +116,9 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn('href="../files/samples/fact_actuals.csv"', out)
         self.assertLess(out.find("fact_budget.csv"), out.find("fact_actuals.csv"))
         self.assertNotIn("[[download:", out)
-        self.assertIn(">Download fact_actuals.csv (610 rows)</a>", out)
-        self.assertNotIn('class="download-note"', out)
+        self.assertIn('<span class="download-verb">Download </span>fact_actuals.csv</a>', out)
+        self.assertIn('<p class="download-note">(610 rows)</p>', out)
+        self.assertNotIn("(610 rows)</a>", out)
 
     def test_directory_url_href_is_relative_to_the_built_page(self):
         out = render_shortcodes(
@@ -254,7 +255,7 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn('href="../files/sql/plan_vs_actual.sql"', out)
         self.assertIn("Intro", out)
         self.assertIn("Outro", out)
-        self.assertIn(">Download fact_actuals.csv</a>", out)
+        self.assertIn('<span class="download-verb">Download </span>fact_actuals.csv</a>', out)
         self.assertIn('<p class="download-note">(610 rows)</p>', out)
         self.assertIn('<p class="download-note">(optional view)</p>', out)
         self.assertNotIn(">Download fact_actuals.csv (610 rows)</a>", out)

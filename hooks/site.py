@@ -715,7 +715,7 @@ def build_link(
 
     text = label or f"Download {filename}"
     note = None
-    if as_html and src_uri == "downloads.md":
+    if as_html:
         text, note = split_button_note(text)
     event = event_name(filename)
     title = f"Download {filename}"
@@ -727,7 +727,7 @@ def build_link(
             f' data-goatcounter-click="{escape_attr(event)}"'
             f' data-goatcounter-title="{escape_attr(title)}"'
             ' data-goatcounter-no-session="1">'
-            f"{html.escape(text)}</a>"
+            f"{button_label_html(text)}</a>"
         )
         if note is None:
             return anchor
@@ -745,6 +745,14 @@ def build_link(
         f' data-goatcounter-title="{escape_attr(title)}"'
         ' data-goatcounter-no-session="1" }'
     )
+
+
+def button_label_html(text: str) -> str:
+    """Keep a leading Download word in its own span so phones can hide it."""
+    prefix = "Download "
+    if text.startswith(prefix):
+        return '<span class="download-verb">Download </span>' + html.escape(text[len(prefix) :])
+    return html.escape(text)
 
 
 def split_button_note(text: str) -> tuple[str, str | None]:

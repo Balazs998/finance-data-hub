@@ -1279,7 +1279,127 @@ html.js .reveal.reveal-wait.is-visible {
   text-decoration-color: rgba(56, 189, 248, 1);
 }
 
+/* Latest posts: the date sits beside the title and squeezes it until
+   words break. On a phone the date moves under the title, and the card
+   inset shrinks so the title has the width. */
+@media screen and (max-width: 390px) {
+  .md-typeset ul.home-posts {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .md-typeset a.home-post {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 2px;
+    align-items: center;
+  }
+
+  .md-typeset a.home-post picture {
+    grid-row: 1 / span 2;
+  }
+
+  .md-typeset .home-date {
+    margin-left: 0;
+    grid-column: 2;
+  }
+
+  .md-typeset .home-post__text strong {
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .md-typeset .downloads .download-verb {
+    display: none;
+  }
+}
+
+.home-path-swipe {
+  display: none;
+  margin: 0 0 0.35rem;
+  color: var(--dn-text-muted);
+  font-size: 0.75rem;
+}
+
+@media screen and (max-width: 320px) {
+  .md-typeset .home-path-swipe {
+    display: block;
+  }
+}
+
 /* Phone chips are width:100%. Keep this filename on one line at 390. */
+/* Touch targets. The header search, Clear, breadcrumbs, code copy, and
+   content tabs are smaller than 44px in the theme. */
+@media screen and (max-width: 59.984375em) {
+  .md-header__button[for="__search"],
+  .md-header__button[for="__drawer"] {
+    box-sizing: border-box;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .md-search__form {
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .md-search__options {
+    top: 0;
+    height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .md-search__options > .md-search__icon {
+    box-sizing: border-box;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .md-path__link {
+    box-sizing: border-box;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 2px;
+    justify-content: center;
+  }
+
+  .md-clipboard,
+  .md-code__button {
+    box-sizing: border-box;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .md-clipboard::after,
+  .md-code__button::after {
+    margin: 0;
+  }
+
+  .md-typeset .tabbed-labels > label {
+    box-sizing: border-box;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .md-typeset pre {
+    padding-top: 56px;
+  }
+}
+
 @media (max-width: 600px) {
   [dir] .md-typeset .fdh-downloads ul a[download="FPNA_MonthCloseChecks.bas"] {
     white-space: nowrap;

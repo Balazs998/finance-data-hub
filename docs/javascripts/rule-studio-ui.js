@@ -292,7 +292,10 @@ function createRuleStudioTransport(deps) {
     function countLines() {
       var text = ruleText();
       var n = text ? text.split("\n").length : 0;
-      if (lineCount) lineCount.textContent = n + (n === 1 ? " line" : " lines");
+      if (lineCount) {
+        lineCount.textContent = n + (n === 1 ? " line" : " lines");
+        lineCount.hidden = n === 0;
+      }
     }
 
     function roleFor(name) {

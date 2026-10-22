@@ -330,6 +330,16 @@ body:has(#email-builder) .md-header__title {
   font-weight: 500;
 }
 
+@media screen and (max-width: 59.984375em) {
+  .md-typeset .email-app button.email-chip {
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 .md-typeset .email-app button.email-chip.is-on {
   border-color: #38bdf8;
   color: #38bdf8;

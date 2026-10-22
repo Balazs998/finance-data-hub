@@ -128,7 +128,7 @@ If nothing is flagged, the job writes one log line and stops. Otherwise it sends
 ```groovy
 def mailer = API.getMailer()
 mailer.addRecipient(to)
-mailer.setSubject('Nightly load alert ' + runDate + ': ' + flagged.size() + ' run(s) need attention')
+mailer.setSubject((testMode ? '[TEST] ' : '') + 'Nightly load alert ' + runDate + ': ' + flagged.size() + ' run(s) need attention')
 mailer.setMessage(buildBody(flagged, runDate))
 mailer.send()
 mailer.reset()
@@ -161,7 +161,7 @@ The test script checks four nights; run the job with `RUN_DATE` from 2026-03-02 
 
 - **Every night sends an email:** the status values have different case or spelling. Check the `status` column; the script lowercases it and expects `success`, `warning` or `error`.
 - **The zero-row run isn't flagged:** `rows` is empty or not a number. Fill it with `0`.
-- **No email arrives in test mode:** the SMTP server or From address isn't set (Cloud Console on Jedox Cloud, Web Administration > Settings on-prem). The script can't set them.
+- **No email arrives in test mode:** the SMTP server or From address isn't set (see [Before you start](#before-you-start)). The script can't set them.
 - **The alert covers the wrong night:** `RUN_DATE` is in local time but the log is in server time.
 
 ## Wrap-up

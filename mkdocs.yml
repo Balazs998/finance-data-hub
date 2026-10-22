@@ -94,6 +94,7 @@ nav:
       - Snowflake to Jedox load: jedox/snowflake-to-jedox.md
       - Relational extracts: jedox/relational-extracts.md
       - Automated value emails: jedox/automated-value-emails.md
+      - Failure-only alerts: jedox/failure-alerts.md
       - Create your own email:
           - Builder: jedox/email-builder.md
           - Check your email script: jedox/email-checker.md

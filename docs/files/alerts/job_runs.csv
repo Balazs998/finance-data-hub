@@ -1,0 +1,15 @@
+run_id,job,start,end,status,message,rows
+R0101,load_actuals,2026-03-02 02:00,2026-03-02 02:04,success,Load finished,610
+R0102,load_budget,2026-03-02 02:10,2026-03-02 02:12,success,Load finished,696
+R0103,load_actuals,2026-03-03 02:00,2026-03-03 02:04,success,Load finished,610
+R0104,load_budget,2026-03-03 02:10,2026-03-03 02:12,success,Load finished,696
+R0105,load_actuals,2026-03-04 02:00,2026-03-04 02:01,error,Connection SNOWFLAKE_DEMO failed: login timeout,0
+R0106,load_budget,2026-03-04 02:10,2026-03-04 02:12,success,Load finished,696
+R0107,load_actuals,2026-03-05 02:00,2026-03-05 02:04,success,Load finished,610
+R0108,load_budget,2026-03-05 02:10,2026-03-05 02:13,warning,2 rows skipped: unknown CostCenter CC9999,694
+R0109,load_actuals,2026-03-06 02:00,2026-03-06 02:03,success,Load finished,0
+R0110,load_budget,2026-03-06 02:10,2026-03-06 02:12,success,Load finished,696
+R0111,load_actuals,2026-03-07 02:00,2026-03-07 02:04,success,Load finished,610
+R0112,load_budget,2026-03-07 02:10,2026-03-07 02:12,success,Load finished,696
+R0113,load_actuals,2026-03-08 02:00,2026-03-08 02:04,success,Load finished,610
+R0114,load_budget,2026-03-08 02:10,2026-03-08 02:12,success,Load finished,696

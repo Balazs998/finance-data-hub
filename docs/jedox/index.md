@@ -47,6 +47,12 @@ hide:
     <p class="fdh-card__summary">Send each cost center owner their own budget vs actuals from a Groovy job.</p>
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 17 min read</p>
   </article></li>
+  <li><article class="fdh-card">
+    <p class="fdh-card__tools">Jedox · Integrator</p>
+    <h3 class="fdh-card__title"><a href="failure-alerts/">Failure-only job alerts</a></h3>
+    <p class="fdh-card__summary">Email one alert a night when a Jedox Integrator load fails, warns, or loads zero rows.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 15 min read</p>
+  </article></li>
   <li><article class="fdh-card fdh-card--tool">
     <p class="fdh-card__tools">Jedox · Groovy</p>
     <h3 class="fdh-card__title"><a href="email-builder/">Email builder and checker</a></h3>
@@ -68,6 +74,11 @@ hide:
     <li><a href="../files/relational/relational_extract_actuals.sql" download="relational_extract_actuals.sql" data-goatcounter-click="download-relational_extract_actuals.sql" data-goatcounter-title="Download relational_extract_actuals.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> relational_extract_actuals.sql</a></li>
     <li><a href="../files/email/send_value_emails.groovy" download="send_value_emails.groovy" data-goatcounter-click="download-send_value_emails.groovy" data-goatcounter-title="Download send_value_emails.groovy" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> send_value_emails.groovy</a></li>
     <li><a href="../files/email/recipients.csv" download="recipients.csv" data-goatcounter-click="download-recipients.csv" data-goatcounter-title="Download recipients.csv" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> recipients.csv</a></li>
+    <li><a href="../files/alerts/job_runs.csv" download="job_runs.csv" data-goatcounter-click="download-job_runs.csv" data-goatcounter-title="Download job_runs.csv" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> job_runs.csv</a></li>
+    <li><a href="../files/alerts/alert_on_failure.groovy" download="alert_on_failure.groovy" data-goatcounter-click="download-alert_on_failure.groovy" data-goatcounter-title="Download alert_on_failure.groovy" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> alert_on_failure.groovy</a></li>
+    <li><a href="../files/alerts/test_alert_logic.groovy" download="test_alert_logic.groovy" data-goatcounter-click="download-test_alert_logic.groovy" data-goatcounter-title="Download test_alert_logic.groovy" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> test_alert_logic.groovy</a></li>
+    <li><a href="../files/relational/v_fact_actuals.sql" download="v_fact_actuals.sql" data-goatcounter-click="download-v_fact_actuals.sql" data-goatcounter-title="Download v_fact_actuals.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> v_fact_actuals.sql</a></li>
+    <li><a href="../files/relational/v_fact_budget.sql" download="v_fact_budget.sql" data-goatcounter-click="download-v_fact_budget.sql" data-goatcounter-title="Download v_fact_budget.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> v_fact_budget.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

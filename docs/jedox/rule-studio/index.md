@@ -100,7 +100,7 @@ Test, explain and improve Jedox business rules, or describe a calculation and ge
 <button type="button" class="rs-chip" aria-pressed="false">Simpler explanation</button>
 </div>
 <div class="rs-row" style="margin-top:12px">
-<input id="rs-instruction" class="rs-in" style="flex:1;min-width:220px" placeholder="Typed changes need the live model. Use the chips in this demo.">
+<input id="rs-instruction" class="rs-in" style="flex:1;min-width:220px" placeholder="Try a chip below">
 <button type="button" class="rs-btn rs-pri" id="rs-refine">Refine</button>
 </div>
 <p class="rs-hint">In this demo, only the chips change the rule. Typed requests need the live model.</p>

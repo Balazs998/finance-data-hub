@@ -445,8 +445,17 @@
   width: 100%;
   min-height: 3.25rem;
   text-align: left;
-  overflow-wrap: anywhere;
   border: 1px solid #2a3847;
+}
+
+.md-typeset .downloads .download-verb {
+  white-space: nowrap;
+  margin-right: 0.25em;
+}
+
+.md-typeset .downloads .download-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .md-typeset .downloads .md-button:only-child {

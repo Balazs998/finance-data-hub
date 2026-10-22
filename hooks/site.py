@@ -748,10 +748,19 @@ def build_link(
 
 
 def button_label_html(text: str) -> str:
-    """Keep a leading Download word in its own span so phones can hide it."""
+    """Keep a leading Download word in its own span so phones can hide it.
+
+    The filename is a separate span. Breaks are offered before _ and . so a
+    narrow button wraps the name there, not through the word Download.
+    """
     prefix = "Download "
     if text.startswith(prefix):
-        return '<span class="download-verb">Download </span>' + html.escape(text[len(prefix) :])
+        name = html.escape(text[len(prefix) :])
+        name = name.replace("_", "<wbr>_").replace(".", "<wbr>.")
+        return (
+            '<span class="download-verb">Download </span>'
+            f'<span class="download-name">{name}</span>'
+        )
     return html.escape(text)
 
 

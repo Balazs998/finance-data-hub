@@ -32,7 +32,7 @@ If every nightly load sends a "job finished" mail, people stop reading them, and
 
 !!! info "You'll need"
     - Role / access: rights to create and run Groovy jobs in an Integrator project
-    - Product version: Jedox 26.1. The SMTP server and From address are set centrally (Cloud Console on Jedox Cloud, Web Administration > Settings on-prem), not in scripts.
+    - Product version: Jedox 26.1. The SMTP server and From address are set centrally ([Cloud Console](https://knowledgebase.jedox.com/jedox/api/26-1/integrator-scripting/com/jedox/etl/components/scriptapi/MailAPI.html) on Jedox Cloud, [Web Administration > Settings](https://knowledgebase.jedox.com/jedox/maintenance/scheduler-integrator-jobs.htm) on-prem), not in scripts.
     - Snowflake: run [`v_fact_actuals.sql`](#downloads) once as SYSADMIN, so `JEDOX_ETL_ROLE` can read `V_FACT_ACTUALS` (check: 610 rows, total 15,446,573.09), and [`v_fact_budget.sql`](#downloads) once as SYSADMIN, so `JEDOX_ETL_ROLE` can read `V_FACT_BUDGET` (check: 696 rows, total 17,253,220.89).
     - Previous post: [Automated value emails from Jedox Integrator](automated-value-emails.md)
     - Sample data: [Downloads](#downloads)
@@ -76,7 +76,7 @@ The earlier pattern was: notify that the run started, poll the status, then noti
 
 The alert job reads `job_runs.csv`. In this post the file is sample data. On a real install, each load would add its own row when it ends.
 
-The Groovy API has no documented call that reads another job's last run. The documented route is a wrapper Groovy job that starts the load with `API.executeJob('load_actuals')`, which returns a State. The State's getters aren't documented, so check in your Jedox which ones it has. The row count isn't exposed at all, so each load still writes its own row. That's why this post uses the CSV run log.
+The Groovy API has no documented call that reads another job's last run. The documented route is a wrapper Groovy job that starts the load with [`API.executeJob('load_actuals')`](https://knowledgebase.jedox.com/jedox/api/26-1/integrator-scripting/com/jedox/etl/components/scriptapi/JobAPI.html), which returns a State. The [State](https://knowledgebase.jedox.com/jedox/api/26-1/integrator-scripting/com/jedox/etl/components/scriptapi/State.html) gives you the status, errors, warnings, start and stop time and the log, but no row count, so each load still writes its own row.
 
 If you only need a status mail from the scheduler itself, its email templates have the placeholders `${etlJobStatus}` and `${etlJobStatusCode}`. They work only for scheduled Integrator tasks ([scheduler email templates](https://knowledgebase.jedox.com/jedox/maintenance/scheduler-email-templates.htm)). The status codes are ([scheduler task status codes](https://knowledgebase.jedox.com/jedox/maintenance/scheduler-task-status-codes.htm)):
 
@@ -161,7 +161,7 @@ The test script checks four nights; run the job with `RUN_DATE` from 2026-03-02 
 
 - **Every night sends an email:** the status values have different case or spelling. Check the `status` column; the script lowercases it and expects `success`, `warning` or `error`.
 - **The zero-row run isn't flagged:** `rows` is empty or not a number. Fill it with `0`.
-- **No email arrives in test mode:** the SMTP server or From address isn't set (see [Before you start](#before-you-start)). The script can't set them.
+- **No email arrives in test mode:** (see [Before you start](#before-you-start)). The script can't set them.
 - **The alert covers the wrong night:** `RUN_DATE` is in local time but the log is in server time.
 
 ## Wrap-up

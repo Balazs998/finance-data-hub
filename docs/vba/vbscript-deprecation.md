@@ -26,7 +26,7 @@ Windows is phasing out VBScript, and that reaches into Excel. Microsoft names tw
 
 - Desktop Excel with macros enabled.
 - Your macros exported as `.bas`, `.cls` or `.frm` files into one folder. In the VBA editor, right-click a module and choose **Export File**.
-- The fictional demo files: the exported modules in `FDH_Macros/`. They're made up, and no `.vbs` file is included.
+- The fictional demo modules `modValidate.bas`, `modChecks.bas` and `modCleanup.bas`. Save them in a folder called `FDH_Macros` next to your saved workbook. Don't put `ScanVBScript.bas` in that folder, because the scanner would flag its own search lines.
 
 ## The sample scenario
 
@@ -176,6 +176,7 @@ Run `ScanVBScript`. It adds a new sheet with one row per finding: file, line num
 - No findings at all: check that the files are in `FDH_Macros\` next to the workbook and end in `.bas`, `.cls` or `.frm`.
 - A locked VBA project can't be exported, so the scanner can't see it. Ask the owner to unlock it or export it for you.
 - A line was flagged that only mentions `.vbs` in a string or a file name: the scanner can't tell those apart, so check each finding by hand.
+- 8 findings: `ScanVBScript.bas` is in `FDH_Macros\`. Move it out.
 
 ## Still open
 

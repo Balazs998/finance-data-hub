@@ -231,6 +231,12 @@ function createRuleStudioTransport(deps) {
       .replace(/"/g, "&quot;");
   }
 
+  var REFINE_HINT = "In this demo, only the chips change the rule. Typed requests need the live model.";
+
+  function visibleExplanation(text) {
+    return String(text || "").split(REFINE_HINT).join("").replace(/[ \t]{2,}/g, " ").trim();
+  }
+
   function cfg() {
     return window.FDH_RULE_STUDIO || { endpoint: "", turnstileSiteKey: "" };
   }
@@ -888,7 +894,7 @@ function createRuleStudioTransport(deps) {
         (mock ? '<span class="rs-badge rs-b-mock">⚑ Mock provider – not real AI</span>' : '<span class="rs-badge rs-b-ai">AI assessment</span>') +
         "</div>" + renderCode(ai.rule, "") +
         '<dl class="rs-kv" style="margin-top:16px">' +
-        "<dt>Explanation</dt><dd>" + esc(ai.explanation) + "</dd>" +
+        "<dt>Explanation</dt><dd>" + esc(visibleExplanation(ai.explanation)) + "</dd>" +
         "<dt>Target area</dt><dd><code>" + esc(ai.targetArea) + "</code></dd>" +
         "<dt>References</dt><dd>" + esc(ai.references) + "</dd>" +
         "<dt>Performance notes</dt><dd>" + esc(ai.performanceNotes) + "</dd>" +
@@ -997,10 +1003,11 @@ function createRuleStudioTransport(deps) {
           /* A live provider may return a rule. The badge stays off only then. */
         }
         var next = ai.rule || before;
+        var explanation = visibleExplanation(ai.explanation || (lastGenerated && lastGenerated.explanation) || "");
         if (lastGenerated) {
           renderDraft(Object.assign({}, lastGenerated, {
             rule: next,
-            explanation: ai.explanation || lastGenerated.explanation
+            explanation: explanation
           }), fallback);
         }
         setRule(next);
@@ -1009,7 +1016,7 @@ function createRuleStudioTransport(deps) {
         host.innerHTML = (fallback ? fallbackNote() : "") +
           '<div class="rs-grid2 equal"><div><div class="rs-label">Before</div>' + renderCode(before, "rs-del") +
           '</div><div><div class="rs-label">After</div>' + renderDiff(before, ai.rule || before) + "</div></div>" +
-          '<p class="rs-cnt">' + esc(ai.explanation || "") + (ai.mock !== false ? " Mock provider – not real AI." : "") + "</p>";
+          '<p class="rs-cnt">' + esc(explanation) + (ai.mock !== false ? " Mock provider – not real AI." : "") + "</p>";
         say(fallback ? FALLBACK_SAY : "Refine draft ready.");
       } catch (error) {
         showError(ruleStudioShownError(error));

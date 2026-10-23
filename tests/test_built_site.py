@@ -34,6 +34,26 @@ def parse(path: Path) -> AnchorParser:
     return parser
 
 
+def _div_end(html: str, start: int) -> int:
+    """End offset of the div that begins at start, including nested divs."""
+    depth = 0
+    index = start
+    while index < len(html):
+        open_at = html.find("<div", index)
+        close_at = html.find("</div>", index)
+        if close_at < 0:
+            break
+        if open_at != -1 and open_at < close_at:
+            depth += 1
+            index = open_at + 4
+            continue
+        depth -= 1
+        index = close_at + len("</div>")
+        if depth == 0:
+            return index
+    raise AssertionError("download cluster was not closed")
+
+
 SITE_PREFIX = "/finance-data-hub"
 
 
@@ -166,8 +186,7 @@ class PlanVsActualsPageTests(unittest.TestCase):
 
         start = html.find('<div class="downloads">')
         self.assertGreaterEqual(start, 0)
-        end = html.find("</div>", start)
-        cluster = html[start:end]
+        cluster = html[start:_div_end(html, start)]
         self.assertEqual(cluster.count("md-button download"), 6)
         self.assertIn("grid-template-columns: minmax(0, 1fr);", source_css)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr));", source_css)
@@ -263,8 +282,7 @@ class SnowflakeToJedoxPageTests(unittest.TestCase):
 
         start = html.find('<div class="downloads">')
         self.assertGreaterEqual(start, 0)
-        end = html.find("</div>", start)
-        cluster = html[start:end]
+        cluster = html[start:_div_end(html, start)]
         self.assertEqual(cluster.count("md-button download"), 5)
         self.assertEqual(cluster.count(' download="'), 5)
 

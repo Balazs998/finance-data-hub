@@ -48,6 +48,7 @@ hide:
 
 <div class="reveal" style="--reveal-delay: 150ms">
 <h2 id="follow-the-data-step-by-step">Follow the data, step by step</h2>
+<p class="home-path-swipe">Swipe to see the steps →</p>
 <ol class="home-path">
 <li>
 <a class="home-step" href="snowflake/plan-vs-actuals/">

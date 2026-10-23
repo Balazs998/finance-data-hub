@@ -901,6 +901,7 @@ test("the CodeMirror bundle keeps the MIT banner", function () {
     "@codemirror/legacy-modes",
     "@codemirror/lint",
     "@codemirror/state",
+    "@codemirror/streamparser",
     "@codemirror/view",
     "@lezer/common",
     "@lezer/highlight",

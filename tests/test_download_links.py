@@ -171,11 +171,14 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"Snowflake to Jedox load": "jedox/snowflake-to-jedox.md"},
                     {"Relational extracts": "jedox/relational-extracts.md"},
                     {"Automated value emails": "jedox/automated-value-emails.md"},
+                    {"Failure-only alerts": "jedox/failure-alerts.md"},
                 ]
             },
             {
-                "VBA and Excel": [
+                "VBA": [
                     "vba/index.md",
+                    {"Email macros after New Outlook": "vba/new-outlook-email.md"},
+                    {"VBScript deprecation": "vba/vbscript-deprecation.md"},
                     {"Month-close checks": "vba/month-close-checks.md"},
                 ]
             },
@@ -193,6 +196,9 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Automated value emails](jedox/automated-value-emails.md)",
+            "## [Failure-only alerts](jedox/failure-alerts.md)",
+            "## [Email macros after New Outlook](vba/new-outlook-email.md)",
+            "## [VBScript deprecation](vba/vbscript-deprecation.md)",
             "## [Month-close checks](vba/month-close-checks.md)",
         ]
         positions = [index.index(heading) for heading in order]
@@ -221,7 +227,23 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn("relational/relational_extract_actuals.sql", relational)
         self.assertIn("relational/v_jedox_actuals_by_group.sql", relational)
         self.assertIn("relational/query_history_lookup.sql", relational)
+        self.assertNotIn("relational/v_fact_budget.sql", relational)
         self.assertNotIn("samples/", relational)
+        alerts = index.split("## [Failure-only alerts](jedox/failure-alerts.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("alerts/job_runs.csv", alerts)
+        self.assertIn("alerts/alert_on_failure.groovy", alerts)
+        self.assertIn("alerts/test_alert_logic.groovy", alerts)
+        self.assertIn("relational/v_fact_budget.sql", alerts)
+        self.assertNotIn("relational/v_fact_actuals.sql", alerts)
+        self.assertNotIn("samples/", alerts)
+        outlook = index.split("## [Email macros after New Outlook](vba/new-outlook-email.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("email/SendOrSave.bas", outlook)
+        self.assertNotIn("email/recipients.csv", outlook)
+        vbscript = index.split("## [VBScript deprecation](vba/vbscript-deprecation.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("vba/ScanVBScript.bas", vbscript)
+        self.assertIn("vba/modChecks.bas", vbscript)
+        self.assertIn("vba/modValidate.bas", vbscript)
+        self.assertIn("vba/modCleanup.bas", vbscript)
 
     def test_file_index_lists_each_file_exactly_once(self):
         index = render_file_index(DOCS, None)
@@ -231,7 +253,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 21)
+        self.assertEqual(len(disk), 25)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

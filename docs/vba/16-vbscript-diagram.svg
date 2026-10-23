@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="840" height="420" viewBox="0 0 840 420" role="img" aria-labelledby="t d"><title id="t">Does VBScript deprecation affect my macro?</title><desc id="d">Decision flow. If the macro calls a .vbs script, that stops being supported once VBScript is off. If it uses VBScript RegExp and Office is Version 2508 or later, it keeps working; on older Office it breaks once VBScript is off. If it uses neither, this change doesn't affect it.</desc>
-<style>.b{font:600 16px 'Space Grotesk',sans-serif;fill:#E6EDF3}.s{font:400 15px Inter,sans-serif;fill:#B7C5D3}.l{font:600 15px Inter,sans-serif}.m{font:500 15px 'JetBrains Mono',monospace;fill:#E6EDF3}</style>
+<style>.b{font:600 18px 'Space Grotesk',sans-serif;fill:#E6EDF3}.s{font:400 16px Inter,sans-serif;fill:#B7C5D3}.l{font:600 16px Inter,sans-serif}.m{font:500 16px 'JetBrains Mono',monospace;fill:#E6EDF3}</style>
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B7B"/></marker></defs>
 <rect width="840" height="420" fill="#0F1720"/>
 <g stroke="#5B6B7B" stroke-width="2" fill="none" marker-end="url(#a)">

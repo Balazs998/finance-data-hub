@@ -154,9 +154,6 @@ End Sub
 
 Run `ScanVBScript`. It adds a new sheet with one row per finding: file, line number, the kind of finding and the code.
 
-!!! warning "Also check Tools > References"
-    The library reference itself isn't in the exported files. In the VBA editor, open **Tools > References** and look for the VBScript regular expressions library. A project with that reference ticked and `Dim re As RegExp` in the code won't show up as early-bound in the scan.
-
 ## 4. Fix what you found
 
 - **Late-bound RegExp:** update Office to Version 2508 or later. Microsoft says the same code then runs whether or not VBScript is on.

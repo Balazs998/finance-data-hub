@@ -166,6 +166,24 @@ test("a long one-line rule stays within the viewport", { timeout: 120000 }, asyn
       assert.equal(measured.outlineStyle, "solid");
       assert.equal(measured.outlineColor, "rgb(56, 189, 248)");
       assert.match(measured.performance, /Low/);
+      if (width === 320) {
+        const contained = await page.evaluate(function () {
+          const host = document.getElementById("rs-turnstile");
+          const fake = document.createElement("div");
+          fake.style.width = "300px";
+          fake.style.height = "65px";
+          host.appendChild(fake);
+          const doc = document.scrollingElement || document.documentElement;
+          return {
+            scrollWidth: doc.scrollWidth,
+            innerWidth: window.innerWidth
+          };
+        });
+        assert.ok(
+          contained.scrollWidth <= contained.innerWidth,
+          "320px Turnstile-sized widget overflows the page " + contained.scrollWidth + " > " + contained.innerWidth
+        );
+      }
     }
     await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
     const motion = await page.evaluate(function () {

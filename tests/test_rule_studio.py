@@ -22,6 +22,19 @@ class RuleStudioTests(unittest.TestCase):
             completed.stdout + "\n" + completed.stderr,
         )
 
+    def test_refine_hint_appears_once(self):
+        completed = subprocess.run(
+            ["node", "--test", str(ROOT / "tests" / "rule-studio-refine-hint.test.js")],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            completed.returncode,
+            0,
+            completed.stdout + "\n" + completed.stderr,
+        )
+
     def test_node_suites(self):
         completed = subprocess.run(
             [

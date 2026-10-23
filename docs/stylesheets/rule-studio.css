@@ -15,6 +15,31 @@
   --rs-red: #f87171;
   font-family: "Inter", "Segoe UI", sans-serif;
   color: var(--dn-text);
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* The Turnstile iframe is a fixed 300px, and the theme shrinks every
+   iframe to its container. Leave this one at its own width and scroll
+   it inside the box, so a 320px page does not scroll sideways and the
+   challenge stays intact inside the iframe. */
+#rs-turnstile {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  contain: inline-size;
+}
+
+#rs-turnstile iframe {
+  max-width: none;
+}
+
+#rule-studio #rs-instruction {
+  min-width: 0 !important;
+  max-width: 100%;
 }
 
 #rule-studio * { box-sizing: border-box; }

@@ -1,4 +1,5 @@
 import re
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -116,8 +117,13 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn('href="../files/samples/fact_actuals.csv"', out)
         self.assertLess(out.find("fact_budget.csv"), out.find("fact_actuals.csv"))
         self.assertNotIn("[[download:", out)
-        self.assertIn(">Download fact_actuals.csv (610 rows)</a>", out)
-        self.assertNotIn('class="download-note"', out)
+        self.assertIn(
+            '<span class="download-verb">Download </span>'
+            '<span class="download-name">fact<wbr>_actuals<wbr>.csv</span></a>',
+            out,
+        )
+        self.assertIn('<p class="download-note">(610 rows)</p>', out)
+        self.assertNotIn("(610 rows)</a>", out)
 
     def test_directory_url_href_is_relative_to_the_built_page(self):
         out = render_shortcodes(
@@ -254,7 +260,11 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn('href="../files/sql/plan_vs_actual.sql"', out)
         self.assertIn("Intro", out)
         self.assertIn("Outro", out)
-        self.assertIn(">Download fact_actuals.csv</a>", out)
+        self.assertIn(
+            '<span class="download-verb">Download </span>'
+            '<span class="download-name">fact<wbr>_actuals<wbr>.csv</span></a>',
+            out,
+        )
         self.assertIn('<p class="download-note">(610 rows)</p>', out)
         self.assertIn('<p class="download-note">(optional view)</p>', out)
         self.assertNotIn(">Download fact_actuals.csv (610 rows)</a>", out)
@@ -280,6 +290,19 @@ class DownloadShortcodeTests(unittest.TestCase):
                 render_file_index(docs, [{"Note": "note.md"}])
         self.assertIn("data/b.txt", str(caught.exception))
         self.assertNotIn("data/a.txt", str(caught.exception))
+
+    def test_download_button_labels_at_phone_and_desktop(self):
+        completed = subprocess.run(
+            ["node", "--test", str(ROOT / "tests" / "download-button-label.test.js")],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            completed.returncode,
+            0,
+            completed.stdout + "\n" + completed.stderr,
+        )
 
     def test_site_code_is_trimmed_and_a_url_is_rejected(self):
         config = Config(" financedatahub ")

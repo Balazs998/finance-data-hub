@@ -130,6 +130,57 @@ class ContentTests(unittest.TestCase):
             self.assertIn(figure, load)
             self.assertIn(figure, relational)
 
+    def test_month_end_snapshots_stay_distinct_and_ungranted(self):
+        page = (ROOT / "docs/snowflake/month-end-snapshots.md").read_text(encoding="utf-8")
+        actuals = (ROOT / "docs/snowflake/month-end-actuals.md").read_text(encoding="utf-8")
+        self.assertIn('title: "What number did we report? Permanent month-end snapshots vs Time Travel"', page)
+        self.assertIn("social_image: month-end-snapshots.png", page)
+        self.assertIn('<p class="post-meta">Snowflake</p>', page)
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("Time Travel defaults to **1 day**", page)
+        self.assertIn("makes a **new** object", page)
+        self.assertIn("**Business Critical or higher**", page)
+        self.assertIn("Backups](https://docs.snowflake.com/en/user-guide/backups)", page)
+        self.assertIn("month-end-snapshots-timeline.svg", page)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn("[Month-end actuals](month-end-actuals.md)", page)
+        self.assertNotIn("gl_actuals_pnl.sql", page)
+        self.assertNotIn("FINANCE.GL_JOURNAL_LINE", page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Flake", page)
+        self.assertNotIn("Siemens", page)
+        self.assertIn("month-end actuals", actuals.lower())
+        labels = (
+            "[[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]",
+            "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
+            "[[download:snapshots/01_fact_actuals_snapshot_ddl.sql|Download 01_fact_actuals_snapshot_ddl.sql]]",
+            "[[download:snapshots/02_seed_late_posting.sql|Download 02_seed_late_posting.sql]]",
+            "[[download:snapshots/03_take_snapshot.sql|Download 03_take_snapshot.sql]]",
+            "[[download:snapshots/04_v_snapshot_vs_current.sql|Download 04_v_snapshot_vs_current.sql]]",
+            "[[download:snapshots/05_compare_query.sql|Download 05_compare_query.sql]]",
+            "[[download:snapshots/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/snapshots"
+        for path in pack.rglob("*"):
+            if not path.is_file():
+                continue
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotIn("JEDOX_ETL_ROLE TO", text, path.name)
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/plan-vs-actuals.md"),
+            nav.index("snowflake/month-end-snapshots.md"),
+        )
+        self.assertLess(
+            nav.index("snowflake/month-end-actuals.md"),
+            nav.index("snowflake/month-end-snapshots.md"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

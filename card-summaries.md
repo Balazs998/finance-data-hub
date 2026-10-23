@@ -6,6 +6,7 @@ One sentence on each section card.
 
 - Month-end actuals: Turn journal lines into monthly P&L actuals that stay right when a period is reloaded.
 - Plan vs actuals: Compare budget and actuals so a month missing on either side still shows up.
+- Snapshots vs Time Travel: Freeze the month you reported so a late posting does not change the number you sent.
 - Snowflake to Jedox load: Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.
 
 ## Jedox

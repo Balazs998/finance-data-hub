@@ -441,6 +441,7 @@ SOCIAL_PAGES = {
     "vba/vbscript-deprecation/index.html": "vbscript-deprecation.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
+    "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -453,6 +454,7 @@ SOCIAL_FILES = (
     "new-outlook-email.png",
     "failure-alerts.png",
     "vbscript-deprecation.png",
+    "month-end-snapshots.png",
 )
 
 
@@ -909,6 +911,61 @@ class BuiltSiteTests(unittest.TestCase):
         active = active.split('class="md-sidebar md-sidebar--secondary"', 1)[0]
         self.assertIn("Relational extracts", active)
         self.assertIn("md-nav__link--active", active)
+
+    def test_month_end_snapshots_page_diagram_and_footer(self):
+        page = SITE / "snowflake" / "month-end-snapshots" / "index.html"
+        self.assertTrue(page.is_file(), "month-end snapshots page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn("What number did we report? Permanent month-end snapshots vs Time Travel", html)
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("Flake", html)
+        self.assertNotIn("Siemens", html)
+        self.assertIn('class="docs-note"', html)
+        self.assertIn("Swipe to see the full diagram →", html)
+        self.assertIn('style="--diagram-min-width: 700px"', html)
+        self.assertIn('aria-label="Month-end snapshot timeline"', html)
+        self.assertIn(
+            '<span class="diagram-chevron" aria-hidden="true">›</span>',
+            html,
+        )
+        diagram = local_target(page, "../month-end-snapshots-timeline.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        self.assertIn('src="../month-end-snapshots-timeline.svg"', html)
+        for relative in (
+            "snapshots/01_fact_actuals_snapshot_ddl.sql",
+            "snapshots/02_seed_late_posting.sql",
+            "snapshots/03_take_snapshot.sql",
+            "snapshots/04_v_snapshot_vs_current.sql",
+            "snapshots/05_compare_query.sql",
+            "snapshots/README.md",
+            "samples/fact_actuals.csv",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 8)
+        readme = SITE / "files" / "snapshots" / "README.md"
+        self.assertTrue(readme.is_file(), "snapshot README was not copied as a download")
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Snapshots SQL pack"))
+        self.assertFalse((SITE / "files" / "snapshots" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Plan vs actuals"',
+            footer,
+        )
+        self.assertIn('href="../plan-vs-actuals/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
+            footer,
+        )
+        self.assertNotIn("month-end-actuals/", footer)
+        actuals = (SITE / "snowflake" / "month-end-actuals" / "index.html").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("FACT_ACTUALS_SNAPSHOT", actuals)
+        self.assertNotIn("month-end-snapshots-timeline.svg", actuals)
 
     def test_heading_permalinks_are_absent_but_ids_remain(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

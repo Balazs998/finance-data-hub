@@ -1,6 +1,7 @@
 ---
 title: Is your finance workbook hit by VBScript deprecation?
 description: Find the macros that use VBScript RegExp or call .vbs scripts before Windows turns VBScript off, and what to change.
+social_image: vbscript-deprecation.png
 ---
 
 # Is your finance workbook hit by VBScript deprecation?

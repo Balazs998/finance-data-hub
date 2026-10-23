@@ -170,8 +170,8 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"Management report export": "jedox/management-report-export.md"},
                     {"Snowflake to Jedox load": "jedox/snowflake-to-jedox.md"},
                     {"Relational extracts": "jedox/relational-extracts.md"},
-                    {"Automated value emails": "jedox/automated-value-emails.md"},
                     {"Failure-only alerts": "jedox/failure-alerts.md"},
+                    {"Automated value emails": "jedox/automated-value-emails.md"},
                 ]
             },
             {
@@ -195,8 +195,8 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Plan vs actuals](snowflake/plan-vs-actuals.md)",
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
-            "## [Automated value emails](jedox/automated-value-emails.md)",
             "## [Failure-only alerts](jedox/failure-alerts.md)",
+            "## [Automated value emails](jedox/automated-value-emails.md)",
             "## [Email macros after New Outlook](vba/new-outlook-email.md)",
             "## [VBScript deprecation](vba/vbscript-deprecation.md)",
             "## [Month-close checks](vba/month-close-checks.md)",

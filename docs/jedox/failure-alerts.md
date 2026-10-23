@@ -1,6 +1,7 @@
 ---
 title: "Jedox job alerts people read: email only when a load fails"
 description: "Turn noisy 'job finished' mails into one failure-only alert per night for Jedox Integrator loads, with a run log, a Groovy job and a test mode that's on by default."
+social_image: failure-alerts.png
 ---
 
 # Jedox job alerts people read: email only when a load fails

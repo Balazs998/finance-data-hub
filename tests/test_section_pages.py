@@ -105,7 +105,7 @@ SECTIONS = {
                 False,
             ),
             (
-                "Failure-only job alerts",
+                "Email only when a Jedox load fails",
                 "failure-alerts/",
                 "Jedox · Integrator",
                 "Email one alert a night when a Jedox Integrator load fails, warns, or loads zero rows.",

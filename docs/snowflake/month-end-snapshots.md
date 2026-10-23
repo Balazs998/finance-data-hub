@@ -1,6 +1,7 @@
 ---
 title: "What number did we report? Permanent month-end snapshots vs Time Travel"
 description: "Freeze a month of FDH_DEMO actuals into a snapshot table, seed a late posting, and compare reported vs current so you can answer audit questions after Time Travel has moved on."
+social_image: month-end-snapshots.png
 ---
 
 # What number did we report? Permanent month-end snapshots vs Time Travel

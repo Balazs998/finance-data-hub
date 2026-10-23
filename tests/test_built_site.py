@@ -441,6 +441,7 @@ SOCIAL_PAGES = {
     "vba/vbscript-deprecation/index.html": "vbscript-deprecation.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
+    "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -453,6 +454,7 @@ SOCIAL_FILES = (
     "new-outlook-email.png",
     "failure-alerts.png",
     "vbscript-deprecation.png",
+    "month-end-snapshots.png",
 )
 
 

@@ -134,6 +134,7 @@ class ContentTests(unittest.TestCase):
         page = (ROOT / "docs/snowflake/month-end-snapshots.md").read_text(encoding="utf-8")
         actuals = (ROOT / "docs/snowflake/month-end-actuals.md").read_text(encoding="utf-8")
         self.assertIn('title: "What number did we report? Permanent month-end snapshots vs Time Travel"', page)
+        self.assertIn("social_image: month-end-snapshots.png", page)
         self.assertIn('<p class="post-meta">Snowflake</p>', page)
         self.assertIn('class="docs-note"', page)
         self.assertIn("Time Travel defaults to **1 day**", page)

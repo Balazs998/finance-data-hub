@@ -102,6 +102,7 @@ nav:
   - VBA:
       - vba/index.md
       - Email macros after New Outlook: vba/new-outlook-email.md
+      - VBScript deprecation: vba/vbscript-deprecation.md
       - Month-close checks: vba/month-close-checks.md
   - Downloads: downloads.md
   - About: about.md

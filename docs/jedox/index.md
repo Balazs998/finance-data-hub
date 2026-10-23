@@ -49,7 +49,7 @@ hide:
   </article></li>
   <li><article class="fdh-card">
     <p class="fdh-card__tools">Jedox · Integrator</p>
-    <h3 class="fdh-card__title"><a href="failure-alerts/">Failure-only job alerts</a></h3>
+    <h3 class="fdh-card__title"><a href="failure-alerts/">Email only when a Jedox load fails</a></h3>
     <p class="fdh-card__summary">Email one alert a night when a Jedox Integrator load fails, warns, or loads zero rows.</p>
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 15 min read</p>
   </article></li>

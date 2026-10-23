@@ -436,7 +436,9 @@ SOCIAL_PAGES = {
     "jedox/email-builder/index.html": "email-builder.png",
     "jedox/email-checker/index.html": "email-checker.png",
     "jedox/relational-extracts/index.html": "relational-extracts.png",
+    "jedox/failure-alerts/index.html": "failure-alerts.png",
     "vba/new-outlook-email/index.html": "new-outlook-email.png",
+    "vba/vbscript-deprecation/index.html": "vbscript-deprecation.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
 }
@@ -449,6 +451,8 @@ SOCIAL_FILES = (
     "email-checker.png",
     "relational-extracts.png",
     "new-outlook-email.png",
+    "failure-alerts.png",
+    "vbscript-deprecation.png",
 )
 
 
@@ -593,6 +597,26 @@ class BuiltSiteTests(unittest.TestCase):
     def setUpClass(cls):
         if not (SITE / "index.html").is_file():
             raise AssertionError("site/index.html is missing. Run mkdocs build first.")
+
+    def test_failure_alerts_footer_next_is_automated_value_emails(self):
+        html = (SITE / "jedox" / "failure-alerts" / "index.html").read_text(encoding="utf-8")
+        self.assertIn(
+            "Jedox job alerts people read: email only when a load fails",
+            html,
+        )
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Relational extracts"',
+            footer,
+        )
+        self.assertIn('href="../relational-extracts/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Automated value emails"',
+            footer,
+        )
+        self.assertIn('href="../automated-value-emails/"', footer)
+        self.assertNotIn("email-builder/", footer)
+        self.assertNotIn("Builder", footer)
 
     def test_analytics_snippet_uses_the_site_code(self):
         for relative in ("index.html", "downloads/index.html", "about/index.html"):

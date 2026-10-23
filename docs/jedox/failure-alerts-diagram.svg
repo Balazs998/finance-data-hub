@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="500" viewBox="0 0 840 500" role="img" aria-labelledby="t d"><title id="t">Failure-only alert flow</title><desc id="d">Nightly load jobs write a row to the run log. A status check asks whether the run failed, warned or loaded zero rows. If yes, one alert email goes out. If no, no email is sent.</desc>
+<style>.b{font:600 16px 'Space Grotesk',sans-serif;fill:#E6EDF3}.s{font:400 15px Inter,sans-serif;fill:#B7C5D3}.l{font:600 15px Inter,sans-serif;fill:#9AA7B4}.m{font:500 15px 'JetBrains Mono',monospace;fill:#E6EDF3}</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6B7B"/></marker></defs>
+<rect width="840" height="500" fill="#0F1720"/>
+<g stroke="#5B6B7B" stroke-width="2" fill="none" marker-end="url(#a)"><path d="M180 130H218"/><path d="M398 130H436"/><path d="M616 110H668"/><path d="M526 200V318"/></g>
+<rect x="20" y="70" width="160" height="120" rx="10" fill="#18222E" stroke="#38BDF8" stroke-width="2"/>
+<text x="100" y="104" text-anchor="middle" class="b">Nightly loads</text><text x="100" y="134" text-anchor="middle" class="m">load_actuals</text><text x="100" y="158" text-anchor="middle" class="s">and other jobs</text>
+<rect x="220" y="70" width="178" height="120" rx="10" fill="#18222E" stroke="#38BDF8" stroke-width="2"/>
+<text x="309" y="104" text-anchor="middle" class="b">Run log</text><text x="309" y="134" text-anchor="middle" class="m">job_runs.csv</text><text x="309" y="158" text-anchor="middle" class="s">status, rows</text>
+<rect x="438" y="60" width="178" height="140" rx="10" fill="#18222E" stroke="#8B7CF6" stroke-width="2"/>
+<text x="527" y="92" text-anchor="middle" class="b">Needs attention?</text>
+<text x="456" y="122" class="s">• failed</text><text x="456" y="146" class="s">• warning</text><text x="456" y="170" class="s">• success, 0 rows</text>
+<text x="642" y="100" text-anchor="middle" class="l">Yes</text>
+<rect x="670" y="50" width="150" height="120" rx="10" fill="#18222E" stroke="#F87171" stroke-width="2"/>
+<text x="745" y="84" text-anchor="middle" class="b" style="fill:#F87171">One alert</text><text x="745" y="110" text-anchor="middle" class="s">email per night,</text><text x="745" y="134" text-anchor="middle" class="s">listing every run</text><text x="745" y="156" text-anchor="middle" class="s">that needs a look</text>
+<text x="538" y="266" class="l">No</text>
+<rect x="438" y="320" width="178" height="80" rx="10" fill="#18222E" stroke="#A3E635" stroke-width="2"/>
+<text x="527" y="354" text-anchor="middle" class="b" style="fill:#A3E635">No email</text><text x="527" y="378" text-anchor="middle" class="s">quiet night</text>
+<rect x="20" y="250" width="378" height="150" rx="10" fill="none" stroke="#2A3746" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="40" y="280" class="b">Sample week</text>
+<text x="40" y="306" class="m">03-04 load_actuals failed</text>
+<text x="40" y="330" class="m">03-05 load_budget warning</text>
+<text x="40" y="354" class="m">03-06 load_actuals 0 rows</text>
+<text x="40" y="384" class="s">3 alert emails, 4 quiet nights</text>
+<text x="20" y="462" class="s" style="fill:#9AA7B4">Zero rows isn't success: a "finished" mail would have hidden the 03-06 run.</text>
+</svg>

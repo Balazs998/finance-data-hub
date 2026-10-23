@@ -162,6 +162,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                     "snowflake/index.md",
                     {"Month-end actuals": "snowflake/month-end-actuals.md"},
                     {"Plan vs actuals": "snowflake/plan-vs-actuals.md"},
+                    {"Snapshots vs Time Travel": "snowflake/month-end-snapshots.md"},
                 ]
             },
             {
@@ -193,6 +194,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## Sample data",
             "## [Month-end actuals](snowflake/month-end-actuals.md)",
             "## [Plan vs actuals](snowflake/plan-vs-actuals.md)",
+            "## [Snapshots vs Time Travel](snowflake/month-end-snapshots.md)",
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Failure-only alerts](jedox/failure-alerts.md)",
@@ -215,6 +217,14 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn("sql/plan_vs_actual.sql", plan)
         self.assertNotIn("samples/", plan)
         self.assertNotIn("email/send_value_emails.groovy", plan)
+        snapshots = index.split("## [Snapshots vs Time Travel](snowflake/month-end-snapshots.md)", 1)[1].split("## [", 1)[0]
+        self.assertIn("snapshots/01_fact_actuals_snapshot_ddl.sql", snapshots)
+        self.assertIn("snapshots/02_seed_late_posting.sql", snapshots)
+        self.assertIn("snapshots/03_take_snapshot.sql", snapshots)
+        self.assertIn("snapshots/04_v_snapshot_vs_current.sql", snapshots)
+        self.assertIn("snapshots/05_compare_query.sql", snapshots)
+        self.assertIn("snapshots/README.md", snapshots)
+        self.assertNotIn("samples/", snapshots)
         email = index.split("## [Automated value emails]", 1)[1].split("## [", 1)[0]
         self.assertIn("email/send_value_emails.groovy", email)
         self.assertIn("email/recipients.csv", email)
@@ -253,7 +263,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 25)
+        self.assertEqual(len(disk), 31)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

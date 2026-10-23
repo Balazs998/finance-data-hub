@@ -261,8 +261,35 @@ def on_post_page(output, page, config):
     return _drop_unused_email_assets(output)
 
 
+def on_files(files, config):
+    """Keep Markdown under docs/files/ as a download, not a rendered page.
+
+    MkDocs treats every ``.md`` file as a page. A downloadable README would
+    otherwise become ``files/.../index.html`` and the ``.md`` link would 404.
+    """
+    for file in list(files):
+        src = str(file.src_uri).replace("\\", "/")
+        if src.startswith("files/") and src.lower().endswith(".md"):
+            files.remove(file)
+    return files
+
+
+def _copy_markdown_downloads(config) -> None:
+    docs = Path(config["docs_dir"]) / "files"
+    site = Path(config["site_dir"]) / "files"
+    if not docs.is_dir():
+        return
+    for path in docs.rglob("*.md"):
+        if not path.is_file():
+            continue
+        dest = site / path.relative_to(docs)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(path.read_bytes())
+
+
 def on_post_build(config):
     """Append section.css to the built extra.css so the first paint has it."""
+    _copy_markdown_downloads(config)
     site = Path(config["site_dir"]) / "stylesheets" / "extra.css"
     section = Path(config["docs_dir"]) / "stylesheets" / "section.css"
     marker = "/* section index rules, kept with extra.css for the first paint */"

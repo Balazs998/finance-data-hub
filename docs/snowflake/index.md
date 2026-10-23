@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL: closed-period P&L actuals and plan vs actuals joins you can drop straight into Excel or Jedox."
+description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, and permanent snapshots versus Time Travel."
 hide:
   - toc
 ---
@@ -11,7 +11,7 @@ hide:
   <div class="fdh-hero__text">
     <p class="fdh-hero__eyebrow">Section</p>
     <h1>Snowflake</h1>
-    <p class="fdh-hero__intro">Snowflake is where the actuals live after the general ledger closes. This section is about getting a finance-shaped extract out of Snowflake, not about warehouses, roles, or loading pipelines.</p>
+    <p class="fdh-hero__intro">Snowflake is where the actuals live after the general ledger closes. This section is about getting a finance-shaped extract out of Snowflake, and freezing the number you reported, not about warehouses, roles, or loading pipelines.</p>
   </div>
   <picture class="fdh-hero__mascot">
     <source media="(max-width: 600px)" srcset="../assets/mascots/section/snowflake-pointing-phone.webp 1x, ../assets/mascots/section/snowflake-pointing-phone-2x.webp 2x" type="image/webp">
@@ -36,6 +36,12 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 7 min read</p>
   </article></li>
   <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="month-end-snapshots/">Snapshots vs Time Travel</a></h3>
+    <p class="fdh-card__summary">Freeze the month you reported so a late posting does not change the number you sent.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 20 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
@@ -50,6 +56,11 @@ hide:
     <li><a href="../files/sql/plan_vs_actual.sql" download="plan_vs_actual.sql" data-goatcounter-click="download-plan_vs_actual.sql" data-goatcounter-title="Download plan_vs_actual.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> plan_vs_actual.sql</a></li>
     <li><a href="../files/samples/load_snowflake.sql" download="load_snowflake.sql" data-goatcounter-click="download-load_snowflake.sql" data-goatcounter-title="Download load_snowflake.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> load_snowflake.sql</a></li>
     <li><a href="../files/samples/fact_actuals.csv" download="fact_actuals.csv" data-goatcounter-click="download-fact_actuals.csv" data-goatcounter-title="Download fact_actuals.csv" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> fact_actuals.csv</a></li>
+    <li><a href="../files/snapshots/01_fact_actuals_snapshot_ddl.sql" download="01_fact_actuals_snapshot_ddl.sql" data-goatcounter-click="download-01_fact_actuals_snapshot_ddl.sql" data-goatcounter-title="Download 01_fact_actuals_snapshot_ddl.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_fact_actuals_snapshot_ddl.sql</a></li>
+    <li><a href="../files/snapshots/03_take_snapshot.sql" download="03_take_snapshot.sql" data-goatcounter-click="download-03_take_snapshot.sql" data-goatcounter-title="Download 03_take_snapshot.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_take_snapshot.sql</a></li>
+    <li><a href="../files/snapshots/02_seed_late_posting.sql" download="02_seed_late_posting.sql" data-goatcounter-click="download-02_seed_late_posting.sql" data-goatcounter-title="Download 02_seed_late_posting.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_seed_late_posting.sql</a></li>
+    <li><a href="../files/snapshots/04_v_snapshot_vs_current.sql" download="04_v_snapshot_vs_current.sql" data-goatcounter-click="download-04_v_snapshot_vs_current.sql" data-goatcounter-title="Download 04_v_snapshot_vs_current.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_snapshot_vs_current.sql</a></li>
+    <li><a href="../files/snapshots/05_compare_query.sql" download="05_compare_query.sql" data-goatcounter-click="download-05_compare_query.sql" data-goatcounter-title="Download 05_compare_query.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_compare_query.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

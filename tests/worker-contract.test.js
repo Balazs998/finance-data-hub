@@ -209,7 +209,8 @@ test.describe("worker contract", { concurrency: 1 }, function () {
     assert.equal(typed.status, 200);
     assert.equal(typedBody.ai.mock, true);
     assert.equal(typedBody.ai.rule, rule);
-    assert.match(typedBody.ai.explanation, /In this demo, only the chips change the rule\. Typed requests need the live model\./);
+    assert.match(typedBody.ai.explanation, /Mock edit from the selected chips/);
+    assert.equal(typedBody.ai.explanation.includes("Typed requests need the live model"), false);
 
     const chipped = await post("/refine", {
       version: "2026.1",
@@ -223,7 +224,8 @@ test.describe("worker contract", { concurrency: 1 }, function () {
     assert.equal(chipped.status, 200);
     assert.equal(chippedBody.ai.rule, "['Account':'Revenue','Version':'Actual'] = B: ['Account':'Sales']");
     assert.equal(chippedBody.ai.rule.includes("period"), false);
-    assert.match(chippedBody.ai.explanation, /In this demo, only the chips change the rule\. Typed requests need the live model\./);
+    assert.match(chippedBody.ai.explanation, /Mock edit from the selected chips/);
+    assert.equal(chippedBody.ai.explanation.includes("Typed requests need the live model"), false);
   });
 
   test("zero variance passes because 0 and empty are equal", async function () {

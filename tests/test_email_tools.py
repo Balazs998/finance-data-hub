@@ -6,6 +6,19 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class EmailToolTests(unittest.TestCase):
+    def test_preview_drawer_stays_inside_the_phone_viewport(self):
+        completed = subprocess.run(
+            ["node", "--test", str(ROOT / "tests" / "email-builder-drawer.test.js")],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            completed.returncode,
+            0,
+            completed.stdout + "\n" + completed.stderr,
+        )
+
     def test_node_unit_tests(self):
         completed = subprocess.run(
             ["node", "--test", str(ROOT / "tests" / "email-tools.test.js")],

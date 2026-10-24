@@ -163,6 +163,8 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"Month-end actuals": "snowflake/month-end-actuals.md"},
                     {"Plan vs actuals": "snowflake/plan-vs-actuals.md"},
                     {"Snapshots vs Time Travel": "snowflake/month-end-snapshots.md"},
+                    {"FX rate lock": "snowflake/fx-rate-lock.md"},
+                    {"ASOF JOIN": "snowflake/asof-join.md"},
                 ]
             },
             {
@@ -195,6 +197,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Month-end actuals](snowflake/month-end-actuals.md)",
             "## [Plan vs actuals](snowflake/plan-vs-actuals.md)",
             "## [Snapshots vs Time Travel](snowflake/month-end-snapshots.md)",
+            "## [FX rate lock](snowflake/fx-rate-lock.md)",
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Failure-only alerts](jedox/failure-alerts.md)",
@@ -225,6 +228,20 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn("snapshots/05_compare_query.sql", snapshots)
         self.assertIn("snapshots/README.md", snapshots)
         self.assertNotIn("samples/", snapshots)
+        fx = index.split("## [FX rate lock](snowflake/fx-rate-lock.md)", 1)[1].split("## [", 1)[0]
+        fx_files = (
+            "fx/01_fx_rate_daily_ddl.sql",
+            "fx/02_fx_rate_period_ddl.sql",
+            "fx/03_seed_fx_rates.sql",
+            "fx/04_v_fx_missing_rates.sql",
+            "fx/05_asof_join_convert.sql",
+            "fx/06_period_lock_and_snapshot.sql",
+            "fx/07_restate_after_lock_demo.sql",
+            "fx/README.md",
+        )
+        positions = [fx.index(name) for name in fx_files]
+        self.assertEqual(positions, sorted(positions))
+        self.assertNotIn("samples/", fx)
         email = index.split("## [Automated value emails]", 1)[1].split("## [", 1)[0]
         self.assertIn("email/send_value_emails.groovy", email)
         self.assertIn("email/recipients.csv", email)
@@ -263,7 +280,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 31)
+        self.assertEqual(len(disk), 39)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

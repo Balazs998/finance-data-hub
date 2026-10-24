@@ -442,6 +442,8 @@ SOCIAL_PAGES = {
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
     "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
+    "snowflake/fx-rate-lock/index.html": "fx-rate-lock.png",
+    "snowflake/asof-join/index.html": "home.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -455,6 +457,7 @@ SOCIAL_FILES = (
     "failure-alerts.png",
     "vbscript-deprecation.png",
     "month-end-snapshots.png",
+    "fx-rate-lock.png",
 )
 
 
@@ -957,15 +960,88 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertIn('href="../plan-vs-actuals/"', footer)
         self.assertIn(
-            'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
+            'class="md-footer__link md-footer__link--next" aria-label="Next: FX rate lock"',
             footer,
         )
+        self.assertIn('href="../fx-rate-lock/"', footer)
         self.assertNotIn("month-end-actuals/", footer)
         actuals = (SITE / "snowflake" / "month-end-actuals" / "index.html").read_text(
             encoding="utf-8"
         )
         self.assertNotIn("FACT_ACTUALS_SNAPSHOT", actuals)
         self.assertNotIn("month-end-snapshots-timeline.svg", actuals)
+
+    def test_fx_rate_lock_page_diagram_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "fx-rate-lock" / "index.html"
+        self.assertTrue(page.is_file(), "FX rate lock page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "FX conversion that survives close: rate choice, missing rates, and a period lock",
+            html,
+        )
+        self.assertNotIn("DRAFT", html)
+        self.assertIn(
+            "Flake checked the SQL against the docs and recomputed every total.",
+            html,
+        )
+        self.assertNotIn("Siemens", html)
+        self.assertIn('class="docs-note"', html)
+        self.assertIn("Swipe to see the full diagram →", html)
+        self.assertIn('aria-label="FX rate lookup flow"', html)
+        self.assertIn('src="../fx-rate-lookup-diagram.svg"', html)
+        diagram = local_target(page, "../fx-rate-lookup-diagram.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "fx-rate-lock.png"],
+        )
+        self.assertNotIn("home.png", meta_contents(html, "property", "og:image")[0])
+        for relative in (
+            "fx/01_fx_rate_daily_ddl.sql",
+            "fx/02_fx_rate_period_ddl.sql",
+            "fx/03_seed_fx_rates.sql",
+            "fx/04_v_fx_missing_rates.sql",
+            "fx/05_asof_join_convert.sql",
+            "fx/06_period_lock_and_snapshot.sql",
+            "fx/07_restate_after_lock_demo.sql",
+            "fx/README.md",
+            "samples/fact_actuals.csv",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 10)
+        cluster = html[html.find('<div class="downloads">') :]
+        ordered = [
+            "01_fx_rate_daily_ddl.sql",
+            "02_fx_rate_period_ddl.sql",
+            "03_seed_fx_rates.sql",
+            "04_v_fx_missing_rates.sql",
+            "05_asof_join_convert.sql",
+            "06_period_lock_and_snapshot.sql",
+            "07_restate_after_lock_demo.sql",
+            "README.md",
+        ]
+        positions = [cluster.index(name) for name in ordered]
+        self.assertEqual(positions, sorted(positions))
+        readme = SITE / "files" / "fx" / "README.md"
+        self.assertTrue(readme.is_file(), "FX README was not copied as a download")
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# FX rate SQL pack"))
+        self.assertFalse((SITE / "files" / "fx" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Snapshots vs Time Travel"',
+            footer,
+        )
+        self.assertIn('href="../month-end-snapshots/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: ASOF JOIN"',
+            footer,
+        )
+        self.assertIn('href="../asof-join/"', footer)
+        self.assertIn("month-end-snapshots/", html)
 
     def test_heading_permalinks_are_absent_but_ids_remain(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

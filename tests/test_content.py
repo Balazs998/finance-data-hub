@@ -181,6 +181,91 @@ class ContentTests(unittest.TestCase):
             nav.index("snowflake/month-end-snapshots.md"),
         )
 
+    def test_fx_rate_lock_keeps_fictional_totals_and_numeric_downloads(self):
+        page = (ROOT / "docs/snowflake/fx-rate-lock.md").read_text(encoding="utf-8")
+        teaser = (ROOT / "docs/snowflake/asof-join.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "FX conversion that survives close: rate choice, missing rates, and a period lock"',
+            page,
+        )
+        self.assertIn("social_image: fx-rate-lock.png", page)
+        self.assertIn('<p class="post-meta">Snowflake</p>', page)
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("fx-rate-lookup-diagram.svg", page)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn("](month-end-snapshots.md)", page)
+        self.assertIn("](asof-join.md)", teaser and page)
+        self.assertIn("](fx-rate-lock.md)", teaser)
+        for figure in (
+            "1,466,143.86",
+            "1,629,048.72",
+            "1,629,048.73",
+            "1,611,147.13",
+            "0.9000",
+            "0.900000",
+            "0.9100",
+            "0.910000",
+            "1.0000",
+            "1111.11",
+            "2026-03",
+            "2026-05",
+            "2026-03-17",
+            "58",
+            "610",
+        ):
+            self.assertIn(figure, page)
+        self.assertIn("1111.11", teaser)
+        self.assertIn(
+            "Flake checked the SQL against the docs and recomputed every total.",
+            page,
+        )
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("social_image:", teaser)
+        labels = (
+            "[[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]",
+            "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
+            "[[download:fx/01_fx_rate_daily_ddl.sql|Download 01_fx_rate_daily_ddl.sql]]",
+            "[[download:fx/02_fx_rate_period_ddl.sql|Download 02_fx_rate_period_ddl.sql]]",
+            "[[download:fx/03_seed_fx_rates.sql|Download 03_seed_fx_rates.sql]]",
+            "[[download:fx/04_v_fx_missing_rates.sql|Download 04_v_fx_missing_rates.sql]]",
+            "[[download:fx/05_asof_join_convert.sql|Download 05_asof_join_convert.sql]]",
+            "[[download:fx/06_period_lock_and_snapshot.sql|Download 06_period_lock_and_snapshot.sql]]",
+            "[[download:fx/07_restate_after_lock_demo.sql|Download 07_restate_after_lock_demo.sql]]",
+            "[[download:fx/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/fx"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_fx_rate_daily_ddl.sql",
+                "02_fx_rate_period_ddl.sql",
+                "03_seed_fx_rates.sql",
+                "04_v_fx_missing_rates.sql",
+                "05_asof_join_convert.sql",
+                "06_period_lock_and_snapshot.sql",
+                "07_restate_after_lock_demo.sql",
+                "README.md",
+            ],
+        )
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/month-end-snapshots.md"),
+            nav.index("snowflake/fx-rate-lock.md"),
+        )
+        self.assertLess(
+            nav.index("snowflake/fx-rate-lock.md"),
+            nav.index("snowflake/asof-join.md"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

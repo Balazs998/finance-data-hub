@@ -201,7 +201,7 @@ class ContentTests(unittest.TestCase):
             "Move P&L and variance logic into two FDH_DEMO Snowflake views",
             page,
         )
-        self.assertNotIn("social_image:", page)
+        self.assertIn("social_image: excel-thin-front-end.png", page)
         self.assertIn('<p class="post-meta">VBA · Intermediate · ~20 min</p>', page)
         self.assertIn('class="docs-note"', page)
         self.assertIn("The demo workbook hasn't been built yet", page)
@@ -242,7 +242,19 @@ class ContentTests(unittest.TestCase):
 
         self.assertTrue(grants.startswith("-- Post 02: PROPOSED grants"))
         self.assertIn("NOT approved yet", grants)
-        self.assertIn("Security Guard must approve before ship", grants)
+        self.assertIn(
+            "Reviewed by Security Guard. Not run by this pack; an admin runs it once.",
+            grants,
+        )
+        self.assertNotIn("Security Guard must approve before ship", grants)
+        self.assertIn(
+            "Keep the private key file outside the workbook's folder and any synced, shared or Git folder, and encrypt it with a passphrase.",
+            page,
+        )
+        self.assertIn(
+            "`WriteLog` (5 cells to the RefreshLog sheet) is in the downloadable module.",
+            page,
+        )
         self.assertIn("Views only; no table grants.", grants)
         self.assertIn("FDH_DEMO.SAMPLE.V_PNL_MONTHLY", grants)
         self.assertIn("FDH_DEMO.SAMPLE.V_VARIANCE_BY_CC", grants)

@@ -439,7 +439,7 @@ SOCIAL_PAGES = {
     "jedox/failure-alerts/index.html": "failure-alerts.png",
     "vba/new-outlook-email/index.html": "new-outlook-email.png",
     "vba/vbscript-deprecation/index.html": "vbscript-deprecation.png",
-    "vba/excel-thin-front-end/index.html": "home.png",
+    "vba/excel-thin-front-end/index.html": "excel-thin-front-end.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
     "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
@@ -456,6 +456,7 @@ SOCIAL_FILES = (
     "failure-alerts.png",
     "vbscript-deprecation.png",
     "month-end-snapshots.png",
+    "excel-thin-front-end.png",
 )
 
 
@@ -968,7 +969,7 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("FACT_ACTUALS_SNAPSHOT", actuals)
         self.assertNotIn("month-end-snapshots-timeline.svg", actuals)
 
-    def test_excel_thin_front_end_page_uses_the_default_social_image(self):
+    def test_excel_thin_front_end_page_uses_its_share_image(self):
         page = SITE / "vba" / "excel-thin-front-end" / "index.html"
         self.assertTrue(page.is_file(), "thin front end page was not built")
         html = page.read_text(encoding="utf-8")
@@ -1004,8 +1005,9 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertFalse(list((SITE / "files" / "thinfront").glob("*.xlsm")))
         self.assertEqual(
             meta_contents(html, "property", "og:image"),
-            ["https://balazs998.github.io/finance-data-hub/assets/social/home.png"],
+            [SOCIAL_BASE + "excel-thin-front-end.png"],
         )
+        self.assertNotIn("home.png", meta_contents(html, "property", "og:image")[0])
         footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
         self.assertIn(
             'class="md-footer__link md-footer__link--prev" aria-label="Previous: Month-close checks"',

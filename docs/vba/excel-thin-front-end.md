@@ -1,6 +1,7 @@
 ---
 title: "Excel as a thin front end: Snowflake views feed a refresh-only workbook"
 description: "Move P&L and variance logic into two FDH_DEMO Snowflake views, connect Excel to them with Power Query, and refresh everything with one safe VBA button that waits for each query, logs the result and restores Excel's settings."
+social_image: excel-thin-front-end.png
 ---
 
 # Excel as a thin front end: Snowflake views feed a refresh-only workbook
@@ -93,6 +94,8 @@ Then follow three rules:
 - **No logic in Power Query.** No merges, no custom columns. If you need a new measure, add it to the view.
 - **No credentials in the file.** The DSN holds the connection; the workbook only knows its name. See the key-pair post for how the service user signs in.
 
+Keep the private key file outside the workbook's folder and any synced, shared or Git folder, and encrypt it with a passphrase.
+
 A **Checks** sheet makes the workbook self-testing: `=SUM(tPnlMonthly[actual])` should show 15,446,573.09 and `=COUNTIFS(tVarianceByCC[variance_flag],"No actuals yet")` should show 12. The full layout is in `BUILD-SPEC.md`.
 
 ## 4. One-click refresh with VBA
@@ -174,6 +177,8 @@ Private Function SheetExists(ByVal sheetName As String) As Boolean
     Next ws
 End Function
 ```
+
+`WriteLog` (5 cells to the RefreshLog sheet) is in the downloadable module.
 
 What to notice:
 

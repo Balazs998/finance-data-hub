@@ -106,5 +106,6 @@ nav:
       - Email macros after New Outlook: vba/new-outlook-email.md
       - VBScript deprecation: vba/vbscript-deprecation.md
       - Month-close checks: vba/month-close-checks.md
+      - Excel as a thin front end: vba/excel-thin-front-end.md
   - Downloads: downloads.md
   - About: about.md

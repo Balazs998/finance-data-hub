@@ -38,7 +38,7 @@ It writes to `LOAD_LOG` and `CONTROL_EVIDENCE` (both already in the sample pack)
 ## Before you start
 
 !!! info "You'll need"
-    - Role / access: `SYSADMIN` (or equivalent) in `FDH_DEMO.MOTORS` for the walkthrough. This pack adds no grants. `JEDOX_ETL_ROLE` stays views-only. In production, the roles that write the log and the evidence should be INSERT-only; your security owner decides those grants.
+    - Role / access: `SYSADMIN` (or equivalent) in `FDH_DEMO.MOTORS` for the walkthrough. This pack adds no grants. `JEDOX_ETL_ROLE` stays views-only. In production, the roles that write the log and the evidence should be INSERT and SELECT only (no UPDATE, DELETE or ownership); your security owner decides those grants.
     - Product version: any current Snowflake account (docs-based, not run). For the Jedox hop, the load from the Snowflake to Jedox post (not run).
     - Previous posts: [Snowflake to Jedox](../jedox/snowflake-to-jedox.md) (the load) and [Email only when a Jedox load fails](../jedox/failure-alerts.md) (why the job writes its own row count)
     - Sample data: `erp_gl_extract_2026-03.csv` (clean), `erp_gl_extract_2026-03_dropped.csv` (one line missing), plus `load_motors.sql`

@@ -805,6 +805,15 @@ class ContentTests(unittest.TestCase):
             page,
         )
         self.assertIn("CREATE TABLE IF NOT EXISTS ERP_GL_LANDING", page)
+        self.assertIn(
+            "should be INSERT and SELECT only (no UPDATE, DELETE or ownership)",
+            page,
+        )
+        self.assertNotIn("INSERT-only", page)
+        self.assertIn(
+            "Only accept file names that match a pattern such as ^erp_gl_extract_[0-9]{4}-[0-9]{2}[a-z_]*\\.csv\\.gz$ before you build the string.",
+            page,
+        )
         self.assertIn("is only a template for that row", page)
         self.assertNotIn("close automation", page)
         self.assertNotIn("paid template", page.lower())
@@ -857,6 +866,10 @@ class ContentTests(unittest.TestCase):
         self.assertIn("CREATE TABLE IF NOT EXISTS ERP_GL_LANDING", ddl)
         log = (pack / "03_load_and_log.sql").read_text(encoding="utf-8")
         self.assertIn("INSERT INTO LOAD_LOG", log)
+        self.assertIn(
+            "Only accept file names that match a pattern such as ^erp_gl_extract_[0-9]{4}-[0-9]{2}[a-z_]*\\.csv\\.gz$ before you build the string.",
+            log,
+        )
         evidence = (pack / "06_control_evidence.sql").read_text(encoding="utf-8")
         self.assertIn("INSERT INTO CONTROL_EVIDENCE", evidence)
         for path in pack.iterdir():

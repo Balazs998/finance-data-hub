@@ -1382,6 +1382,11 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("FDH Motors", html)
         self.assertIn("FDH_DEMO.MOTORS", html)
         self.assertIn("ERP_GL_LANDING", html)
+        self.assertIn(
+            "should be INSERT and SELECT only (no UPDATE, DELETE or ownership)",
+            html,
+        )
+        self.assertNotIn("INSERT-only", html)
         self.assertIn('class="docs-note"', html)
         article = html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0]
         self.assertEqual(article.count('href="../../jedox/snowflake-to-jedox/"'), 2)

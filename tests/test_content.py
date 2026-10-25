@@ -640,7 +640,10 @@ class ContentTests(unittest.TestCase):
         self.assertNotIn("TODO", page)
         self.assertNotIn("diagrams/capex-flow.svg", page)
         self.assertTrue((ROOT / "docs/snowflake/capex-flow.svg").is_file())
-        self.assertNotIn("rolling up BOM", page)
+        self.assertIn(
+            "**Next in the automaker series:** [rolling up BOM cost and purchase price variance](automaker-bom-cost-rollup.md).",
+            page,
+        )
         self.assertIn("FDH_DEMO.MOTORS", page)
         self.assertIn("FDH Motors", page)
         for figure in (
@@ -692,6 +695,90 @@ class ContentTests(unittest.TestCase):
         self.assertLess(
             nav.index("snowflake/automaker-cost-per-vehicle.md"),
             nav.index("snowflake/automaker-capex-project-tracking.md"),
+        )
+
+    def test_bom_cost_rollup_keeps_fictional_totals_and_stays_free(self):
+        page = (ROOT / "docs/snowflake/automaker-bom-cost-rollup.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "BOM cost rollup in Snowflake: standard cost per vehicle, price and usage variance"',
+            page,
+        )
+        self.assertIn("social_image: automaker-bom-cost-rollup.png", page)
+        self.assertIn(
+            '<p class="post-meta">Snowflake · Intermediate · ~30 min · Automaker series</p>',
+            page,
+        )
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("](automaker-cost-per-vehicle.md)", page)
+        self.assertIn("](month-end-snapshots.md)", page)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn('src="../bom-tree.svg"', page)
+        self.assertIn(
+            "Bill of materials for model M-B: the vehicle is built from four assemblies "
+            "(A-BODY-B, A-PT-B, A-INT-B and the shared A-ELEC), which together hold 14 part lines.",
+            page,
+        )
+        self.assertNotIn("diagrams/bom-tree.svg", page)
+        self.assertNotIn("ERP-to-warehouse", page)
+        self.assertNotIn("paid template", page.lower())
+        self.assertNotIn("template", page.lower())
+        self.assertNotRegex(page, r"\]\([^)]*(?:paid|template)")
+        self.assertIn("FDH_DEMO.MOTORS", page)
+        self.assertIn("FDH Motors", page)
+        for figure in (
+            "8,310.10",
+            "11,707.40",
+            "11,323.40",
+            "46,159.51",
+            "42,000.00",
+            "81,940.27",
+            "3,864.00",
+            "P-TRIM-B",
+            "P-ECU-01",
+            "P-PANEL-B",
+            "P-CELL-01",
+            "2026-03",
+            "2026-05",
+        ):
+            self.assertIn(figure, page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        labels = (
+            "[[download:bom/01_v_bom_exploded.sql|Download 01_v_bom_exploded.sql]]",
+            "[[download:bom/02_v_std_cost_rollup.sql|Download 02_v_std_cost_rollup.sql]]",
+            "[[download:bom/03_v_ppv.sql|Download 03_v_ppv.sql]]",
+            "[[download:bom/04_v_usage_var.sql|Download 04_v_usage_var.sql]]",
+            "[[download:bom/05_checks.sql|Download 05_checks.sql]]",
+            "[[download:bom/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/bom"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_v_bom_exploded.sql",
+                "02_v_std_cost_rollup.sql",
+                "03_v_ppv.sql",
+                "04_v_usage_var.sql",
+                "05_checks.sql",
+                "README.md",
+            ],
+        )
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotIn("/workspace/", text, path.name)
+            self.assertNotIn("template", text.lower(), path.name)
+        self.assertTrue((ROOT / "docs/snowflake/bom-tree.svg").is_file())
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/automaker-capex-project-tracking.md"),
+            nav.index("snowflake/automaker-bom-cost-rollup.md"),
         )
 
 

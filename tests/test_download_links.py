@@ -168,6 +168,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"13-week cash runway": "snowflake/automaker-13-week-cash-runway.md"},
                     {"Cost per vehicle": "snowflake/automaker-cost-per-vehicle.md"},
                     {"Capex project tracking": "snowflake/automaker-capex-project-tracking.md"},
+                    {"BOM cost rollup": "snowflake/automaker-bom-cost-rollup.md"},
                 ]
             },
             {
@@ -205,6 +206,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [13-week cash runway](snowflake/automaker-13-week-cash-runway.md)",
             "## [Cost per vehicle](snowflake/automaker-cost-per-vehicle.md)",
             "## [Capex project tracking](snowflake/automaker-capex-project-tracking.md)",
+            "## [BOM cost rollup](snowflake/automaker-bom-cost-rollup.md)",
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Failure-only alerts](jedox/failure-alerts.md)",
@@ -302,6 +304,21 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertEqual(capex.count("[[download:"), len(capex_files))
         self.assertNotIn("samples/", capex)
         self.assertNotIn("pvm/", capex)
+        self.assertNotIn("bom/", capex)
+        bom = index.split("## [BOM cost rollup](snowflake/automaker-bom-cost-rollup.md)", 1)[1].split("## [", 1)[0]
+        bom_files = (
+            "bom/01_v_bom_exploded.sql",
+            "bom/02_v_std_cost_rollup.sql",
+            "bom/03_v_ppv.sql",
+            "bom/04_v_usage_var.sql",
+            "bom/05_checks.sql",
+            "bom/README.md",
+        )
+        positions = [bom.index(name) for name in bom_files]
+        self.assertEqual(positions, sorted(positions))
+        self.assertEqual(bom.count("[[download:"), len(bom_files))
+        self.assertNotIn("samples/", bom)
+        self.assertNotIn("capex/", bom)
         email = index.split("## [Automated value emails]", 1)[1].split("## [", 1)[0]
         self.assertIn("email/send_value_emails.groovy", email)
         self.assertIn("email/recipients.csv", email)
@@ -355,7 +372,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 89)
+        self.assertEqual(len(disk), 95)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

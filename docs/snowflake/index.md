@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, cost per vehicle, and capex project tracking for fictional FDH Motors."
+description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, cost per vehicle, capex project tracking, and a BOM cost rollup for fictional FDH Motors."
 hide:
   - toc
 ---
@@ -72,6 +72,12 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 25 min read</p>
   </article></li>
   <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="automaker-bom-cost-rollup/">BOM cost rollup</a></h3>
+    <p class="fdh-card__summary">Explode the FDH Motors bill of materials, roll standard cost up to the vehicle, and split purchase price and usage variance.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 30 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
@@ -120,6 +126,11 @@ hide:
     <li><a href="../files/capex/02_v_capex_exceptions.sql" download="02_v_capex_exceptions.sql" data-goatcounter-click="download-02_v_capex_exceptions.sql" data-goatcounter-title="Download 02_v_capex_exceptions.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_v_capex_exceptions.sql</a></li>
     <li><a href="../files/capex/03_v_capex_alert.sql" download="03_v_capex_alert.sql" data-goatcounter-click="download-03_v_capex_alert.sql" data-goatcounter-title="Download 03_v_capex_alert.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_v_capex_alert.sql</a></li>
     <li><a href="../files/capex/04_checks.sql" download="04_checks.sql" data-goatcounter-click="download-04_checks.sql" data-goatcounter-title="Download 04_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_checks.sql</a></li>
+    <li><a href="../files/bom/01_v_bom_exploded.sql" download="01_v_bom_exploded.sql" data-goatcounter-click="download-01_v_bom_exploded.sql" data-goatcounter-title="Download 01_v_bom_exploded.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_v_bom_exploded.sql</a></li>
+    <li><a href="../files/bom/02_v_std_cost_rollup.sql" download="02_v_std_cost_rollup.sql" data-goatcounter-click="download-02_v_std_cost_rollup.sql" data-goatcounter-title="Download 02_v_std_cost_rollup.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_v_std_cost_rollup.sql</a></li>
+    <li><a href="../files/bom/03_v_ppv.sql" download="03_v_ppv.sql" data-goatcounter-click="download-03_v_ppv.sql" data-goatcounter-title="Download 03_v_ppv.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_v_ppv.sql</a></li>
+    <li><a href="../files/bom/04_v_usage_var.sql" download="04_v_usage_var.sql" data-goatcounter-click="download-04_v_usage_var.sql" data-goatcounter-title="Download 04_v_usage_var.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_usage_var.sql</a></li>
+    <li><a href="../files/bom/05_checks.sql" download="05_checks.sql" data-goatcounter-click="download-05_checks.sql" data-goatcounter-title="Download 05_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_checks.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

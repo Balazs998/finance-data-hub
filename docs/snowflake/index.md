@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, and permanent snapshots versus Time Travel."
+description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, and an FX rate lock."
 hide:
   - toc
 ---
@@ -42,6 +42,18 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 20 min read</p>
   </article></li>
   <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="fx-rate-lock/">FX rate lock</a></h3>
+    <p class="fdh-card__summary">Lock the FX rate on the pack you sent so a later restatement cannot move the total.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 25 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="asof-join/">ASOF JOIN</a></h3>
+    <p class="fdh-card__summary">Attach the latest prior daily FX rate when the posting date has no exact match.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 8 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
@@ -61,6 +73,13 @@ hide:
     <li><a href="../files/snapshots/02_seed_late_posting.sql" download="02_seed_late_posting.sql" data-goatcounter-click="download-02_seed_late_posting.sql" data-goatcounter-title="Download 02_seed_late_posting.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_seed_late_posting.sql</a></li>
     <li><a href="../files/snapshots/04_v_snapshot_vs_current.sql" download="04_v_snapshot_vs_current.sql" data-goatcounter-click="download-04_v_snapshot_vs_current.sql" data-goatcounter-title="Download 04_v_snapshot_vs_current.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_snapshot_vs_current.sql</a></li>
     <li><a href="../files/snapshots/05_compare_query.sql" download="05_compare_query.sql" data-goatcounter-click="download-05_compare_query.sql" data-goatcounter-title="Download 05_compare_query.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_compare_query.sql</a></li>
+    <li><a href="../files/fx/01_fx_rate_daily_ddl.sql" download="01_fx_rate_daily_ddl.sql" data-goatcounter-click="download-01_fx_rate_daily_ddl.sql" data-goatcounter-title="Download 01_fx_rate_daily_ddl.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_fx_rate_daily_ddl.sql</a></li>
+    <li><a href="../files/fx/02_fx_rate_period_ddl.sql" download="02_fx_rate_period_ddl.sql" data-goatcounter-click="download-02_fx_rate_period_ddl.sql" data-goatcounter-title="Download 02_fx_rate_period_ddl.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_fx_rate_period_ddl.sql</a></li>
+    <li><a href="../files/fx/03_seed_fx_rates.sql" download="03_seed_fx_rates.sql" data-goatcounter-click="download-03_seed_fx_rates.sql" data-goatcounter-title="Download 03_seed_fx_rates.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_seed_fx_rates.sql</a></li>
+    <li><a href="../files/fx/04_v_fx_missing_rates.sql" download="04_v_fx_missing_rates.sql" data-goatcounter-click="download-04_v_fx_missing_rates.sql" data-goatcounter-title="Download 04_v_fx_missing_rates.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_fx_missing_rates.sql</a></li>
+    <li><a href="../files/fx/05_asof_join_convert.sql" download="05_asof_join_convert.sql" data-goatcounter-click="download-05_asof_join_convert.sql" data-goatcounter-title="Download 05_asof_join_convert.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_asof_join_convert.sql</a></li>
+    <li><a href="../files/fx/06_period_lock_and_snapshot.sql" download="06_period_lock_and_snapshot.sql" data-goatcounter-click="download-06_period_lock_and_snapshot.sql" data-goatcounter-title="Download 06_period_lock_and_snapshot.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_period_lock_and_snapshot.sql</a></li>
+    <li><a href="../files/fx/07_restate_after_lock_demo.sql" download="07_restate_after_lock_demo.sql" data-goatcounter-click="download-07_restate_after_lock_demo.sql" data-goatcounter-title="Download 07_restate_after_lock_demo.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 07_restate_after_lock_demo.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

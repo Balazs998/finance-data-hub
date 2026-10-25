@@ -26,3 +26,4 @@ One sentence on each section card.
 - Month-close checks: Flag a blank reporting period, empty Input_ drivers and #REF! or #N/A errors before the pack goes out.
 - Your VBA email macro after New Outlook: Classic or New Outlook? What to switch to when VBA can't send, and a fallback so no month-end mail is lost.
 - Is your finance workbook hit by VBScript deprecation?: Find the macros that use VBScript RegExp or call a .vbs script before Windows turns VBScript off.
+- Excel as a thin front end: Move P&L and variance into Snowflake views and refresh the workbook with one button.

@@ -439,6 +439,7 @@ SOCIAL_PAGES = {
     "jedox/failure-alerts/index.html": "failure-alerts.png",
     "vba/new-outlook-email/index.html": "new-outlook-email.png",
     "vba/vbscript-deprecation/index.html": "vbscript-deprecation.png",
+    "vba/excel-thin-front-end/index.html": "excel-thin-front-end.png",
     "about/index.html": "home.png",
     "snowflake/month-end-actuals/index.html": "home.png",
     "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
@@ -457,6 +458,7 @@ SOCIAL_FILES = (
     "failure-alerts.png",
     "vbscript-deprecation.png",
     "month-end-snapshots.png",
+    "excel-thin-front-end.png",
     "fx-rate-lock.png",
 )
 
@@ -971,6 +973,57 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("FACT_ACTUALS_SNAPSHOT", actuals)
         self.assertNotIn("month-end-snapshots-timeline.svg", actuals)
 
+    def test_excel_thin_front_end_page_uses_its_share_image(self):
+        page = SITE / "vba" / "excel-thin-front-end" / "index.html"
+        self.assertTrue(page.is_file(), "thin front end page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "Excel as a thin front end: Snowflake views feed a refresh-only workbook",
+            html,
+        )
+        self.assertNotIn("DRAFT v0.3", html)
+        self.assertNotIn("VBA Pro", html)
+        self.assertNotIn(".xlsm", html[html.find('<div class="downloads">') :])
+        self.assertEqual(html.count("md-button download"), 5)
+        for relative in (
+            "thinfront/01_reporting_views.sql",
+            "thinfront/02_excel_read_grants_PROPOSED.sql",
+            "thinfront/FDH_ThinFront.bas",
+            "thinfront/BUILD-SPEC.md",
+            "thinfront/README.md",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        grants = (SITE / "files" / "thinfront" / "02_excel_read_grants_PROPOSED.sql").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("PROPOSED", grants)
+        self.assertIn("NOT approved yet", grants)
+        self.assertNotRegex(grants, r"(?im)^[ \t]*(GRANT|REVOKE)\b")
+        readme = SITE / "files" / "thinfront" / "README.md"
+        self.assertTrue(readme.is_file(), "thin front README was not copied as a download")
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Post 02 thin front end pack"))
+        self.assertFalse((SITE / "files" / "thinfront" / "index.html").exists())
+        self.assertFalse(list((SITE / "files" / "thinfront").glob("*.xlsm")))
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "excel-thin-front-end.png"],
+        )
+        self.assertNotIn("home.png", meta_contents(html, "property", "og:image")[0])
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Month-close checks"',
+            footer,
+        )
+        self.assertIn('href="../month-close-checks/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Downloads"',
+            footer,
+        )
+
+
     def test_fx_rate_lock_page_diagram_downloads_and_og_image(self):
         page = SITE / "snowflake" / "fx-rate-lock" / "index.html"
         self.assertTrue(page.is_file(), "FX rate lock page was not built")
@@ -1042,6 +1095,7 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertIn('href="../asof-join/"', footer)
         self.assertIn("month-end-snapshots/", html)
+
 
     def test_heading_permalinks_are_absent_but_ids_remain(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

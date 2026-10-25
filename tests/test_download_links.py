@@ -183,6 +183,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"Email macros after New Outlook": "vba/new-outlook-email.md"},
                     {"VBScript deprecation": "vba/vbscript-deprecation.md"},
                     {"Month-close checks": "vba/month-close-checks.md"},
+                    {"Excel as a thin front end": "vba/excel-thin-front-end.md"},
                 ]
             },
         ]
@@ -205,6 +206,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Email macros after New Outlook](vba/new-outlook-email.md)",
             "## [VBScript deprecation](vba/vbscript-deprecation.md)",
             "## [Month-close checks](vba/month-close-checks.md)",
+            "## [Excel as a thin front end](vba/excel-thin-front-end.md)",
         ]
         positions = [index.index(heading) for heading in order]
         self.assertEqual(positions, sorted(positions))
@@ -271,6 +273,21 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertIn("vba/modChecks.bas", vbscript)
         self.assertIn("vba/modValidate.bas", vbscript)
         self.assertIn("vba/modCleanup.bas", vbscript)
+        thin = index.split("## [Excel as a thin front end](vba/excel-thin-front-end.md)", 1)[1]
+        self.assertLess(
+            thin.index("thinfront/01_reporting_views.sql"),
+            thin.index("thinfront/02_excel_read_grants_PROPOSED.sql"),
+        )
+        self.assertLess(
+            thin.index("thinfront/02_excel_read_grants_PROPOSED.sql"),
+            thin.index("thinfront/FDH_ThinFront.bas"),
+        )
+        self.assertLess(
+            thin.index("thinfront/FDH_ThinFront.bas"),
+            thin.index("thinfront/BUILD-SPEC.md"),
+        )
+        self.assertLess(thin.index("thinfront/BUILD-SPEC.md"), thin.index("thinfront/README.md"))
+        self.assertNotIn(".xlsm", thin)
 
     def test_file_index_lists_each_file_exactly_once(self):
         index = render_file_index(DOCS, None)
@@ -280,7 +297,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 39)
+        self.assertEqual(len(disk), 44)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

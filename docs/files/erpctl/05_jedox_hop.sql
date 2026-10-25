@@ -1,0 +1,19 @@
+-- Step 4: the Jedox hop. The Snowflake -> Jedox load (post "Snowflake to Jedox") reads V_ERP_GL_CELLS WHERE file_name = '<file>'.
+-- Start the Jedox load only when hop snowflake = LOADED AND V_CONTROL_RECON step 1 = PASS for this run_id.
+-- After the Cube Load, the job reads back the slice it loaded with a Cube Extract (base elements only), counts the cells and
+-- sums them with a TableAggregation Transform, and inserts one jedox row into LOAD_LOG with a Relational Load in insert mode.
+-- The read-back uses Empty cells = excludeEmpty. The cube doesn't store zero values (the Jedox default), so a cell that loads
+-- as 0.00 is deleted, not stored, and the read-back would count one cell fewer than V_ERP_GL_CELLS. 2026-03 has no zero cells (58 of 58 non-zero).
+-- Never use Relational Load mode update (it deletes the table's rows first) or create (it drops the table).
+-- Status rule (the control totals decide the result, not the status code):
+-- status 10 -> write the row with status LOADED; status 20 -> write it with status WARNING (PASS_WARNING only if count and total match);
+-- status 30, 40, 50, 55, 60 or 70 -> write no jedox row (the recon shows MISSING_HOP = FAIL).
+-- A Cube Load skips cells with missing elements and only logs a warning, which is why status 20 is not trusted on its own.
+-- Docs: https://knowledgebase.jedox.com/integration/extracts/cube-extract.htm ; https://knowledgebase.jedox.com/integration/transforms/tableaggregation-transform.htm ; https://knowledgebase.jedox.com/integration/loads/relational-load.htm ; https://knowledgebase.jedox.com/integration/loads/cube-load.htm ; https://knowledgebase.jedox.com/jedox/maintenance/scheduler-integrator-jobs.htm
+-- Write role: the Relational Load runs as a separate write role with INSERT on MOTORS.LOAD_LOG plus USAGE on the
+-- database, schema and warehouse. Nothing else: no SELECT, UPDATE, DELETE or ownership. Use a separate role, never JEDOX_ETL_ROLE.
+-- This pack creates no role and grants nothing.
+-- Row the Relational Load inserts (one per run). A Relational Load can't run CURRENT_TIMESTAMP() or CURRENT_ROLE(),
+-- so the job supplies run_at (session-local wall-clock time, TIMESTAMP_NTZ) and run_by_role itself:
+-- run_id = '<run_id>', hop = 'jedox', period = '2026-03', rows = <cells_read_back>, control_total = <sum_read_back>,
+-- hash = NULL, status = '<LOADED|WARNING>', run_at = '<job timestamp>', run_by_role = '<write role name>'

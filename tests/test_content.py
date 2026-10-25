@@ -719,7 +719,10 @@ class ContentTests(unittest.TestCase):
             page,
         )
         self.assertNotIn("diagrams/bom-tree.svg", page)
-        self.assertNotIn("ERP-to-warehouse", page)
+        self.assertIn(
+            "**Next in the automaker series:** [ERP-to-warehouse load controls](automaker-erp-control-totals.md).",
+            page,
+        )
         self.assertNotIn("paid template", page.lower())
         self.assertNotIn("template", page.lower())
         self.assertNotRegex(page, r"\]\([^)]*(?:paid|template)")
@@ -779,6 +782,99 @@ class ContentTests(unittest.TestCase):
         self.assertLess(
             nav.index("snowflake/automaker-capex-project-tracking.md"),
             nav.index("snowflake/automaker-bom-cost-rollup.md"),
+        )
+
+    def test_erp_control_totals_keeps_fictional_totals_and_stays_free(self):
+        page = (ROOT / "docs/snowflake/automaker-erp-control-totals.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "Prove every hop: control totals from ERP to Snowflake to Jedox, with a load log and an evidence table"',
+            page,
+        )
+        self.assertIn("social_image: automaker-erp-control-totals.png", page)
+        self.assertIn(
+            '<p class="post-meta">Snowflake + Jedox · Intermediate · ~35 min · Automaker series</p>',
+            page,
+        )
+        self.assertIn('class="docs-note"', page)
+        self.assertEqual(page.count("](../jedox/snowflake-to-jedox.md)"), 2)
+        self.assertEqual(page.count("](../jedox/failure-alerts.md)"), 2)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn('src="../control-totals.svg"', page)
+        self.assertIn("CREATE TABLE IF NOT EXISTS ERP_GL_LANDING", page)
+        self.assertIn("is only a template for that row", page)
+        self.assertNotIn("close automation", page)
+        self.assertNotIn("paid template", page.lower())
+        self.assertNotRegex(page, r"\]\([^)]*(?:paid|template)")
+        self.assertIn("FDH_DEMO.MOTORS", page)
+        self.assertIn("FDH Motors", page)
+        for figure in (
+            "284",
+            "58",
+            "1,466,143.86",
+            "1,460,108.50",
+            "−6,035.36",
+            "6,035.36",
+            "FDH1-202603-CC4000-600000",
+        ):
+            self.assertIn(figure, page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        labels = (
+            "[[download:erpctl/01_erp_gl_landing_ddl.sql|Download 01_erp_gl_landing_ddl.sql]]",
+            "[[download:erpctl/02_views.sql|Download 02_views.sql]]",
+            "[[download:erpctl/03_load_and_log.sql|Download 03_load_and_log.sql]]",
+            "[[download:erpctl/04_v_control_recon.sql|Download 04_v_control_recon.sql]]",
+            "[[download:erpctl/05_jedox_hop.sql|Download 05_jedox_hop.sql]]",
+            "[[download:erpctl/06_control_evidence.sql|Download 06_control_evidence.sql]]",
+            "[[download:erpctl/07_checks.sql|Download 07_checks.sql]]",
+            "[[download:erpctl/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/erpctl"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_erp_gl_landing_ddl.sql",
+                "02_views.sql",
+                "03_load_and_log.sql",
+                "04_v_control_recon.sql",
+                "05_jedox_hop.sql",
+                "06_control_evidence.sql",
+                "07_checks.sql",
+                "README.md",
+            ],
+        )
+        ddl = (pack / "01_erp_gl_landing_ddl.sql").read_text(encoding="utf-8")
+        self.assertIn("USE SCHEMA FDH_DEMO.MOTORS;", ddl)
+        self.assertIn("CREATE TABLE IF NOT EXISTS ERP_GL_LANDING", ddl)
+        log = (pack / "03_load_and_log.sql").read_text(encoding="utf-8")
+        self.assertIn("INSERT INTO LOAD_LOG", log)
+        evidence = (pack / "06_control_evidence.sql").read_text(encoding="utf-8")
+        self.assertIn("INSERT INTO CONTROL_EVIDENCE", evidence)
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*(?:UPDATE|DELETE|MERGE|TRUNCATE)\b", path.name)
+            self.assertNotIn("/workspace/", text, path.name)
+            self.assertNotIn("paid template", text.lower(), path.name)
+            if path.suffix == ".sql" and path.name != "05_jedox_hop.sql":
+                self.assertIn("USE SCHEMA FDH_DEMO.MOTORS;", text, path.name)
+            if path.name == "05_jedox_hop.sql":
+                self.assertNotRegex(
+                    text,
+                    r"(?im)^[ \t]*(?:CREATE|INSERT|COPY|GRANT)\b",
+                    path.name,
+                )
+        self.assertTrue((ROOT / "docs/snowflake/control-totals.svg").is_file())
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/automaker-bom-cost-rollup.md"),
+            nav.index("snowflake/automaker-erp-control-totals.md"),
         )
 
 

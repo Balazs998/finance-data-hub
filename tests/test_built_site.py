@@ -449,6 +449,7 @@ SOCIAL_PAGES = {
     "snowflake/automaker-cost-per-vehicle/index.html": "automaker-cost-per-vehicle.png",
     "snowflake/automaker-capex-project-tracking/index.html": "automaker-capex-project-tracking.png",
     "snowflake/automaker-bom-cost-rollup/index.html": "automaker-bom-cost-rollup.png",
+    "snowflake/automaker-erp-control-totals/index.html": "automaker-erp-control-totals.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -468,12 +469,13 @@ SOCIAL_FILES = (
     "automaker-cost-per-vehicle.png",
     "automaker-capex-project-tracking.png",
     "automaker-bom-cost-rollup.png",
+    "automaker-erp-control-totals.png",
 )
 
 
 def meta_contents(html: str, attr: str, key: str) -> list[str]:
     found = []
-    for match in re.finditer(r"<meta\b[^>]*>", html):
+    for match in re.finditer(r"""<meta\b(?:[^>"']|"[^"]*"|'[^']*')*>""", html):
         tag = match.group(0)
         if f'{attr}="{key}"' not in tag:
             continue
@@ -1314,7 +1316,10 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("Siemens", html)
         self.assertNotIn("/workspace/", html)
         self.assertNotIn("paid template", html.lower())
-        self.assertNotIn("ERP-to-warehouse", html)
+        self.assertIn(
+            'href="../automaker-erp-control-totals/">ERP-to-warehouse load controls</a>',
+            html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0],
+        )
         self.assertIn("FDH Motors", html)
         self.assertIn("FDH_DEMO.MOTORS", html)
         self.assertIn('class="docs-note"', html)
@@ -1355,6 +1360,68 @@ class BuiltSiteTests(unittest.TestCase):
             footer,
         )
         self.assertIn('href="../automaker-capex-project-tracking/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: ERP control totals"',
+            footer,
+        )
+        self.assertIn('href="../automaker-erp-control-totals/"', footer)
+
+    def test_erp_control_totals_page_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "automaker-erp-control-totals" / "index.html"
+        self.assertTrue(page.is_file(), "ERP control totals page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "Prove every hop: control totals from ERP to Snowflake to Jedox, with a load log and an evidence table",
+            html,
+        )
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("Siemens", html)
+        self.assertNotIn("/workspace/", html)
+        self.assertNotIn("paid template", html.lower())
+        self.assertNotIn("close automation", html)
+        self.assertIn("FDH Motors", html)
+        self.assertIn("FDH_DEMO.MOTORS", html)
+        self.assertIn("ERP_GL_LANDING", html)
+        self.assertIn('class="docs-note"', html)
+        article = html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0]
+        self.assertEqual(article.count('href="../../jedox/snowflake-to-jedox/"'), 2)
+        self.assertEqual(article.count('href="../../jedox/failure-alerts/"'), 2)
+        self.assertIn("Swipe to see the full diagram →", article)
+        self.assertIn('aria-label="ERP control totals"', article)
+        self.assertIn('src="../control-totals.svg"', article)
+        self.assertNotRegex(article, r'href="[^"]*(?:paid|template)')
+        diagram = local_target(page, "../control-totals.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "automaker-erp-control-totals.png"],
+        )
+        for relative in (
+            "erpctl/01_erp_gl_landing_ddl.sql",
+            "erpctl/02_views.sql",
+            "erpctl/03_load_and_log.sql",
+            "erpctl/04_v_control_recon.sql",
+            "erpctl/05_jedox_hop.sql",
+            "erpctl/06_control_evidence.sql",
+            "erpctl/07_checks.sql",
+            "erpctl/README.md",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 8)
+        readme = SITE / "files" / "erpctl" / "README.md"
+        self.assertTrue(readme.is_file())
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# ERP -> Snowflake -> Jedox"))
+        self.assertFalse((SITE / "files" / "erpctl" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: BOM cost rollup"',
+            footer,
+        )
+        self.assertIn('href="../automaker-bom-cost-rollup/"', footer)
         self.assertIn(
             'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
             footer,

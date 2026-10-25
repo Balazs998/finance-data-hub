@@ -1258,14 +1258,13 @@ class BuiltSiteTests(unittest.TestCase):
         article = html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0]
         self.assertIn('href="../automaker-13-week-cash-runway/"', article)
         self.assertEqual(article.count('href="../../jedox/failure-alerts/"'), 2)
-        visible = html.replace(
-            "<!-- TODO: diagram docs/snowflake/capex-flow.svg is not ready. "
-            "Do not add an image link until that file exists. -->",
-            "",
-        )
-        self.assertNotIn("capex-flow.svg", visible)
-        article = html.split("<article", 1)[1].split("</article>", 1)[0]
-        self.assertNotIn("<img", article)
+        self.assertNotIn("TODO", article)
+        self.assertIn("Swipe to see the full diagram →", article)
+        self.assertIn('aria-label="Capex flow"', article)
+        self.assertIn('src="../capex-flow.svg"', article)
+        diagram = local_target(page, "../capex-flow.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
         self.assertEqual(
             meta_contents(html, "property", "og:image"),
             [SOCIAL_BASE + "automaker-capex-project-tracking.png"],

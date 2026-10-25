@@ -23,7 +23,13 @@ This post builds one view of budget, committed and actual per project for the fi
 - `V_CAPEX_EXCEPTIONS`: one row per project and reason (`OVER_BUDGET`, `UNAPPROVED_SPEND`, `SOD_FLAG`)
 - `V_CAPEX_ALERT`: who gets told about which exception, from a recipients table
 
-<!-- TODO: diagram docs/snowflake/capex-flow.svg is not ready. Do not add an image link until that file exists. -->
+<p class="diagram-swipe">Swipe to see the full diagram →</p>
+<div class="diagram-frame">
+<figure class="diagram-scroll" style="--diagram-min-width: 700px" tabindex="0" aria-label="Capex flow">
+  <a href="../capex-flow.svg"><img src="../capex-flow.svg" alt="Capex flow for FDH Motors: request (CAPEX_PROJECT), approve, commit (open POs in CAPEX_COMMIT), invoice (CAPEX_ACTUAL), check (V_CAPEX_STATUS, V_CAPEX_EXCEPTIONS: 2 over budget, 1 unapproved spend, 1 approver = owner), then alert (V_CAPEX_ALERT, 8 rows). If there are no exceptions, nothing is sent." width="840" height="320"></a>
+</figure>
+<span class="diagram-chevron" aria-hidden="true">›</span>
+</div>
 
 ## Before you start
 

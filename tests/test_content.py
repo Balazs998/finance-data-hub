@@ -627,13 +627,19 @@ class ContentTests(unittest.TestCase):
         self.assertIn('class="docs-note"', page)
         self.assertIn("](automaker-13-week-cash-runway.md)", page)
         self.assertEqual(page.count("](../jedox/failure-alerts.md)"), 2)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn('src="../capex-flow.svg"', page)
         self.assertIn(
-            "<!-- TODO: diagram docs/snowflake/capex-flow.svg is not ready. "
-            "Do not add an image link until that file exists. -->",
+            "Capex flow for FDH Motors: request (CAPEX_PROJECT), approve, commit "
+            "(open POs in CAPEX_COMMIT), invoice (CAPEX_ACTUAL), check "
+            "(V_CAPEX_STATUS, V_CAPEX_EXCEPTIONS: 2 over budget, 1 unapproved spend, "
+            "1 approver = owner), then alert (V_CAPEX_ALERT, 8 rows). If there are "
+            "no exceptions, nothing is sent.",
             page,
         )
-        self.assertNotIn("<img", page)
-        self.assertNotIn("](capex-flow.svg", page)
+        self.assertNotIn("TODO", page)
+        self.assertNotIn("diagrams/capex-flow.svg", page)
+        self.assertTrue((ROOT / "docs/snowflake/capex-flow.svg").is_file())
         self.assertNotIn("rolling up BOM", page)
         self.assertIn("FDH_DEMO.MOTORS", page)
         self.assertIn("FDH Motors", page)

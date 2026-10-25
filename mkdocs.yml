@@ -96,6 +96,7 @@ nav:
       - Capex project tracking: snowflake/automaker-capex-project-tracking.md
       - BOM cost rollup: snowflake/automaker-bom-cost-rollup.md
       - ERP control totals: snowflake/automaker-erp-control-totals.md
+      - Close tracker anomaly flags: snowflake/automaker-close-tracker-anomaly-flags.md
   - Jedox:
       - jedox/index.md
       - Management report export: jedox/management-report-export.md

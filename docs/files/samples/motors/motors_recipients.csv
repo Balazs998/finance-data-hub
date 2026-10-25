@@ -2,6 +2,7 @@ role,email,display_name
 CAPEX_COMMITTEE,capex.committee@example.com,Capex Committee (Example)
 ENGINEERING_LEAD,engineering.lead@example.com,Engineering Lead (Example)
 FACILITIES_LEAD,facilities.lead@example.com,Facilities Lead (Example)
+GL_ACCOUNTANT,gl.accountant@example.com,Gl Accountant (Example)
 IT_PROJECTS_LEAD,it.projects.lead@example.com,It Projects Lead (Example)
 PLANT_P100_MGR,plant.p100.mgr@example.com,Plant P100 Mgr (Example)
 PLANT_P200_MGR,plant.p200.mgr@example.com,Plant P200 Mgr (Example)

@@ -194,7 +194,7 @@ def build_a2():
     w("capex_project.csv", ["project_id","project_name","plant","owner_role","budget_amount","approval_status","approved_by_role","approved_at","closed","closed_period"], pr)
     w("capex_commit.csv", ["po_id","project_id","period","amount","status"], cm)
     w("capex_actual.csv", ["invoice_id","project_id","period","amount"], ac)
-    roles = sorted({x[3] for x in P} | {"CAPEX_COMMITTEE"})
+    roles = sorted({x[3] for x in P} | {"CAPEX_COMMITTEE", "GL_ACCOUNTANT"})
     w("motors_recipients.csv", ["role","email","display_name"], [[r, r.lower().replace("_", ".") + "@example.com", r.title().replace("_", " ") + " (Example)"] for r in roles])
     return summ
 

@@ -170,6 +170,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"Capex project tracking": "snowflake/automaker-capex-project-tracking.md"},
                     {"BOM cost rollup": "snowflake/automaker-bom-cost-rollup.md"},
                     {"ERP control totals": "snowflake/automaker-erp-control-totals.md"},
+                    {"Close tracker anomaly flags": "snowflake/automaker-close-tracker-anomaly-flags.md"},
                 ]
             },
             {
@@ -209,6 +210,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Capex project tracking](snowflake/automaker-capex-project-tracking.md)",
             "## [BOM cost rollup](snowflake/automaker-bom-cost-rollup.md)",
             "## [ERP control totals](snowflake/automaker-erp-control-totals.md)",
+            "## [Close tracker anomaly flags](snowflake/automaker-close-tracker-anomaly-flags.md)",
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Failure-only alerts](jedox/failure-alerts.md)",
@@ -338,6 +340,22 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertEqual(erp.count("[[download:"), len(erp_files))
         self.assertNotIn("samples/", erp)
         self.assertNotIn("bom/", erp)
+        self.assertNotIn("anomaly/", erp)
+        anomaly = index.split("## [Close tracker anomaly flags](snowflake/automaker-close-tracker-anomaly-flags.md)", 1)[1].split("## [", 1)[0]
+        anomaly_files = (
+            "anomaly/01_v_close_status.sql",
+            "anomaly/02_v_je_zscore.sql",
+            "anomaly/03_v_je_iqr.sql",
+            "anomaly/04_v_je_rules.sql",
+            "anomaly/05_v_je_flags_alert.sql",
+            "anomaly/06_checks.sql",
+            "anomaly/README.md",
+        )
+        positions = [anomaly.index(name) for name in anomaly_files]
+        self.assertEqual(positions, sorted(positions))
+        self.assertEqual(anomaly.count("[[download:"), len(anomaly_files))
+        self.assertNotIn("samples/", anomaly)
+        self.assertNotIn("erpctl/", anomaly)
         email = index.split("## [Automated value emails]", 1)[1].split("## [", 1)[0]
         self.assertIn("email/send_value_emails.groovy", email)
         self.assertIn("email/recipients.csv", email)
@@ -391,7 +409,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 103)
+        self.assertEqual(len(disk), 110)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

@@ -1389,6 +1389,10 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn("Swipe to see the full diagram →", article)
         self.assertIn('aria-label="ERP control totals"', article)
         self.assertIn('src="../control-totals.svg"', article)
+        self.assertIn(
+            "R2 FAIL, because one line was dropped (−6,035.36), so the Jedox load is blocked and step 3 shows MISSING_HOP; R3 DUPLICATE.",
+            article,
+        )
         self.assertNotRegex(article, r'href="[^"]*(?:paid|template)')
         diagram = local_target(page, "../control-totals.svg")
         self.assertIsNotNone(diagram)

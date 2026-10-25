@@ -30,7 +30,7 @@ It writes to `LOAD_LOG` and `CONTROL_EVIDENCE` (both already in the sample pack)
 <p class="diagram-swipe">Swipe to see the full diagram →</p>
 <div class="diagram-frame">
 <figure class="diagram-scroll" style="--diagram-min-width: 700px" tabindex="0" aria-label="ERP control totals">
-  <a href="../control-totals.svg"><img src="../control-totals.svg" alt="Control totals at every hop for FDH Motors 2026-03: the ERP file trailer says 284 lines and 1,466,143.86. Snowflake lands 284 lines with the same total (ERP_GL_LANDING, V_ERP_GL_LANDED), aggregates them to 58 cells (V_ERP_GL_CELLS), and Jedox reports 58 cells. A check on each hop compares rows and totals, and all pass. Every hop writes to LOAD_LOG, and V_CONTROL_RECON appends one row per run to CONTROL_EVIDENCE: R1 PASS, R2 FAIL (one line dropped, −6,035.36), R3 DUPLICATE." width="840" height="320"></a>
+  <a href="../control-totals.svg"><img src="../control-totals.svg" alt="Control totals at every hop for FDH Motors 2026-03: the ERP file trailer says 284 lines and 1,466,143.86. Snowflake lands 284 lines with the same total (ERP_GL_LANDING, V_ERP_GL_LANDED), aggregates them to 58 cells (V_ERP_GL_CELLS), and Jedox reports 58 cells. A check on each hop compares rows and totals, and all pass. Every hop writes to LOAD_LOG, and V_CONTROL_RECON appends one row per run to CONTROL_EVIDENCE: R1 PASS, R2 FAIL, because one line was dropped (−6,035.36), so the Jedox load is blocked and step 3 shows MISSING_HOP; R3 DUPLICATE." width="840" height="320"></a>
 </figure>
 <span class="diagram-chevron" aria-hidden="true">›</span>
 </div>

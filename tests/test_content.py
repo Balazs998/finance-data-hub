@@ -800,6 +800,10 @@ class ContentTests(unittest.TestCase):
         self.assertEqual(page.count("](../jedox/failure-alerts.md)"), 2)
         self.assertIn("Swipe to see the full diagram", page)
         self.assertIn('src="../control-totals.svg"', page)
+        self.assertIn(
+            "R2 FAIL, because one line was dropped (−6,035.36), so the Jedox load is blocked and step 3 shows MISSING_HOP; R3 DUPLICATE.",
+            page,
+        )
         self.assertIn("CREATE TABLE IF NOT EXISTS ERP_GL_LANDING", page)
         self.assertIn("is only a template for that row", page)
         self.assertNotIn("close automation", page)

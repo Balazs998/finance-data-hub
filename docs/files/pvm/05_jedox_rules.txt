@@ -1,0 +1,35 @@
+Jedox rules for MOTORS_COST and MOTORS_SALES (database FDH_DEMO). Based on Jedox docs and reviewed by J-dox. NOT run on a live Jedox install.
+
+MOTORS_COST: Version x Period x Plant x Model x Measure (UnitsProduced, Cost, CostPerVehicle)
+MOTORS_SALES: Version x Period x Model x Market x Measure (UnitsSold, NetRevenue, UnitPrice, ContributionPerVehicle, PriceEffect, VolumeEffect, MixEffect, NewLostEffect)
+Version and Period are the shared PnL dimensions (Actual, Budget, Forecast; Variance, Variance %; 2025-10..2026-09 with FY2026).
+
+Rule order in both cubes: the Version Variance (Actual - Budget) and Variance % rules go ABOVE the ratio rules below,
+so Variance CostPerVehicle = Actual CPV - Budget CPV, not delta Cost / delta Units.
+
+Rule on MOTORS_COST (plain rule, no N:/C:, so it also runs on All Plants, All Models, FY2026; rule-only, never loaded):
+['CostPerVehicle'] = IF(['UnitsProduced']=0, STET(), ['Cost']/['UnitsProduced'])
+
+Rule on MOTORS_SALES (plain rule, rule-only, never loaded):
+['UnitPrice'] = IF(['UnitsSold']=0, STET(), ['NetRevenue']/['UnitsSold'])
+
+Loaded from Snowflake views, base elements only:
+- MOTORS_COST: UnitsProduced and Cost (allocated_cost) from V_COST_PER_VEHICLE, Version Actual/Budget.
+- MOTORS_SALES: UnitsSold and NetRevenue from FACT_VEHICLE_SALES (through a view), Version Actual/Budget.
+- MOTORS_SALES: PriceEffect, VolumeEffect, MixEffect, NewLostEffect from V_PVM_VARIANCE at model x market,
+  written to Version Actual (base). Budget stays empty for these measures, so the Variance rule shows the same effect; Variance % is blank.
+  These consolidate by plain sum.
+- Never add a rule like Mix = Total - Price - Volume in Jedox.
+
+Contribution per vehicle at Model level: price per vehicle sold minus cost per vehicle produced.
+ContributionPerVehicle is a MOTORS_SALES measure, rule-only, never loaded. A PALO.DATA cross-cube rule reads the
+All Plants value from MOTORS_COST (arguments in MOTORS_COST dimension order: Version, Period, Plant, Model, Measure):
+['ContributionPerVehicle','All Markets'] = IF(['UnitsSold']=0, STET(), ['UnitPrice'] - PALO.DATA("FDH_DEMO","MOTORS_COST",!'Version',!'Period',"All Plants",!'Model',"CostPerVehicle"))
+Markers are optional. In Jedox 25.x and later they are rarely needed because the Dynamic Data Engine (DDE) usually optimizes the calculation itself.
+
+Docs (only these):
+https://knowledgebase-onprem.jedox.com/jedox/in-memory-db/rules-overview.htm
+https://knowledgebase.jedox.com/jedox/in-memory-db/rule-functions.htm
+https://knowledgebase.jedox.com/jedox/in-memory-db/markers.htm
+https://knowledgebase.jedox.com/jedox/in-memory-db/rules-cell-reference-offset.htm
+https://knowledgebase.jedox.com/jedox/in-memory-db/rules-dimensions-rule-targets-strings.htm

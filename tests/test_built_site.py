@@ -446,6 +446,7 @@ SOCIAL_PAGES = {
     "snowflake/fx-rate-lock/index.html": "fx-rate-lock.png",
     "snowflake/asof-join/index.html": "home.png",
     "snowflake/automaker-13-week-cash-runway/index.html": "automaker-13-week-cash-runway.png",
+    "snowflake/automaker-cost-per-vehicle/index.html": "automaker-cost-per-vehicle.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -462,6 +463,7 @@ SOCIAL_FILES = (
     "excel-thin-front-end.png",
     "fx-rate-lock.png",
     "automaker-13-week-cash-runway.png",
+    "automaker-cost-per-vehicle.png",
 )
 
 
@@ -1177,11 +1179,64 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertIn('href="../asof-join/"', footer)
         self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Cost per vehicle"',
+            footer,
+        )
+        self.assertIn('href="../automaker-cost-per-vehicle/"', footer)
+        self.assertIn("month-end-snapshots/", html)
+
+    def test_cost_per_vehicle_page_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "automaker-cost-per-vehicle" / "index.html"
+        self.assertTrue(page.is_file(), "cost per vehicle page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn("Cost per vehicle in Snowflake, variance in Jedox", html)
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("Siemens", html)
+        self.assertNotIn("/workspace/", html)
+        self.assertIn("FDH Motors", html)
+        self.assertIn("FDH_DEMO.MOTORS", html)
+        self.assertIn('class="docs-note"', html)
+        self.assertIn('href="../automaker-13-week-cash-runway/"', html)
+        self.assertIn('href="../plan-vs-actuals/"', html)
+        self.assertIn('href="../../jedox/snowflake-to-jedox/"', html)
+        self.assertIn(
+            "tracking capex projects against budget and commitments.",
+            html,
+        )
+        self.assertNotIn("capex/", html)
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "automaker-cost-per-vehicle.png"],
+        )
+        for relative in (
+            "pvm/01_v_plant_cost.sql",
+            "pvm/02_v_cost_per_vehicle.sql",
+            "pvm/03_v_unit_economics.sql",
+            "pvm/04_v_pvm_variance.sql",
+            "pvm/05_jedox_rules.txt",
+            "pvm/06_checks.sql",
+            "pvm/README.md",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 7)
+        readme = SITE / "files" / "pvm" / "README.md"
+        self.assertTrue(readme.is_file())
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Cost per vehicle"))
+        self.assertFalse((SITE / "files" / "pvm" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: 13-week cash runway"',
+            footer,
+        )
+        self.assertIn('href="../automaker-13-week-cash-runway/"', footer)
+        self.assertIn(
             'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
             footer,
         )
         self.assertIn('href="../../jedox/"', footer)
-        self.assertIn("month-end-snapshots/", html)
 
     def test_heading_permalinks_are_absent_but_ids_remain(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

@@ -536,6 +536,85 @@ class ContentTests(unittest.TestCase):
             nav.index("snowflake/automaker-13-week-cash-runway.md"),
         )
 
+    def test_cost_per_vehicle_links_the_cash_post_and_not_capex(self):
+        page = (ROOT / "docs/snowflake/automaker-cost-per-vehicle.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "Cost per vehicle in Snowflake, variance in Jedox"',
+            page,
+        )
+        self.assertIn("social_image: automaker-cost-per-vehicle.png", page)
+        self.assertIn(
+            '<p class="post-meta">Snowflake + Jedox · Intermediate · ~30 min · Automaker series</p>',
+            page,
+        )
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("](automaker-13-week-cash-runway.md)", page)
+        self.assertIn("](plan-vs-actuals.md)", page)
+        self.assertIn("](../jedox/snowflake-to-jedox.md)", page)
+        self.assertIn(
+            "**Next in the automaker series:** tracking capex projects against budget and commitments.",
+            page,
+        )
+        self.assertNotIn("](capex", page)
+        self.assertNotIn("capex.md", page)
+        self.assertNotIn("../automaker-13-week-cash-runway/", page)
+        self.assertIn("FDH_DEMO.MOTORS", page)
+        self.assertIn("FDH Motors", page)
+        for figure in (
+            "1,914.16",
+            "1,959.33",
+            "1,236,450.39",
+            "1,207,184.99",
+            "2,003,815.48",
+            "2,078,128.00",
+            "−74,312.52",
+            "96,130.22",
+            "−235,664.00",
+            "2,832.70",
+            "945.24",
+            "2026-03",
+        ):
+            self.assertIn(figure, page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        labels = (
+            "[[download:pvm/01_v_plant_cost.sql|Download 01_v_plant_cost.sql]]",
+            "[[download:pvm/02_v_cost_per_vehicle.sql|Download 02_v_cost_per_vehicle.sql]]",
+            "[[download:pvm/03_v_unit_economics.sql|Download 03_v_unit_economics.sql]]",
+            "[[download:pvm/04_v_pvm_variance.sql|Download 04_v_pvm_variance.sql]]",
+            "[[download:pvm/05_jedox_rules.txt|Download 05_jedox_rules.txt]]",
+            "[[download:pvm/06_checks.sql|Download 06_checks.sql]]",
+            "[[download:pvm/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/pvm"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_v_plant_cost.sql",
+                "02_v_cost_per_vehicle.sql",
+                "03_v_unit_economics.sql",
+                "04_v_pvm_variance.sql",
+                "05_jedox_rules.txt",
+                "06_checks.sql",
+                "README.md",
+            ],
+        )
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotIn("/workspace/", text, path.name)
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/automaker-13-week-cash-runway.md"),
+            nav.index("snowflake/automaker-cost-per-vehicle.md"),
+        )
+
 
 
 

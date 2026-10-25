@@ -182,7 +182,7 @@ Run `06_checks.sql`. You should see:
 - Write the PVM formula down, keep new and lost models on their own line, and prove it with a check row of 0.00.
 - Let Snowflake compute the variance and Jedox store it.
 
-**Next in the automaker series:** tracking capex projects against budget and commitments.
+**Next in the automaker series:** [tracking capex projects against budget and commitments](automaker-capex-project-tracking.md).
 
 ## Downloads
 

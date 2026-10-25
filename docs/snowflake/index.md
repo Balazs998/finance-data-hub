@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, and cost per vehicle for fictional FDH Motors."
+description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, cost per vehicle, and capex project tracking for fictional FDH Motors."
 hide:
   - toc
 ---
@@ -66,6 +66,12 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 30 min read</p>
   </article></li>
   <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="automaker-capex-project-tracking/">Capex project tracking</a></h3>
+    <p class="fdh-card__summary">Track FDH Motors capex budget, open commitments and actuals, and alert only when a project is over budget or unapproved.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 25 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
@@ -110,6 +116,10 @@ hide:
     <li><a href="../files/pvm/04_v_pvm_variance.sql" download="04_v_pvm_variance.sql" data-goatcounter-click="download-04_v_pvm_variance.sql" data-goatcounter-title="Download 04_v_pvm_variance.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_pvm_variance.sql</a></li>
     <li><a href="../files/pvm/05_jedox_rules.txt" download="05_jedox_rules.txt" data-goatcounter-click="download-05_jedox_rules.txt" data-goatcounter-title="Download 05_jedox_rules.txt" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_jedox_rules.txt</a></li>
     <li><a href="../files/pvm/06_checks.sql" download="06_checks.sql" data-goatcounter-click="download-06_checks.sql" data-goatcounter-title="Download 06_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_checks.sql</a></li>
+    <li><a href="../files/capex/01_v_capex_status.sql" download="01_v_capex_status.sql" data-goatcounter-click="download-01_v_capex_status.sql" data-goatcounter-title="Download 01_v_capex_status.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_v_capex_status.sql</a></li>
+    <li><a href="../files/capex/02_v_capex_exceptions.sql" download="02_v_capex_exceptions.sql" data-goatcounter-click="download-02_v_capex_exceptions.sql" data-goatcounter-title="Download 02_v_capex_exceptions.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_v_capex_exceptions.sql</a></li>
+    <li><a href="../files/capex/03_v_capex_alert.sql" download="03_v_capex_alert.sql" data-goatcounter-click="download-03_v_capex_alert.sql" data-goatcounter-title="Download 03_v_capex_alert.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_v_capex_alert.sql</a></li>
+    <li><a href="../files/capex/04_checks.sql" download="04_checks.sql" data-goatcounter-click="download-04_checks.sql" data-goatcounter-title="Download 04_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_checks.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

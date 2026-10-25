@@ -445,6 +445,7 @@ SOCIAL_PAGES = {
     "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
     "snowflake/fx-rate-lock/index.html": "fx-rate-lock.png",
     "snowflake/asof-join/index.html": "home.png",
+    "snowflake/automaker-13-week-cash-runway/index.html": "automaker-13-week-cash-runway.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -460,6 +461,7 @@ SOCIAL_FILES = (
     "month-end-snapshots.png",
     "excel-thin-front-end.png",
     "fx-rate-lock.png",
+    "automaker-13-week-cash-runway.png",
 )
 
 
@@ -694,15 +696,28 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertEqual(sorted(buttons), disk)
         self.assertEqual(article.count("md-button download"), len(disk))
 
-        # Shared sample files sit in one "Sample data" group at the top.
+        # Shared FDH_DEMO.SAMPLE files sit in one "Sample data" group at the top.
+        # The FDH Motors pack lives under samples/motors/ and is listed with its note.
         sample_heading = article.find(">Sample data<")
         self.assertGreaterEqual(sample_heading, 0)
-        sample_files = [rel for rel in disk if rel.startswith("samples/")]
-        self.assertEqual(len(sample_files), 5)
+        sample_files = [rel for rel in disk if rel.startswith("samples/") and not rel.startswith("samples/motors/")]
+        self.assertEqual(
+            sample_files,
+            [
+                "samples/dim_account.csv",
+                "samples/dim_cost_center.csv",
+                "samples/fact_actuals.csv",
+                "samples/fact_budget.csv",
+                "samples/load_snowflake.sql",
+            ],
+        )
         first_note_heading = article.find("<h2", sample_heading + 1)
         sample_section = article[sample_heading:first_note_heading]
         for relative in sample_files:
             self.assertIn(f"files/{relative}", sample_section, relative)
+        for relative in disk:
+            if relative.startswith("samples/motors/"):
+                self.assertNotIn(f"files/{relative}", sample_section, relative)
 
         # Every other file sits in the group of the first note, in nav order, that links it.
         rest = article[first_note_heading:]
@@ -1096,6 +1111,65 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertIn('href="../asof-join/"', footer)
         self.assertIn("month-end-snapshots/", html)
 
+    def test_cash_runway_page_diagram_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "automaker-13-week-cash-runway" / "index.html"
+        self.assertTrue(page.is_file(), "13-week cash runway page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "A 13-week cash forecast with scenarios, a liquidity floor and an honest runway number",
+            html,
+        )
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("Siemens", html)
+        self.assertNotIn("/workspace/", html)
+        self.assertIn("FDH Motors", html)
+        self.assertIn("FDH_DEMO.MOTORS", html)
+        self.assertIn('class="docs-note"', html)
+        self.assertIn("Swipe to see the full diagram →", html)
+        self.assertIn('aria-label="13-week cash runway chart"', html)
+        self.assertIn('src="../cash-runway-13w.svg"', html)
+        diagram = local_target(page, "../cash-runway-13w.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "automaker-13-week-cash-runway.png"],
+        )
+        self.assertNotIn("home.png", meta_contents(html, "property", "og:image")[0])
+        for relative in (
+            "samples/motors/cash_opening.csv",
+            "samples/motors/cash_flow.csv",
+            "samples/motors/load_motors.sql",
+            "samples/motors/gen_motors.py",
+            "samples/motors/README.md",
+            "cash13/01_cash_tables_ddl_load.sql",
+            "cash13/07_checks.sql",
+            "cash13/README.md",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 33)
+        readme = SITE / "files" / "cash13" / "README.md"
+        self.assertTrue(readme.is_file(), "cash SQL README was not copied as a download")
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# 13-week cash forecast"))
+        self.assertFalse((SITE / "files" / "cash13" / "index.html").exists())
+        self.assertFalse((SITE / "files" / "samples" / "motors" / "index.html").exists())
+        motors_readme = SITE / "files" / "samples" / "motors" / "README.md"
+        self.assertTrue(motors_readme.is_file())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: ASOF JOIN"',
+            footer,
+        )
+        self.assertIn('href="../asof-join/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
+            footer,
+        )
+        self.assertIn('href="../../jedox/"', footer)
+        self.assertIn("month-end-snapshots/", html)
 
     def test_heading_permalinks_are_absent_but_ids_remain(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

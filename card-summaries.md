@@ -9,6 +9,7 @@ One sentence on each section card.
 - Snapshots vs Time Travel: Freeze the month you reported so a late posting does not change the number you sent.
 - FX rate lock: Lock the FX rate on the pack you sent so a later restatement cannot move the total.
 - ASOF JOIN: Attach the latest prior daily FX rate when the posting date has no exact match.
+- 13-week cash runway: Forecast 13 weeks of FDH Motors cash and read how many weeks stay above the liquidity floor.
 - Snowflake to Jedox load: Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.
 
 ## Jedox

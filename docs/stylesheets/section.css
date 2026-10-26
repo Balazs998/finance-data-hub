@@ -3,6 +3,8 @@
 .fdh-section--jedox{--tool:#8B7CF6;--tool-text:#A78BFA;--tool-rgb:139,124,246}
 .fdh-section--snowflake{--tool:#38BDF8;--tool-text:#38BDF8;--tool-rgb:56,189,248}
 .fdh-section--vba{--tool:#A3E635;--tool-text:#A3E635;--tool-rgb:163,230,53}
+.fdh-section--power-bi{--tool:#FBBF24;--tool-text:#FBBF24;--tool-rgb:251,191,36}
+.fdh-section--qlik{--tool:#2DD4BF;--tool-text:#2DD4BF;--tool-rgb:45,212,191}
 
 /* Hero */
 .fdh-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:2rem;align-items:end;

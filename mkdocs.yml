@@ -12,6 +12,7 @@ extra:
 exclude_docs: |
   jedox/rule-studio/
   javascripts/rule-*.js
+  stylesheets/rule-studio.css
 
 extra_css:
   - stylesheets/extra.css
@@ -113,8 +114,10 @@ nav:
       - VBScript deprecation: vba/vbscript-deprecation.md
       - Month-close checks: vba/month-close-checks.md
       - Excel as a thin front end: vba/excel-thin-front-end.md
-  - Power BI and Qlik:
-      - bi/index.md
-      - Power BI on Snowflake views: bi/power-bi-snowflake-views.md
+  - Power BI:
+      - power-bi/index.md
+      - Power BI on Snowflake views: power-bi/power-bi-snowflake-views.md
+  - Qlik Sense:
+      - qlik/index.md
   - Downloads: downloads.md
   - About: about.md

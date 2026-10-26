@@ -29,7 +29,7 @@ Most finance SQL comes down to three questions: how did we do against plan, how 
     - Role / access: `SYSADMIN` (or a lab admin role) in `FDH_DEMO.SAMPLE`. The pack creates two views and no grants. Leave `JEDOX_ETL_ROLE` unchanged.
     - Product version: any current Snowflake account.
     - Previous posts: [Plan vs. actuals in Snowflake SQL, without losing rows](plan-vs-actuals.md) and [Permanent month-end snapshots vs Time Travel](month-end-snapshots.md) (step 4 reuses its `FACT_ACTUALS_SNAPSHOT`).
-    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), `dim_account.csv`, and the [Downloads](#downloads) pack.
+    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), [`dim_account.csv`](../files/samples/dim_account.csv), and the [Downloads](#downloads) pack.
 
 ## 1. Actual vs budget per cell
 
@@ -136,7 +136,7 @@ Before the late posting this returns **0** rows. The one 2026-03 budget-only cel
 - Compare nullable amounts with `IS DISTINCT FROM`.
 - Keep the number you sent in a snapshot and compare against it.
 
-**Next:** [Power BI on Snowflake views](../bi/power-bi-snowflake-views.md) loads the same actuals and budget into a star schema with a check that ties to 0.00.
+**Next:** [Power BI on Snowflake views](../power-bi/power-bi-snowflake-views.md) loads the same actuals and budget into a star schema with a check that ties to 0.00.
 
 ## Downloads
 

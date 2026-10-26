@@ -8,7 +8,7 @@ from test_built_site import ROOT, SITE, local_target
 from test_home import png_size, webp_size
 
 SECTION_CSS = ROOT / "docs" / "stylesheets" / "section.css"
-SECTION_CSS_SHA256 = "aab900abe9b200064f791b4643d4a19673d198290418047ac6e7f02ef02d457b"
+SECTION_CSS_SHA256 = "a0f650659c750e5afd17e0bfb7bf27e215aac1febe7c2f9ccd92ca0d0c8bd41b"
 
 LOAD_SUMMARY = "Pull monthly actuals into a planning cube so a rerun leaves no stale numbers."
 

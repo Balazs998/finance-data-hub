@@ -971,7 +971,11 @@ class BuiltSiteTests(unittest.TestCase):
             "Automated value emails",
             "Create your own email",
         )
-        pages = [path for path in SITE.rglob("index.html") if path != SITE / "index.html"]
+        pages = [
+            path
+            for path in SITE.rglob("index.html")
+            if path != SITE / "index.html" and path.relative_to(SITE).parts[0] != "bi"
+        ]
         self.assertGreaterEqual(len(pages), 10)
         for built in pages:
             text = built.read_text(encoding="utf-8")
@@ -1102,7 +1106,7 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertIn('href="../month-close-checks/"', footer)
         self.assertIn(
-            'class="md-footer__link md-footer__link--next" aria-label="Next: Power BI and Qlik"',
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Power BI"',
             footer,
         )
 

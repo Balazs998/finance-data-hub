@@ -17,11 +17,11 @@ This is a SOX-style evidence pattern: it records what was checked, by which role
 3. `02_views.sql` - typed lines, trailer, cells.
 4. `03_load_and_log.sql` - per run: COPY the file, then log hops `file`, `snowflake`, `snowflake_cells`.
 5. `04_v_control_recon.sql` - recon view (create once; it reads LOAD_LOG).
-6. `05_jedox_hop.sql` - only after step 1 = PASS: the Jedox job loads the cells, reads them back, and writes hop `jedox` (template).
+6. `05_jedox_hop.sql` - the gate query (after file 04). Continue the Jedox job only when it returns 1: load the cells, read them back, and write hop `jedox` (template).
 7. `06_control_evidence.sql` - one evidence row per run.
 8. `07_checks.sql` - the checks below.
 
-For R2 and R3, set the new run_id and file name and repeat steps 4, 6 (only if the gate returns 1), 7 and 8. Create the views (steps 3 and 5) once.
+For R2 and R3, set the new run_id and file name and repeat steps 4 and 6. In step 6, continue the Jedox job only when the gate returns 1, then run steps 7 and 8. Create the views (steps 3 and 5) once.
 
 ## NULL handling
 

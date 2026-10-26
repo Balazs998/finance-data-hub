@@ -82,6 +82,8 @@ FROM (
 FILES = ('erp_gl_extract_2026-03.csv.gz');
 ```
 
+`PUT` gzips the CSV by default, so `COPY` reads `.csv.gz`.
+
 Then it writes three rows to `LOAD_LOG`:
 
 - **file**: the trailer's row count and total
@@ -96,34 +98,7 @@ Load metadata belongs to the table. Recreating `ERP_GL_LANDING` erases it, which
 
 The run variables use `SET` ([session variables](https://docs.snowflake.com/en/sql-reference/session-variables)), and `run_by_role` is `CURRENT_ROLE()` ([CURRENT_ROLE](https://docs.snowflake.com/en/sql-reference/functions/current_role)). Log times are stored as session-local wall-clock time (TIMESTAMP_NTZ).
 
-## Step 4: The Jedox hop writes its own row
-
-```sql
--- Gate: 1 = start the Jedox load, 0 = stop.
--- step 1 = PASS implies hop snowflake = LOADED (a DUPLICATE run shows DUPLICATE on step 1)
-SELECT COALESCE(MAX(IFF(result = 'PASS', 1, 0)), 0) AS start_jedox
-FROM V_CONTROL_RECON
-WHERE run_id = $run_id AND step_no = 1;
-```
-
-The gate comes first: start the Jedox load only when hop `snowflake` = LOADED and `V_CONTROL_RECON` step 1 = PASS for this run_id. (`V_CONTROL_RECON` is created in Step 5; run file 04 before this.) A file that doesn't match its trailer never reaches the planning model.
-
-The Jedox load reads `V_ERP_GL_CELLS` for the file (`file_name = $file_name`), as in the [Snowflake to Jedox](../jedox/snowflake-to-jedox.md) post. Jedox's Integrator State gives a status but no row count (see the [failure-alerts post](../jedox/failure-alerts.md)). After the Cube Load, the job reads back the slice it loaded with a Cube Extract (base elements only), counts the cells and sums them with a TableAggregation Transform, and inserts one `jedox` row into LOAD_LOG with a Relational Load in insert mode ([Cube Extract](https://knowledgebase.jedox.com/integration/extracts/cube-extract.htm), [TableAggregation Transform](https://knowledgebase.jedox.com/integration/transforms/tableaggregation-transform.htm), [Relational Load](https://knowledgebase.jedox.com/integration/loads/relational-load.htm)). Never use mode update (it deletes the table's rows first) or create (it drops the table).
-
-The control totals decide the result, not the status code ([Integrator job status codes](https://knowledgebase.jedox.com/jedox/maintenance/scheduler-integrator-jobs.htm)):
-
-- **Status 10 or 20:** read back and write the row as LOADED (10) or WARNING (20). If the count and the total both match, the result is PASS (10) or PASS_WARNING (20); otherwise it's MISMATCH.
-- **Status 30, 40, 50, 55, 60 or 70:** write no `jedox` row, so the recon shows MISSING_HOP (= FAIL).
-
-The reason: a Cube Load skips cells with missing elements and only logs a warning ([Cube Load](https://knowledgebase.jedox.com/integration/loads/cube-load.htm)), so a status 20 run can be short of cells and still look fine.
-
-A Relational Load can't run `CURRENT_TIMESTAMP()` or `CURRENT_ROLE()`, so the job supplies `run_at` and `run_by_role` itself.
-
-The read-back uses Empty cells = excludeEmpty. The cube doesn't store zero values (the Jedox default), so a cell that loads as 0.00 is deleted, not stored, and the read-back would count one cell fewer than `V_ERP_GL_CELLS`. 2026-03 has no zero cells (58 of 58 non-zero). ([Zero values](https://knowledgebase.jedox.com/jedox/in-memory-db/zero-values.htm))
-
-`05_jedox_hop.sql` is only a template for that row. Which role inserts it is a security decision: `JEDOX_ETL_ROLE` stays views-only, so it should be a separate write role with INSERT on `MOTORS.LOAD_LOG` plus USAGE on the database, schema and warehouse. Nothing else: no SELECT, UPDATE, DELETE or ownership. Use a separate role, never `JEDOX_ETL_ROLE`. This pack grants nothing and creates no role.
-
-## Step 5: Compare the hops
+## Step 4: Compare the hops
 
 `V_CONTROL_RECON` compares each hop with the one before it. Control totals are compared at every step. Row counts are compared only where the grain matches: file vs snowflake (lines) and cells vs Jedox (cells).
 
@@ -163,6 +138,33 @@ LEFT JOIN LOAD_LOG c ON c.run_id = r.run_id AND c.hop = s.hop;
 | R3 same file again | DUPLICATE | DUPLICATE | DUPLICATE |
 
 R2 has exactly one mismatch, at the first hop, which is where the line went missing: `FDH1-202603-CC4000-600000` line 1, 6,035.36. Because step 1 failed, the gate keeps the incomplete file out of Jedox, so step 3 shows MISSING_HOP and the evidence row is FAIL. Without the trailer check, Jedox would have matched Snowflake exactly and the gap would never show. That's why you compare against the trailer, not only Snowflake against Jedox.
+
+## Step 5: Gate the load, then the Jedox hop writes its own row
+
+```sql
+-- Gate: 1 = start the Jedox load, 0 = stop.
+-- step 1 = PASS implies hop snowflake = LOADED (a DUPLICATE run shows DUPLICATE on step 1)
+SELECT COALESCE(MAX(IFF(result = 'PASS', 1, 0)), 0) AS start_jedox
+FROM V_CONTROL_RECON
+WHERE run_id = $run_id AND step_no = 1;
+```
+
+The gate comes first: start the Jedox load only when hop `snowflake` = LOADED and `V_CONTROL_RECON` step 1 = PASS for this run_id. A file that doesn't match its trailer never reaches the planning model.
+
+The Jedox load reads `V_ERP_GL_CELLS` for the file (`file_name = $file_name`), as in the [Snowflake to Jedox](../jedox/snowflake-to-jedox.md) post. Jedox's Integrator State gives a status but no row count (see the [failure-alerts post](../jedox/failure-alerts.md)). After the Cube Load, the job reads back the slice it loaded with a Cube Extract (base elements only), counts the cells and sums them with a TableAggregation Transform, and inserts one `jedox` row into LOAD_LOG with a Relational Load in insert mode ([Cube Extract](https://knowledgebase.jedox.com/integration/extracts/cube-extract.htm), [TableAggregation Transform](https://knowledgebase.jedox.com/integration/transforms/tableaggregation-transform.htm), [Relational Load](https://knowledgebase.jedox.com/integration/loads/relational-load.htm)). Never use mode update (it deletes the table's rows first) or create (it drops the table).
+
+The control totals decide the result, not the status code ([Integrator job status codes](https://knowledgebase.jedox.com/jedox/maintenance/scheduler-integrator-jobs.htm)):
+
+- **Status 10 or 20:** read back and write the row as LOADED (10) or WARNING (20). If the count and the total both match, the result is PASS (10) or PASS_WARNING (20); otherwise it's MISMATCH.
+- **Status 30, 40, 50, 55, 60 or 70:** write no `jedox` row, so the recon shows MISSING_HOP (= FAIL).
+
+The reason: a Cube Load skips cells with missing elements and only logs a warning ([Cube Load](https://knowledgebase.jedox.com/integration/loads/cube-load.htm)), so a status 20 run can be short of cells and still look fine.
+
+A Relational Load can't run `CURRENT_TIMESTAMP()` or `CURRENT_ROLE()`, so the job supplies `run_at` and `run_by_role` itself.
+
+The read-back uses Empty cells = excludeEmpty. The cube doesn't store zero values (the Jedox default), so a cell that loads as 0.00 is deleted, not stored, and the read-back would count one cell fewer than `V_ERP_GL_CELLS`. 2026-03 has no zero cells (58 of 58 non-zero). ([Zero values](https://knowledgebase.jedox.com/jedox/in-memory-db/zero-values.htm))
+
+`05_jedox_hop.sql` is only a template for that row, after the gate query above. Which role inserts it is a security decision: `JEDOX_ETL_ROLE` stays views-only, so it should be a separate write role with INSERT on `MOTORS.LOAD_LOG` plus USAGE on the database, schema and warehouse. Nothing else: no SELECT, UPDATE, DELETE or ownership. Use a separate role, never `JEDOX_ETL_ROLE`. This pack grants nothing and creates no role.
 
 ## Step 6: Write the evidence
 
@@ -208,6 +210,9 @@ Run `07_checks.sql`. You should see:
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.
 
+[[download:samples/motors/erp_gl_extract_2026-03.csv|Download erp_gl_extract_2026-03.csv]]
+[[download:samples/motors/erp_gl_extract_2026-03_dropped.csv|Download erp_gl_extract_2026-03_dropped.csv]]
+[[download:samples/motors/load_motors.sql|Download load_motors.sql]]
 [[download:erpctl/01_erp_gl_landing_ddl.sql|Download 01_erp_gl_landing_ddl.sql]]
 [[download:erpctl/02_views.sql|Download 02_views.sql]]
 [[download:erpctl/03_load_and_log.sql|Download 03_load_and_log.sql]]

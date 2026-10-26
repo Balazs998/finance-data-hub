@@ -1,5 +1,13 @@
--- Step 4: the Jedox hop. The Snowflake -> Jedox load (post "Snowflake to Jedox") reads V_ERP_GL_CELLS WHERE file_name = '<file>'.
+-- Step 5: the Jedox hop. Run 04_v_control_recon.sql first so V_CONTROL_RECON exists.
+-- Gate: 1 = start the Jedox load, 0 = stop.
+-- step 1 = PASS implies hop snowflake = LOADED (a DUPLICATE run shows DUPLICATE on step 1).
 -- Start the Jedox load only when hop snowflake = LOADED AND V_CONTROL_RECON step 1 = PASS for this run_id.
+USE SCHEMA FDH_DEMO.MOTORS;
+SELECT COALESCE(MAX(IFF(result = 'PASS', 1, 0)), 0) AS start_jedox
+FROM V_CONTROL_RECON
+WHERE run_id = $run_id AND step_no = 1;
+
+-- The Snowflake -> Jedox load (post "Snowflake to Jedox") reads V_ERP_GL_CELLS WHERE file_name = '<file>'.
 -- After the Cube Load, the job reads back the slice it loaded with a Cube Extract (base elements only), counts the cells and
 -- sums them with a TableAggregation Transform, and inserts one jedox row into LOAD_LOG with a Relational Load in insert mode.
 -- The read-back uses Empty cells = excludeEmpty. The cube doesn't store zero values (the Jedox default), so a cell that loads

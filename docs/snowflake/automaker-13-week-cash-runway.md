@@ -166,10 +166,26 @@ Only the down case breaches, and it breaches in the payroll plus tax week. Base 
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.
 
+### Files this post uses
+
 [[download:samples/motors/cash_opening.csv|Download cash_opening.csv]]
 [[download:samples/motors/cash_flow.csv|Download cash_flow.csv]]
 [[download:samples/motors/cash_scenario.csv|Download cash_scenario.csv]]
 [[download:samples/motors/liquidity_floor.csv|Download liquidity_floor.csv]]
+[[download:samples/motors/load_motors.sql|Download load_motors.sql]]
+[[download:samples/motors/gen_motors.py|Download gen_motors.py]]
+[[download:samples/motors/README.md|Download README.md (sample pack)]]
+[[download:cash13/01_cash_tables_ddl_load.sql|Download 01_cash_tables_ddl_load.sql]]
+[[download:cash13/02_v_cash_flow_week.sql|Download 02_v_cash_flow_week.sql]]
+[[download:cash13/03_v_cash_13w.sql|Download 03_v_cash_13w.sql]]
+[[download:cash13/04_v_cash_runway.sql|Download 04_v_cash_runway.sql]]
+[[download:cash13/05_v_cash_week1_avf.sql|Download 05_v_cash_week1_avf.sql]]
+[[download:cash13/06_v_receipt_slip.sql|Download 06_v_receipt_slip.sql]]
+[[download:cash13/07_checks.sql|Download 07_checks.sql]]
+[[download:cash13/README.md|Download README.md (SQL pack)]]
+
+### Rest of the FDH Motors pack
+
 [[download:samples/motors/bom.csv|Download bom.csv]]
 [[download:samples/motors/capex_actual.csv|Download capex_actual.csv]]
 [[download:samples/motors/capex_commit.csv|Download capex_commit.csv]]
@@ -188,14 +204,3 @@ All files use made-up sample data and placeholder names. FDH Motors is not a rea
 [[download:samples/motors/motors_recipients.csv|Download motors_recipients.csv]]
 [[download:samples/motors/part_purchase.csv|Download part_purchase.csv]]
 [[download:samples/motors/std_cost.csv|Download std_cost.csv]]
-[[download:samples/motors/load_motors.sql|Download load_motors.sql]]
-[[download:samples/motors/gen_motors.py|Download gen_motors.py]]
-[[download:samples/motors/README.md|Download README.md (sample pack)]]
-[[download:cash13/01_cash_tables_ddl_load.sql|Download 01_cash_tables_ddl_load.sql]]
-[[download:cash13/02_v_cash_flow_week.sql|Download 02_v_cash_flow_week.sql]]
-[[download:cash13/03_v_cash_13w.sql|Download 03_v_cash_13w.sql]]
-[[download:cash13/04_v_cash_runway.sql|Download 04_v_cash_runway.sql]]
-[[download:cash13/05_v_cash_week1_avf.sql|Download 05_v_cash_week1_avf.sql]]
-[[download:cash13/06_v_receipt_slip.sql|Download 06_v_receipt_slip.sql]]
-[[download:cash13/07_checks.sql|Download 07_checks.sql]]
-[[download:cash13/README.md|Download README.md (SQL pack)]]

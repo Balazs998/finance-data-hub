@@ -139,7 +139,7 @@ SELECT COUNT(*) AS exception_count FROM V_CAPEX_EXCEPTIONS;
 
 0 means stop and send nothing. Anything above 0 means read `V_CAPEX_ALERT` and send. This is the same idea as the [failure-alerts post](../jedox/failure-alerts.md): no mail on a good day, so people still read the mail on a bad one. The job only needs to read these views; it never writes to the capex tables.
 
-The alert view only reads; it never writes to the capex tables. Give the sending job a role that can only SELECT these three views, and keep real addresses in your own `MOTORS_RECIPIENTS` table, never in a file you publish.
+Give the sending job a role that can only SELECT these three views, and keep real addresses in your own `MOTORS_RECIPIENTS` table, never in a file you publish.
 
 ## Check the result
 
@@ -179,6 +179,11 @@ Run `04_checks.sql`. You should see:
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.
 
+[[download:samples/motors/capex_project.csv|Download capex_project.csv]]
+[[download:samples/motors/capex_commit.csv|Download capex_commit.csv]]
+[[download:samples/motors/capex_actual.csv|Download capex_actual.csv]]
+[[download:samples/motors/motors_recipients.csv|Download motors_recipients.csv]]
+[[download:samples/motors/load_motors.sql|Download load_motors.sql]]
 [[download:capex/01_v_capex_status.sql|Download 01_v_capex_status.sql]]
 [[download:capex/02_v_capex_exceptions.sql|Download 02_v_capex_exceptions.sql]]
 [[download:capex/03_v_capex_alert.sql|Download 03_v_capex_alert.sql]]

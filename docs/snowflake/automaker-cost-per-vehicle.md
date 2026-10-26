@@ -188,6 +188,17 @@ Run `06_checks.sql`. You should see:
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.
 
+[[download:samples/motors/fact_production.csv|Download fact_production.csv]]
+[[download:samples/motors/fact_vehicle_sales.csv|Download fact_vehicle_sales.csv]]
+[[download:samples/motors/map_cost_center_plant.csv|Download map_cost_center_plant.csv]]
+[[download:samples/motors/dim_plant.csv|Download dim_plant.csv]]
+[[download:samples/motors/dim_model.csv|Download dim_model.csv]]
+[[download:samples/motors/dim_market.csv|Download dim_market.csv]]
+[[download:samples/fact_actuals.csv|Download fact_actuals.csv]]
+[[download:samples/fact_budget.csv|Download fact_budget.csv]]
+[[download:samples/dim_account.csv|Download dim_account.csv]]
+[[download:samples/motors/load_motors.sql|Download load_motors.sql]]
+[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]
 [[download:pvm/01_v_plant_cost.sql|Download 01_v_plant_cost.sql]]
 [[download:pvm/02_v_cost_per_vehicle.sql|Download 02_v_cost_per_vehicle.sql]]
 [[download:pvm/03_v_unit_economics.sql|Download 03_v_unit_economics.sql]]

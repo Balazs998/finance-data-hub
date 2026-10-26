@@ -38,7 +38,7 @@ SELECT $run_id, 'snowflake', '2026-03', b.n, COALESCE(b.total, 0), TO_VARCHAR(b.
 FROM b;
 
 -- Hop 2b, Snowflake output: the cells (cost_center x account x period) from the lines that landed in this run.
--- Start the Jedox load only when hop snowflake = LOADED AND V_CONTROL_RECON step 1 = PASS for this run_id.
+-- The Jedox gate is in 05_jedox_hop.sql, after 04_v_control_recon.sql creates V_CONTROL_RECON.
 INSERT INTO LOAD_LOG (run_id, hop, period, rows, control_total, hash, status, run_at, run_by_role)
 WITH c AS (
  SELECT cost_center, account, period, SUM(amount) AS amount
@@ -47,9 +47,3 @@ WITH c AS (
 )
 SELECT $run_id, 'snowflake_cells', '2026-03', COUNT(*), COALESCE(SUM(amount), 0), NULL, 'READY', CURRENT_TIMESTAMP(), CURRENT_ROLE()
 FROM c;
-
--- Gate: 1 = start the Jedox load, 0 = stop.
--- step 1 = PASS implies hop snowflake = LOADED (a DUPLICATE run shows DUPLICATE on step 1)
-SELECT COALESCE(MAX(IFF(result = 'PASS', 1, 0)), 0) AS start_jedox
-FROM V_CONTROL_RECON
-WHERE run_id = $run_id AND step_no = 1;

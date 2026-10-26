@@ -536,7 +536,7 @@ class ContentTests(unittest.TestCase):
             nav.index("snowflake/automaker-13-week-cash-runway.md"),
         )
 
-    def test_cost_per_vehicle_links_the_cash_post_and_not_capex(self):
+    def test_cost_per_vehicle_links_the_cash_post_and_the_capex_post(self):
         page = (ROOT / "docs/snowflake/automaker-cost-per-vehicle.md").read_text(encoding="utf-8")
         self.assertIn(
             'title: "Cost per vehicle in Snowflake, variance in Jedox"',
@@ -552,11 +552,9 @@ class ContentTests(unittest.TestCase):
         self.assertIn("](plan-vs-actuals.md)", page)
         self.assertIn("](../jedox/snowflake-to-jedox.md)", page)
         self.assertIn(
-            "**Next in the automaker series:** tracking capex projects against budget and commitments.",
+            "**Next in the automaker series:** [tracking capex projects against budget and commitments](automaker-capex-project-tracking.md).",
             page,
         )
-        self.assertNotIn("](capex", page)
-        self.assertNotIn("capex.md", page)
         self.assertNotIn("../automaker-13-week-cash-runway/", page)
         self.assertIn("FDH_DEMO.MOTORS", page)
         self.assertIn("FDH Motors", page)
@@ -613,6 +611,87 @@ class ContentTests(unittest.TestCase):
         self.assertLess(
             nav.index("snowflake/automaker-13-week-cash-runway.md"),
             nav.index("snowflake/automaker-cost-per-vehicle.md"),
+        )
+
+    def test_capex_project_tracking_keeps_fictional_totals_and_marks_the_diagram(self):
+        page = (ROOT / "docs/snowflake/automaker-capex-project-tracking.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "Capex tracking: budget vs committed vs actual, with alerts only when something is wrong"',
+            page,
+        )
+        self.assertIn("social_image: automaker-capex-project-tracking.png", page)
+        self.assertIn(
+            '<p class="post-meta">Snowflake · Intermediate · ~25 min · Automaker series</p>',
+            page,
+        )
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("](automaker-13-week-cash-runway.md)", page)
+        self.assertEqual(page.count("](../jedox/failure-alerts.md)"), 2)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn('src="../capex-flow.svg"', page)
+        self.assertIn(
+            "Capex flow for FDH Motors: request (CAPEX_PROJECT), approve, commit "
+            "(open POs in CAPEX_COMMIT), invoice (CAPEX_ACTUAL), check "
+            "(V_CAPEX_STATUS, V_CAPEX_EXCEPTIONS: 2 over budget, 1 unapproved spend, "
+            "1 approver = owner), then alert (V_CAPEX_ALERT, 8 rows). If there are "
+            "no exceptions, nothing is sent.",
+            page,
+        )
+        self.assertNotIn("TODO", page)
+        self.assertNotIn("diagrams/capex-flow.svg", page)
+        self.assertTrue((ROOT / "docs/snowflake/capex-flow.svg").is_file())
+        self.assertNotIn("rolling up BOM", page)
+        self.assertIn("FDH_DEMO.MOTORS", page)
+        self.assertIn("FDH Motors", page)
+        for figure in (
+            "7,400,000.00",
+            "1,202,500.00",
+            "5,320,500.00",
+            "877,000.00",
+            "PRJ03",
+            "PRJ05",
+            "PRJ09",
+            "PRJ10",
+            "PRJ07",
+            "PRJ11",
+            "112.00%",
+            "8",
+        ):
+            self.assertIn(figure, page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        labels = (
+            "[[download:capex/01_v_capex_status.sql|Download 01_v_capex_status.sql]]",
+            "[[download:capex/02_v_capex_exceptions.sql|Download 02_v_capex_exceptions.sql]]",
+            "[[download:capex/03_v_capex_alert.sql|Download 03_v_capex_alert.sql]]",
+            "[[download:capex/04_checks.sql|Download 04_checks.sql]]",
+            "[[download:capex/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/capex"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_v_capex_status.sql",
+                "02_v_capex_exceptions.sql",
+                "03_v_capex_alert.sql",
+                "04_checks.sql",
+                "README.md",
+            ],
+        )
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotIn("/workspace/", text, path.name)
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/automaker-cost-per-vehicle.md"),
+            nav.index("snowflake/automaker-capex-project-tracking.md"),
         )
 
 

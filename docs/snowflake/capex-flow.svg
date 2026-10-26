@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 320" width="840" height="320" role="img" aria-labelledby="t d">
+<title id="t">FDH Motors capex flow: request, approve, commit, invoice, check, alert</title>
+<desc id="d">Capex projects move from request (CAPEX_PROJECT) to approval (approval_status, approved_by_role), commitment (open POs in CAPEX_COMMIT), invoice (CAPEX_ACTUAL), check (V_CAPEX_STATUS and V_CAPEX_EXCEPTIONS) and alert (V_CAPEX_ALERT joined to MOTORS_RECIPIENTS). The check finds OVER_BUDGET 2 (PRJ03, PRJ05), UNAPPROVED_SPEND 1 (PRJ09) and SOD_FLAG 1 (PRJ10, approver equals owner) on the demo data, giving 8 alert rows. If the exception count is 0, nothing is sent, the same pattern as the failure-alerts post. Fictional sample data.</desc>
+<defs><marker id="m38BDF8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#38BDF8"/></marker><marker id="m8B7CF6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8B7CF6"/></marker><marker id="mF87171" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#F87171"/></marker><marker id="mA3E635" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#A3E635"/></marker><marker id="m9AA7B4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#9AA7B4"/></marker></defs>
+<style>.h{font-family:"Space Grotesk",sans-serif;font-weight:600}.l{font-family:Inter,sans-serif}.n{font-family:"JetBrains Mono",monospace}</style>
+<rect width="840" height="320" fill="#0F1720"/><rect x="8" y="8" width="824" height="304" rx="12" fill="#18222E"/>
+<text class="h" x="24" y="38" font-size="20" fill="#E6EDF3">Capex: from request to alert</text>
+<text class="l" x="816" y="38" font-size="15" fill="#9AA7B4" text-anchor="end">fictional FDH_DEMO.MOTORS data</text>
+<rect x="24" y="56" width="118" height="40" rx="10" fill="#0F1720" stroke="#38BDF8" stroke-width="2"/>
+<text class="h" x="83.0" y="82" font-size="17" fill="#E6EDF3" text-anchor="middle">Request</text>
+<text class="n" x="83.0" y="116" font-size="13" fill="#9AA7B4" text-anchor="middle">CAPEX_PROJECT</text>
+<line x1="144" y1="76.0" x2="160" y2="76.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<rect x="162" y="56" width="118" height="40" rx="10" fill="#0F1720" stroke="#38BDF8" stroke-width="2"/>
+<text class="h" x="221.0" y="82" font-size="17" fill="#E6EDF3" text-anchor="middle">Approve</text>
+<text class="n" x="221.0" y="116" font-size="13" fill="#9AA7B4" text-anchor="middle">approval_status</text>
+<text class="n" x="221.0" y="133" font-size="13" fill="#9AA7B4" text-anchor="middle">approved_by_role</text>
+<line x1="282" y1="76.0" x2="298" y2="76.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<rect x="300" y="56" width="118" height="40" rx="10" fill="#0F1720" stroke="#38BDF8" stroke-width="2"/>
+<text class="h" x="359.0" y="82" font-size="17" fill="#E6EDF3" text-anchor="middle">Commit</text>
+<text class="n" x="359.0" y="116" font-size="13" fill="#9AA7B4" text-anchor="middle">CAPEX_COMMIT</text>
+<text class="n" x="359.0" y="133" font-size="13" fill="#9AA7B4" text-anchor="middle">status = OPEN</text>
+<line x1="420" y1="76.0" x2="436" y2="76.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<rect x="438" y="56" width="118" height="40" rx="10" fill="#0F1720" stroke="#38BDF8" stroke-width="2"/>
+<text class="h" x="497.0" y="82" font-size="17" fill="#E6EDF3" text-anchor="middle">Invoice</text>
+<text class="n" x="497.0" y="116" font-size="13" fill="#9AA7B4" text-anchor="middle">CAPEX_ACTUAL</text>
+<line x1="558" y1="76.0" x2="574" y2="76.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<rect x="576" y="56" width="118" height="40" rx="10" fill="#0F1720" stroke="#8B7CF6" stroke-width="2"/>
+<text class="h" x="635.0" y="82" font-size="17" fill="#E6EDF3" text-anchor="middle">Check</text>
+<text class="n" x="635.0" y="116" font-size="13" fill="#9AA7B4" text-anchor="middle">V_CAPEX_STATUS</text>
+<line x1="696" y1="76.0" x2="712" y2="76.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<rect x="714" y="56" width="118" height="40" rx="10" fill="#0F1720" stroke="#F87171" stroke-width="2"/>
+<text class="h" x="773.0" y="82" font-size="17" fill="#E6EDF3" text-anchor="middle">Alert</text>
+<text class="n" x="773.0" y="116" font-size="13" fill="#9AA7B4" text-anchor="middle">V_CAPEX_ALERT</text>
+<path d="M635.0,126 V152 H586 V166" stroke="#8B7CF6" stroke-width="2" fill="none" marker-end="url(#m8B7CF6)"/>
+<rect x="180" y="170" width="430" height="92" rx="10" fill="#0F1720" stroke="#8B7CF6" stroke-width="1.5"/>
+<text class="n" x="194" y="194" font-size="15" fill="#8B7CF6">V_CAPEX_EXCEPTIONS</text>
+<text class="l" x="596" y="194" font-size="15" fill="#9AA7B4" text-anchor="end">tolerance 5%</text>
+<rect x="194" y="208" width="124" height="24" rx="12" fill="#F87171" fill-opacity="0.12" stroke="#F87171"/>
+<text class="n" x="256.0" y="225" font-size="13" fill="#E6EDF3" text-anchor="middle">OVER_BUDGET 2</text>
+<text class="l" x="256.0" y="252" font-size="13" fill="#9AA7B4" text-anchor="middle">PRJ03, PRJ05</text>
+<rect x="326" y="208" width="158" height="24" rx="12" fill="#F87171" fill-opacity="0.12" stroke="#F87171"/>
+<text class="n" x="405.0" y="225" font-size="13" fill="#E6EDF3" text-anchor="middle">UNAPPROVED_SPEND 1</text>
+<text class="l" x="405.0" y="252" font-size="13" fill="#9AA7B4" text-anchor="middle">PRJ09</text>
+<rect x="492" y="208" width="104" height="24" rx="12" fill="#F87171" fill-opacity="0.12" stroke="#F87171"/>
+<text class="n" x="544.0" y="225" font-size="13" fill="#E6EDF3" text-anchor="middle">SOD_FLAG 1</text>
+<text class="l" x="544.0" y="252" font-size="13" fill="#9AA7B4" text-anchor="middle">approver = owner</text>
+<path d="M180,220 H164" stroke="#A3E635" stroke-width="2" marker-end="url(#mA3E635)"/>
+<text class="l" x="24" y="210" font-size="15" fill="#A3E635">count = 0</text>
+<text class="l" x="24" y="230" font-size="15" fill="#A3E635">→ send nothing</text>
+<path d="M610,220 H684" stroke="#F87171" stroke-width="2" marker-end="url(#mF87171)"/>
+<text class="l" x="647.0" y="212" font-size="15" fill="#F87171" text-anchor="middle">&gt; 0</text>
+<rect x="688" y="170" width="138" height="92" rx="10" fill="#0F1720" stroke="#F87171" stroke-width="1.5"/>
+<text class="n" x="757" y="194" font-size="15" fill="#E6EDF3" text-anchor="middle">8 alert rows</text>
+<text class="l" x="757" y="214" font-size="13" fill="#9AA7B4" text-anchor="middle">4 owners</text>
+<text class="l" x="757" y="234" font-size="13" fill="#9AA7B4" text-anchor="middle">4 committee</text>
+<text class="n" x="757" y="254" font-size="13" fill="#9AA7B4" text-anchor="middle">MOTORS_RECIPIENTS</text>
+<path d="M775.0,126 V166" stroke="#F87171" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#mF87171)"/>
+<text class="l" x="24" y="296" font-size="15" fill="#9AA7B4">Same pattern as the failure-alerts post: no mail on a good day. The job only reads views.</text>
+</svg>

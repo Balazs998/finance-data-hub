@@ -11,6 +11,7 @@ One sentence on each section card.
 - ASOF JOIN: Attach the latest prior daily FX rate when the posting date has no exact match.
 - 13-week cash runway: Forecast 13 weeks of FDH Motors cash and read how many weeks stay above the liquidity floor.
 - Cost per vehicle: Allocate FDH Motors plant cost by units produced, then split the revenue gap into price, volume, mix, new and lost.
+- Capex project tracking: Track FDH Motors capex budget, open commitments and actuals, and alert only when a project is over budget or unapproved.
 - Snowflake to Jedox load: Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.
 
 ## Jedox

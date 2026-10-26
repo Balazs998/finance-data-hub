@@ -1082,7 +1082,7 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertNotIn("DRAFT", html)
         self.assertIn(
-            "The SQL was checked against the Snowflake docs, and every total was recomputed from the sample CSVs.",
+            "Every total was recomputed from the sample CSVs.",
             html,
         )
         self.assertNotIn("Siemens", html)

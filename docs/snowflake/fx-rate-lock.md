@@ -11,7 +11,7 @@ social_image: fx-rate-lock.png
 
 <aside class="docs-note" role="note">
   <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
-  <p>ASOF JOIN null-padding and non-deterministic ties follow the Snowflake docs linked in the steps. We have not run ASOF on a live account. Check numbers below were derived from the unmodified sample CSV and the fictional FX seed (per-cell <code>ROUND</code> then <code>SUM</code>). The SQL was checked against the Snowflake docs, and every total was recomputed from the sample CSVs.</p>
+  <p>ASOF JOIN null-padding and non-deterministic ties follow the Snowflake docs linked in the steps. We have not run ASOF on a live account. Check numbers below were derived from the unmodified sample CSV and the fictional FX seed (per-cell <code>ROUND</code> then <code>SUM</code>). Every total was recomputed from the sample CSVs.</p>
 </aside>
 
 Month-end packs in multi-currency companies fail in two quiet ways. A missing FX rate turns a join into NULL and the USD total looks fine until someone notices a whole entity vanished. Or the rate gets restated after close and every historical pack silently moves. This post builds rate tables with a missing-rate check, an ASOF JOIN path for "latest available," and a locked converted snapshot so the number you sent stays the number you sent.

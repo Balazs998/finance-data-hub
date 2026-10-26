@@ -385,7 +385,7 @@ class ContentTests(unittest.TestCase):
             self.assertIn(figure, page)
         self.assertIn("1111.11", teaser)
         self.assertIn(
-            "The SQL was checked against the Snowflake docs, and every total was recomputed from the sample CSVs.",
+            "Every total was recomputed from the sample CSVs.",
             page,
         )
         self.assertNotIn("status:", page.lower())
@@ -992,7 +992,9 @@ class CleanupGuardTests(unittest.TestCase):
             self.assertEqual(data.count(b"\n"), data.count(b"\r\n"), path)
 
     def test_no_internal_reviewer_names_in_published_files(self):
-        names = re.compile(r"\b(Flake|J-dox|Website QA|Picky Reader|Security Guard|Sample Data Steward|VBA Pro)\b")
+        names = re.compile(
+            r"\b(Flake|J-dox|Website QA|Picky Reader|Security Guard|Sample Data Steward|VBA Pro|Web Designer|Site Maintainer|Content Writer)\b"
+        )
         for path in (ROOT / "docs").rglob("*"):
             if not path.is_file() or path.suffix not in {".md", ".js", ".json", ".html", ".sql", ".bas", ".groovy", ".csv"}:
                 continue

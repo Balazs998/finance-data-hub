@@ -89,6 +89,7 @@ Sub SendOrSave(toAddr As String, subj As String, body As String)
     Exit Sub
 
 SaveFail:
+    On Error Resume Next: Close #f
     MsgBox "Could not save unsent mail to " & folder & ": " & Err.Description, vbCritical
 End Sub
 

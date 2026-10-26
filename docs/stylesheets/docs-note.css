@@ -1,4 +1,4 @@
-/* Docs-based note box (Web Designer, POST-TEMPLATE.md). Spec tokens mapped to site tokens:
+/* Docs-based note box (POST-TEMPLATE.md). Spec tokens mapped to site tokens:
    --accent -> --dn-link, --surface -> --dn-surface, --text -> --dn-text, --text-muted -> --dn-text-muted. */
 .md-typeset .docs-note {
   border-left: 3px solid var(--dn-link);

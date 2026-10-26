@@ -192,7 +192,7 @@ Export your modules, run the scan, and sort the findings into RegExp ones (updat
 
 ## Downloads
 
-All files use synthetic sample data and placeholder names. These are the exported modules only. Import them into your own workbook, or save them in `FDH_Macros\` to try the scanner.
+All files use synthetic sample data and placeholder names. These are the exported modules only. Import `ScanVBScript.bas` into your own workbook. Save `modChecks`, `modValidate` and `modCleanup` in `FDH_Macros\` as scanner input only; don't import them.
 
 [[download:vba/ScanVBScript.bas|Download ScanVBScript.bas]]
 [[download:vba/modChecks.bas|Download modChecks.bas]]

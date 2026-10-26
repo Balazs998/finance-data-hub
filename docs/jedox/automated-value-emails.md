@@ -170,7 +170,7 @@ void assertNoLeftovers(String html, String context) {
 
 `'$' + '{'` is split on purpose, so the script itself never contains the two characters together.
 
-The rest of part 1 builds the table from Web Designer's cell snippets: a header row, one row per account with every second row shaded, and a total row. It also checks that the template contains all 12 markers (`SUBJECT`, `HEADER_LABEL`, `TITLE`, `PERIOD`, `VERSION`, `GREETING`, `INTRO`, `HEADER_CELLS`, `TABLE_ROWS`, `TOTAL_CELLS`, `NOTE`, `FOOTER`) and stops if one is missing.
+The rest of part 1 builds the table from the template's cell snippets: a header row, one row per account with every second row shaded, and a total row. It also checks that the template contains all 12 markers (`SUBJECT`, `HEADER_LABEL`, `TITLE`, `PERIOD`, `VERSION`, `GREETING`, `INTRO`, `HEADER_CELLS`, `TABLE_ROWS`, `TOTAL_CELLS`, `NOTE`, `FOOTER`) and stops if one is missing.
 
 ### Variance colors
 

@@ -89,6 +89,7 @@ nav:
       - Snapshots vs Time Travel: snowflake/month-end-snapshots.md
       - FX rate lock: snowflake/fx-rate-lock.md
       - ASOF JOIN: snowflake/asof-join.md
+      - Finance SQL patterns: snowflake/finance-sql-snowflake.md
       - 13-week cash runway: snowflake/automaker-13-week-cash-runway.md
       - Cost per vehicle: snowflake/automaker-cost-per-vehicle.md
       - Capex project tracking: snowflake/automaker-capex-project-tracking.md
@@ -111,6 +112,8 @@ nav:
       - VBScript deprecation: vba/vbscript-deprecation.md
       - Month-close checks: vba/month-close-checks.md
       - Excel as a thin front end: vba/excel-thin-front-end.md
-  - Power BI and Qlik: bi/index.md
+  - Power BI and Qlik:
+      - bi/index.md
+      - Power BI on Snowflake views: bi/power-bi-snowflake-views.md
   - Downloads: downloads.md
   - About: about.md

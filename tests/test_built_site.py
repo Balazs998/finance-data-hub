@@ -1228,10 +1228,10 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertTrue(motors_readme.is_file())
         footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
         self.assertIn(
-            'class="md-footer__link md-footer__link--prev" aria-label="Previous: ASOF JOIN"',
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Finance SQL patterns"',
             footer,
         )
-        self.assertIn('href="../asof-join/"', footer)
+        self.assertIn('href="../finance-sql-snowflake/"', footer)
         self.assertIn(
             'class="md-footer__link md-footer__link--next" aria-label="Next: Cost per vehicle"',
             footer,

@@ -1,0 +1,9 @@
+// Power Query M for V_PBI_DIM_ACCOUNT. Fictional FDH_DEMO only.
+// Replace the placeholder server and warehouse with your own lab values.
+let
+ Source = Snowflake.Databases("<your_account>.snowflakecomputing.com", "<YOUR_WH>"),
+ Db = Source{[Name = "FDH_DEMO", Kind = "Database"]}[Data],
+ Sch = Db{[Name = "SAMPLE", Kind = "Schema"]}[Data],
+ V = Sch{[Name = "V_PBI_DIM_ACCOUNT", Kind = "View"]}[Data]
+in
+ V

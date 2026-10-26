@@ -1,18 +1,21 @@
 site_name: Finance Data Hub
 site_description: Practical notes on Snowflake, Jedox, and Excel VBA for finance and FP&A.
 site_url: https://balazs998.github.io/finance-data-hub/
-copyright: Balazs · Finance Data Hub
+copyright: 'Balazs Tivadar Turcsics · Finance Data Hub · <a href="https://balazs998.github.io/finance-data-hub/about/#privacy">Privacy</a>: cookieless page counts'
 
 # The only analytics setting. Site code for https://financedatahub.goatcounter.com
 # Clear the value to turn analytics off. The site still builds.
 extra:
   goatcounter_code: financedatahub
 
+# Rule Studio stays in the repo and is not published, same as worker/SETUP.md.
+exclude_docs: |
+  jedox/rule-studio/
+
 extra_css:
   - stylesheets/extra.css
   - stylesheets/docs-note.css
   - stylesheets/email-tool.css
-  - stylesheets/rule-studio.css
   - stylesheets/section.css
 
 extra_javascript:
@@ -28,11 +31,6 @@ extra_javascript:
   - javascripts/codemirror-bundle.js
   - javascripts/email-builder-ui.js
   - javascripts/email-checker-ui.js
-  - javascripts/rule-checks.js
-  - javascripts/rule-diff.js
-  - javascripts/rule-mock.js
-  - javascripts/rule-studio-config.js
-  - javascripts/rule-studio-ui.js
 
 theme:
   name: material
@@ -107,13 +105,12 @@ nav:
       - Create your own email:
           - Builder: jedox/email-builder.md
           - Check your email script: jedox/email-checker.md
-      - Business Rule Studio: jedox/rule-studio/index.md
-      - Rule Studio worker setup: WORKER-SETUP.md
   - VBA:
       - vba/index.md
       - Email macros after New Outlook: vba/new-outlook-email.md
       - VBScript deprecation: vba/vbscript-deprecation.md
       - Month-close checks: vba/month-close-checks.md
       - Excel as a thin front end: vba/excel-thin-front-end.md
+  - Power BI and Qlik: bi/index.md
   - Downloads: downloads.md
   - About: about.md

@@ -110,6 +110,7 @@ def local_target(page: Path, href: str) -> Path | None:
 
 
 PLAN_VS_ACTUAL_DOWNLOADS = (
+    "samples/README.md",
     "samples/fact_budget.csv",
     "samples/fact_actuals.csv",
     "samples/dim_account.csv",
@@ -182,12 +183,12 @@ class PlanVsActualsPageTests(unittest.TestCase):
             self.assertIsNotNone(target, matches[0])
             self.assertTrue(target.is_file(), f"missing download {relative} ({matches[0]})")
             resolved.append(relative)
-        self.assertEqual(len(resolved), 6)
+        self.assertEqual(len(resolved), 7)
 
         start = html.find('<div class="downloads">')
         self.assertGreaterEqual(start, 0)
         cluster = html[start:_div_end(html, start)]
-        self.assertEqual(cluster.count("md-button download"), 6)
+        self.assertEqual(cluster.count("md-button download"), 7)
         self.assertIn("grid-template-columns: minmax(0, 1fr);", source_css)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr));", source_css)
         self.assertIn("gap: 0.75rem;", source_css)
@@ -441,10 +442,12 @@ SOCIAL_PAGES = {
     "vba/vbscript-deprecation/index.html": "vbscript-deprecation.png",
     "vba/excel-thin-front-end/index.html": "excel-thin-front-end.png",
     "about/index.html": "home.png",
-    "snowflake/month-end-actuals/index.html": "home.png",
+    "jedox/management-report-export/index.html": "management-report-export.png",
+    "vba/month-close-checks/index.html": "month-close-checks.png",
+    "snowflake/month-end-actuals/index.html": "month-end-actuals.png",
     "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
     "snowflake/fx-rate-lock/index.html": "fx-rate-lock.png",
-    "snowflake/asof-join/index.html": "home.png",
+    "snowflake/asof-join/index.html": "asof-join.png",
     "snowflake/automaker-13-week-cash-runway/index.html": "automaker-13-week-cash-runway.png",
     "snowflake/automaker-cost-per-vehicle/index.html": "automaker-cost-per-vehicle.png",
     "snowflake/automaker-capex-project-tracking/index.html": "automaker-capex-project-tracking.png",
@@ -454,6 +457,11 @@ SOCIAL_PAGES = {
 }
 SOCIAL_FILES = (
     "home.png",
+    "month-end-actuals.png",
+    "management-report-export.png",
+    "month-close-checks.png",
+    "rule-studio.png",
+    "asof-join.png",
     "plan-vs-actuals.png",
     "automated-value-emails.png",
     "snowflake-to-jedox.png",
@@ -522,7 +530,7 @@ class SocialPreviewTests(unittest.TestCase):
             ["Snowflake, Jedox and Excel VBA for FP&A"],
         )
         self.assertIn(
-            "Build your month-end FP&A pack with tested Snowflake SQL",
+            "Build your month-end FP&A pack with Snowflake SQL",
             meta_contents(home, "property", "og:description")[0],
         )
         article = (SITE / "snowflake" / "plan-vs-actuals" / "index.html").read_text(
@@ -531,7 +539,7 @@ class SocialPreviewTests(unittest.TestCase):
         self.assertEqual(
             meta_contents(article, "property", "og:title"),
             [
-                "Plan vs. actuals in Snowflake SQL, without losing rows - Finance Data Hub"
+                "Plan vs actuals in Snowflake SQL - Finance Data Hub"
             ],
         )
         self.assertIn("FULL OUTER JOIN", meta_contents(article, "property", "og:description")[0])
@@ -541,8 +549,7 @@ class SocialPreviewTests(unittest.TestCase):
         self.assertEqual(
             meta_contents(email, "property", "og:title"),
             [
-                "Automated value emails from Jedox Integrator with a generic Groovy template"
-                " - Finance Data Hub"
+                "Jedox value emails with a Groovy template - Finance Data Hub"
             ],
         )
 
@@ -552,14 +559,49 @@ class SocialPreviewTests(unittest.TestCase):
         self.assertEqual(
             meta_contents(load, "property", "og:title"),
             [
-                "From Snowflake to Jedox: a rerun-safe actuals load with Integrator"
-                " - Finance Data Hub"
+                "Snowflake to Jedox: a rerun-safe load - Finance Data Hub"
             ],
         )
         self.assertIn(
             "key-pair service user",
             meta_contents(load, "property", "og:description")[0],
         )
+
+    def test_every_dated_post_shows_its_published_date(self):
+        import yaml
+        from datetime import datetime
+
+        seen = 0
+        for path in (ROOT / "docs").rglob("*.md"):
+            text = path.read_text(encoding="utf-8")
+            if not text.startswith("---"):
+                continue
+            end = text.find("\n---", 3)
+            if end < 0:
+                continue
+            meta = yaml.safe_load(text[3:end]) or {}
+            if not isinstance(meta, dict) or not meta.get("date"):
+                continue
+            day = datetime.strptime(str(meta["date"]), "%Y-%m-%d").date()
+            label = f"{day:%b} {day.day}, {day.year}"
+            rel = path.relative_to(ROOT / "docs").as_posix()
+            if rel == "index.md":
+                built = SITE / "index.html"
+            elif rel.endswith("/index.md"):
+                built = SITE / rel[: -len("index.md")] / "index.html"
+            else:
+                built = SITE / rel[: -len(".md")] / "index.html"
+            self.assertTrue(built.is_file(), rel)
+            html = built.read_text(encoding="utf-8")
+            self.assertIn(
+                f'<p class="post-date"><time datetime="{day.isoformat()}">{label}</time></p>',
+                html,
+                rel,
+            )
+            seen += 1
+        self.assertGreaterEqual(seen, 20)
+        about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="post-date"', about)
 
         for name in SOCIAL_FILES:
             path = SITE / "assets" / "social" / name
@@ -714,6 +756,7 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertEqual(
             sample_files,
             [
+                "samples/README.md",
                 "samples/dim_account.csv",
                 "samples/dim_cost_center.csv",
                 "samples/fact_actuals.csv",
@@ -837,7 +880,8 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("Balazs998/", hook)
         self.assertNotIn("repo_url", hook)
         about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("Balazs, a finance data scientist, writes and maintains it.", about)
+        self.assertIn("Balazs Tivadar Turcsics", about)
+        self.assertIn('id="privacy"', about)
         self.assertNotIn("open an issue", about)
         for page in SITE.rglob("*"):
             if page.suffix.lower() not in {".html", ".json", ".xml"}:
@@ -933,6 +977,8 @@ class BuiltSiteTests(unittest.TestCase):
             text = built.read_text(encoding="utf-8")
             sidebar = text.split('class="md-sidebar md-sidebar--primary"', 1)[1]
             sidebar = sidebar.split('class="md-sidebar md-sidebar--secondary"', 1)[0]
+            if built.relative_to(SITE).as_posix() == "about/index.html":
+                continue
             self.assertNotIn(" hidden", sidebar[:80], built.relative_to(SITE))
             positions = [sidebar.find(label) for label in labels]
             self.assertTrue(all(pos >= 0 for pos in positions), built.relative_to(SITE))
@@ -1019,7 +1065,7 @@ class BuiltSiteTests(unittest.TestCase):
             "samples/dim_cost_center.csv",
             "samples/load_snowflake.sql",
             "thinfront/01_reporting_views.sql",
-            "thinfront/02_excel_read_grants_PROPOSED.sql",
+            "thinfront/02_excel_read_grants_for_admin.sql",
             "thinfront/FDH_ThinFront.bas",
             "thinfront/BUILD-SPEC.md",
             "thinfront/README.md",
@@ -1028,11 +1074,11 @@ class BuiltSiteTests(unittest.TestCase):
             target = local_target(page, f"../../files/{relative}")
             self.assertIsNotNone(target, relative)
             self.assertTrue(target.is_file(), relative)
-        grants = (SITE / "files" / "thinfront" / "02_excel_read_grants_PROPOSED.sql").read_text(
+        grants = (SITE / "files" / "thinfront" / "02_excel_read_grants_for_admin.sql").read_text(
             encoding="utf-8"
         )
         self.assertIn(
-            "Proposed grants. This pack does not run them; an admin reviews and runs them once.",
+            "Grants for an admin. This pack does not run them; an admin reviews and runs them once.",
             grants,
         )
         self.assertNotIn("NOT approved yet", grants)
@@ -1056,7 +1102,7 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertIn('href="../month-close-checks/"', footer)
         self.assertIn(
-            'class="md-footer__link md-footer__link--next" aria-label="Next: Downloads"',
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Power BI and Qlik"',
             footer,
         )
 
@@ -1071,7 +1117,7 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertNotIn("DRAFT", html)
         self.assertIn(
-            "Flake checked the SQL against the docs and recomputed every total.",
+            "Every total was recomputed from the sample CSVs.",
             html,
         )
         self.assertNotIn("Siemens", html)
@@ -1373,7 +1419,7 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertTrue(page.is_file(), "ERP control totals page was not built")
         html = page.read_text(encoding="utf-8")
         self.assertIn(
-            "Prove every hop: control totals from ERP to Snowflake to Jedox, with a load log and an evidence table",
+            "ERP to Snowflake to Jedox control totals",
             html,
         )
         self.assertNotIn("DRAFT", html)
@@ -1448,7 +1494,7 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertTrue(page.is_file(), "Close tracker anomaly flags page was not built")
         html = page.read_text(encoding="utf-8")
         self.assertIn(
-            "Close tracking and journal anomaly flags in SQL: z-score, IQR and three plain rules",
+            "Close tracking and journal anomaly flags in SQL",
             html,
         )
         self.assertNotIn("DRAFT", html)

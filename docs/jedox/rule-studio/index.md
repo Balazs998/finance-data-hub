@@ -1,4 +1,5 @@
 ---
+social_image: rule-studio.png
 title: Business Rule Studio
 description: Test, explain and improve a Jedox business rule, or describe a calculation and get a draft. Static checks run in the browser. Nothing is executed in Jedox.
 hide:

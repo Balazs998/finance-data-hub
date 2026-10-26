@@ -1,6 +1,7 @@
 ---
-title: "FX conversion that survives close: rate choice, missing rates, and a period lock"
-description: "Build fictional FX_RATE_DAILY and FX_RATE_PERIOD tables on FDH_DEMO, catch a missing month with V_FX_MISSING_RATES, convert with ASOF JOIN or month-end rates, and freeze a locked USD snapshot so a late rate restatement cannot move the sent total."
+date: 2026-10-23
+title: "Snowflake FX rate lock for month-end close"
+description: "Catch missing FX rates, convert with ASOF JOIN or month-end rates, and freeze a locked snapshot so a late restatement cannot move the sent total."
 social_image: fx-rate-lock.png
 ---
 
@@ -9,8 +10,8 @@ social_image: fx-rate-lock.png
 <p class="post-meta">Snowflake</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
-  <p>ASOF JOIN null-padding and non-deterministic ties follow the Snowflake docs linked in the steps. We have not run ASOF on a live account. Check numbers below were derived from the pristine sample CSV and the fictional FX seed (per-cell <code>ROUND</code> then <code>SUM</code>). Flake checked the SQL against the docs and recomputed every total.</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
+  <p>ASOF JOIN null-padding and non-deterministic ties follow the Snowflake docs linked in the steps. We have not run ASOF on a live account. Check numbers below were derived from the unmodified sample CSV and the fictional FX seed (per-cell <code>ROUND</code> then <code>SUM</code>). Every total was recomputed from the sample CSVs.</p>
 </aside>
 
 Month-end packs in multi-currency companies fail in two quiet ways. A missing FX rate turns a join into NULL and the USD total looks fine until someone notices a whole entity vanished. Or the rate gets restated after close and every historical pack silently moves. This post builds rate tables with a missing-rate check, an ASOF JOIN path for "latest available," and a locked converted snapshot so the number you sent stays the number you sent.
@@ -38,7 +39,7 @@ The lock is the same idea as [What number did we report? Permanent month-end sna
     - Role / access: `SYSADMIN` (or equivalent) for create, seed, lock, and snapshot in `FDH_DEMO.SAMPLE`. Leave `JEDOX_ETL_ROLE` unchanged — that role stays views-only. This tutorial needs no grants on the new FX tables or snapshot.
     - Product version: any current Snowflake account that can run the SQL below. ASOF JOIN follows the docs linked in step 5 (docs-based; not run on a live account here).
     - Previous post: [What number did we report? Permanent month-end snapshots vs Time Travel](month-end-snapshots.md) (lock/snapshot pattern this post reuses)
-    - Sample data: pristine `fact_actuals.csv` (610 rows) plus the [Downloads](#downloads) FX SQL pack
+    - Sample data: unmodified `fact_actuals.csv` (610 rows) plus the [Downloads](#downloads) FX SQL pack
 
 ## The sample scenario
 
@@ -46,7 +47,7 @@ Treat `FACT_ACTUALS` amounts as **EUR**. We convert them to **USD** for a fictio
 
 In Snowflake the column is `COST_CENTER`; in prose we say cost center. Periods are `YYYY-MM` text. The management-report sample uses a different entity/code scheme (E100/E210); this post stays on FDH_DEMO cost centers and does not mix those codes.
 
-We freeze **2026-03** Actual (pristine CSV: **58** rows / **1,466,143.86** EUR). The seed omits period rates for **2026-05** so the missing-rate view has exactly **one** gap. After lock we restate the live 2026-03 month-end rate from 0.9000 to 0.9100; the snapshot must stay put.
+We freeze **2026-03** Actual (unmodified CSV: **58** rows / **1,466,143.86** EUR). The seed omits period rates for **2026-05** so the missing-rate view has exactly **one** gap. After lock we restate the live 2026-03 month-end rate from 0.9000 to 0.9100; the snapshot must stay put.
 
 | File | What's in it |
 |---|---|

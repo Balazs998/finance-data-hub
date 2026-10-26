@@ -1,4 +1,4 @@
--- Proposed grants. This pack does not run them; an admin reviews and runs them once.
+-- Grants for an admin. This pack does not run them; an admin reviews and runs them once.
 -- Views only; no table grants.
 -- EXCEL_READ_ROLE and EXCEL_WH are the Excel read role and warehouse.
 -- The role also needs USAGE on FDH_DEMO, FDH_DEMO.SAMPLE and EXCEL_WH. Do not use FUTURE grants or GRANT ... ON ALL VIEWS; grant per view.

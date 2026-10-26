@@ -28,14 +28,14 @@ import java.text.DecimalFormatSymbols
     'INTRO', 'HEADER_CELLS', 'TABLE_ROWS', 'TOTAL_CELLS', 'NOTE', 'FOOTER'
 ]
 
-// Cell snippets, copied from Web Designer's cell-snippets.html.
+// Cell snippets, copied from the template's cell-snippets.html.
 @Field final String TH_LEFT = '<th align="left" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;word-wrap:break-word;overflow-wrap:break-word;">{{LABEL}}</th>'
 @Field final String TH_RIGHT = '<th class="email-num" align="right" style="padding:8px 10px;border-bottom:2px solid #1F2933;font-size:12px;text-transform:uppercase;color:#52606D;white-space:nowrap;">{{LABEL}}</th>'
 @Field final String TD_TEXT = '<td align="left" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;word-wrap:break-word;overflow-wrap:break-word;">{{VALUE}}</td>'
 @Field final String TD_NUMBER = '<td class="email-num" align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;white-space:nowrap;font-size:14px;">{{NUMBER}}</td>'
 @Field final String TD_NUMBER_UNFAVORABLE = '<td class="email-num" align="right" style="padding:8px 10px;border-bottom:1px solid #E4E9EE;font-family:Consolas,Menlo,monospace;color:#C2410C;white-space:nowrap;font-size:14px;">{{NUMBER}}</td>'
 @Field final String TD_TOTAL = '<td class="email-num" align="right" style="padding:10px;border-top:2px solid #1F2933;font-weight:bold;font-family:Consolas,Menlo,monospace;white-space:nowrap;font-size:14px;">{{NUMBER}}</td>'
-// Label cell of the total row, as in Web Designer's email-preview-sample.html.
+// Label cell of the total row, as in the template's email-preview-sample.html.
 @Field final String TD_TOTAL_LABEL = '<td align="left" style="padding:10px;border-top:2px solid #1F2933;font-weight:bold;word-wrap:break-word;overflow-wrap:break-word;">{{VALUE}}</td>'
 // Alternate rows get this background (cell-snippets.html: alternate row background #F7F9FB).
 @Field final String ROW_BORDER = 'border-bottom:1px solid #E4E9EE;'

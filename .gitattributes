@@ -1,0 +1,4 @@
+# VBA editor File > Import expects Windows line endings.
+*.bas text eol=crlf
+*.cls text eol=crlf
+*.frm text eol=crlf

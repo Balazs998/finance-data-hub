@@ -1,6 +1,9 @@
 ---
+date: 2026-10-09
+short_title: Create your own email
+home_tag: Builder
 title: "Create your own Jedox email: Groovy script builder"
-description: "Fill in a short form and download a tested Jedox Integrator Groovy script that sends one Budget vs. Actual email per owner. Test mode is on by default, and it all runs in your browser."
+description: "Fill in a short form and download a Jedox Integrator Groovy script that emails each owner their budget vs actuals. Runs in your browser, test mode on."
 social_image: email-builder.png
 hide:
   - toc
@@ -174,7 +177,7 @@ The preview uses the site's made-up sample data. Your real emails will show your
 4. Run the job. Every email goes to your test address. Open them in Outlook, in web mail and on a phone.
 5. When they look right, set `TEST_MODE` to `false` for that one run only, not in the variable's default.
 
-If mail doesn't arrive, check the mail settings in Cloud Console. Since Jedox 24.2, the SMTP server and the From address are set there, not in the script.
+If mail doesn't arrive, check the central mail settings: [Cloud Console](https://knowledgebase.jedox.com/jedox/api/26-1/integrator-scripting/com/jedox/etl/components/scriptapi/MailAPI.html) on Jedox Cloud, [Web Administration > Settings](https://knowledgebase.jedox.com/jedox/maintenance/scheduler-integrator-jobs.htm) on-premises. Since Jedox 24.2, the SMTP server and the From address are set there, not in the script.
 
 The [Automated value emails](automated-value-emails.md) post walks through each step.
 

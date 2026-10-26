@@ -1,6 +1,8 @@
 ---
-title: "Close tracking and journal anomaly flags in SQL: z-score, IQR and three plain rules"
-description: "Track month-end close tasks by day, then flag unusual journal lines with z-scores, the interquartile range and simple rules, and mail the list only when there is something to review, for the fictional FDH Motors on FDH_DEMO.MOTORS. Simple statistics, not AI."
+date: 2026-10-25
+home_tag: Automaker series
+title: "Close tracking and journal anomaly flags in SQL"
+description: "Track month-end close tasks by day and flag unusual journal lines with z-scores, IQR and three plain rules in Snowflake, for fictional FDH Motors."
 social_image: automaker-close-tracker-anomaly-flags.png
 ---
 
@@ -9,7 +11,7 @@ social_image: automaker-close-tracker-anomaly-flags.png
 <p class="post-meta">Snowflake · Intermediate · ~30 min · Automaker series</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary. The flags are simple statistics and rules. They pick lines for a person to review; they don't detect fraud and make no accuracy claim.</p>
 </aside>
 

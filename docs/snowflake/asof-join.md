@@ -1,6 +1,8 @@
 ---
-title: "ASOF JOIN for the latest FX rate you actually have"
-description: "A short free pattern: use Snowflake ASOF JOIN to pick the prior daily FX rate when a posting date has no exact match, with the official null-pad and tie caveats."
+social_image: asof-join.png
+date: 2026-10-23
+title: "Snowflake ASOF JOIN for the latest FX rate"
+description: "Use Snowflake ASOF JOIN to pick the prior daily FX rate when a posting date has no exact match, with the official null-pad and tie caveats."
 ---
 
 # ASOF JOIN for the latest FX rate you actually have
@@ -8,7 +10,7 @@ description: "A short free pattern: use Snowflake ASOF JOIN to pick the prior da
 <p class="post-meta">Snowflake</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>ASOF JOIN behavior follows the Snowflake docs linked below. We have not run these steps on a live account. Demo rates are fictional (USD 0.9000 EUR per 1 USD), not market rates.</p>
 </aside>
 
@@ -79,7 +81,7 @@ ORDER BY p.posting_date;
 The last row is the alert case: ASOF cannot invent a rate that never existed. Wire that into a missing-rate check before the pack goes out (full post).
 
 !!! warning "Docs caveats"
-    No match → right-side columns are **NULL-padded** (like a left outer join). Identical timestamps on the right → Snowflake returns **one** tying row **non-deterministically**. Do not seed duplicate `rate_date` ties if you need stable totals. See [ASOF JOIN](https://docs.snowflake.com/en/sql-reference/constructs/asof-join).
+    Unmatched rows come back with NULL rate columns, and ties on `rate_date` are resolved non-deterministically. The full caveats are in [step 5 of the FX rate-lock post](fx-rate-lock.md#5-asof-join-for-latest-available) and the [ASOF JOIN docs](https://docs.snowflake.com/en/sql-reference/constructs/asof-join).
 
 ## When not to use ASOF alone
 
@@ -93,4 +95,10 @@ Once a period is closed, every cell in the sent pack should use the **same** loc
 
 ## Downloads
 
-Use the same `fx/` SQL pack as the [full tutorial](fx-rate-lock.md#downloads) (`01_fx_rate_daily_ddl.sql`, `03_seed_fx_rates.sql`, and `05_asof_join_convert.sql` are enough for this teaser).
+These three files from the `fx/` SQL pack are enough for this pattern. The [full tutorial](fx-rate-lock.md#downloads) has the rest.
+
+[[download:fx/01_fx_rate_daily_ddl.sql|Download 01_fx_rate_daily_ddl.sql]]
+[[download:fx/03_seed_fx_rates.sql|Download 03_seed_fx_rates.sql]]
+[[download:fx/05_asof_join_convert.sql|Download 05_asof_join_convert.sql]]
+
+**Next:** [FX conversion that survives close](fx-rate-lock.md) adds the missing-rate check, the period lock and a restatement proof.

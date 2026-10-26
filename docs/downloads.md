@@ -1,5 +1,5 @@
 ---
-description: Download the shared Snowflake sample CSVs and load SQL, the fictional FDH Motors sample pack, Jedox Groovy email scripts, and Excel VBA modules used across the Finance Data Hub notes.
+description: "Download the Snowflake sample CSVs and load SQL, the fictional FDH Motors pack, Jedox Groovy scripts and Excel VBA modules used in the notes."
 ---
 
 # Downloads

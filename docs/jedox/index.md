@@ -59,12 +59,6 @@ hide:
     <p class="fdh-card__summary">Fill in the email job from the browser, then check it for the usual traps.</p>
     <p class="fdh-card__meta">Interactive tool</p>
   </article></li>
-  <li><article class="fdh-card fdh-card--tool">
-    <p class="fdh-card__tools">Jedox</p>
-    <h3 class="fdh-card__title"><a href="rule-studio/">Business Rule Studio</a></h3>
-    <p class="fdh-card__summary">The demo cubes are the fictional FDH_DEMO model.</p>
-    <p class="fdh-card__meta">Interactive tool</p>
-  </article></li>
 </ul>
 
 <section class="fdh-downloads" aria-labelledby="dl-jedox">

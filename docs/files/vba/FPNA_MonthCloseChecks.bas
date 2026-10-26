@@ -26,14 +26,17 @@ Public Sub RunMonthCloseChecks()
     Dim previousCalc As XlCalculation
     Dim previousScreen As Boolean
     Dim previousStatus As Variant
+    Dim previousEvents As Boolean
     Dim findings As Collection
 
     previousCalc = Application.Calculation
     previousScreen = Application.ScreenUpdating
     previousStatus = Application.StatusBar
+    previousEvents = Application.EnableEvents
     On Error GoTo CleanFail
 
     Application.ScreenUpdating = False
+    Application.EnableEvents = False
     Application.StatusBar = "Running month-close checks..."
     Application.Calculation = xlCalculationAutomatic
     Application.Calculate
@@ -53,6 +56,7 @@ CleanExit:
     Application.Calculation = previousCalc
     Application.StatusBar = previousStatus
     Application.ScreenUpdating = previousScreen
+    Application.EnableEvents = previousEvents
 End Sub
 
 Private Sub CheckReportingPeriod(ByVal findings As Collection)
@@ -186,6 +190,7 @@ Private Sub WriteReport(ByVal findings As Collection)
     ws.Columns("B").ColumnWidth = 36
     ws.Columns("C").ColumnWidth = 78
     ws.Rows("1:6").Font.Name = "Calibri"
+    ' FreezePanes needs the sheet active; this is the only selection.
     ws.Activate
     On Error Resume Next
     ActiveWindow.FreezePanes = False

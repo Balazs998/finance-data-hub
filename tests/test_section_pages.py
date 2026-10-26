@@ -255,15 +255,6 @@ SECTIONS = {
                 False,
                 True,
             ),
-            (
-                "Business Rule Studio",
-                "rule-studio/",
-                "Jedox",
-                "The demo cubes are the fictional FDH_DEMO model.",
-                "Interactive tool",
-                False,
-                True,
-            ),
         ),
         "downloads": (
             ("../files/jedox/mgmt_report_export_sample.csv", "mgmt_report_export_sample.csv"),
@@ -333,8 +324,8 @@ SECTIONS = {
             ("../files/vba/modCleanup.bas", "modCleanup.bas"),
             ("../files/thinfront/01_reporting_views.sql", "01_reporting_views.sql"),
             (
-                "../files/thinfront/02_excel_read_grants_PROPOSED.sql",
-                "02_excel_read_grants_PROPOSED.sql",
+                "../files/thinfront/02_excel_read_grants_for_admin.sql",
+                "02_excel_read_grants_for_admin.sql",
             ),
             ("../files/thinfront/FDH_ThinFront.bas", "FDH_ThinFront.bas"),
             ("../files/thinfront/BUILD-SPEC.md", "BUILD-SPEC.md"),
@@ -421,7 +412,7 @@ class SectionPageTests(unittest.TestCase):
                 self.assertIn('class="fdh-card__go" aria-hidden="true">Read →<', html)
                 self.assertIn('href="../jedox/"', html)
                 self.assertIn('href="../snowflake/"', html)
-                self.assertIn("More VBA modules are on the way.", html)
+                self.assertIn("Where the numbers come from:", html)
             else:
                 self.assertNotIn("fdh-card__go", html)
 

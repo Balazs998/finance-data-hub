@@ -1,6 +1,6 @@
 ---
 title: Snowflake, Jedox and Excel VBA for FP&A
-description: Build your month-end FP&A pack with tested Snowflake SQL, Jedox Integrator jobs, and Excel VBA, each with sample data you can download and run yourself.
+description: Build your month-end FP&A pack with Snowflake SQL, Jedox Integrator jobs and Excel VBA, checked against the official docs, with sample data to download.
 social_image: home.png
 hide:
   - navigation
@@ -13,7 +13,8 @@ hide:
 <div class="hero__copy">
 <p class="home-eyebrow">FINANCE DATA HUB</p>
 <h1 id="build-the-fpa-pack-without-the-manual-work">Build the FP&amp;A pack <span class="home-accent">without the manual work</span></h1>
-<p class="home-lead">Tested Snowflake SQL, Jedox Integrator jobs and Excel VBA, each with sample data you can download and run.</p>
+<p class="home-lead">Snowflake SQL, Jedox Integrator jobs and Excel VBA, checked against the official docs, each with sample data you can download and run.</p>
+<p class="home-byline">Written by Balazs Tivadar Turcsics, finance data scientist. <a href="about/">About the author →</a></p>
 <div class="home-bar" aria-hidden="true"><span></span><span></span><span></span></div>
 <div class="home-actions">
 <a class="md-button home-btn home-btn--primary" href="snowflake/plan-vs-actuals/">Start with Plan vs actuals →</a>
@@ -41,7 +42,7 @@ hide:
 </li>
 <li>
 <span class="home-who__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" focusable="false"><path fill="currentColor" d="M22.7 19.3l-9.4-9.4c.7-1.8.4-3.9-.9-5.4-1.6-1.6-4-2.1-6.1-1.4l3.5 3.5-2.1 2.1-3.5-3.5c-.7 2.1-.2 4.5 1.4 6.1 1.5 1.3 3.6 1.6 5.4.9l9.4 9.4c.4.4 1 .4 1.4 0l1.9-1.9c.4-.4.4-1 0-1.4z"/></svg></span>
-<p><strong>Data people</strong> Copy tested SQL, Groovy and VBA.</p>
+<p><strong>Data people</strong> Copy SQL, Groovy and VBA checked against the docs.</p>
 </li>
 </ul>
 </div>
@@ -82,46 +83,7 @@ hide:
 <div>
 <h2 id="latest-posts">Latest posts</h2>
 <ul class="home-card home-posts">
-<li>
-<a class="home-post" href="jedox/email-builder/">
-<picture>
-<source srcset="assets/mascots/jedox/head-presenting.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head-presenting.png" width="176" height="176" alt="" loading="lazy">
-</picture>
-<span class="home-post__text"><strong>Create your own email</strong><span>Jedox · Builder</span></span>
-<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
-</a>
-</li>
-<li>
-<a class="home-post" href="jedox/automated-value-emails/">
-<picture>
-<source srcset="assets/mascots/jedox/head-thumbsup.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head-thumbsup.png" width="176" height="176" alt="" loading="lazy">
-</picture>
-<span class="home-post__text"><strong>Automated value emails</strong><span>Jedox · Groovy</span></span>
-<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
-</a>
-</li>
-<li>
-<a class="home-post" href="jedox/snowflake-to-jedox/">
-<picture>
-<source srcset="assets/mascots/jedox/head-laptop.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/jedox/head-laptop.png" width="176" height="176" alt="" loading="lazy">
-</picture>
-<span class="home-post__text"><strong>Snowflake to Jedox load</strong><span>Jedox · Integrator</span></span>
-<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
-</a>
-</li>
-<li>
-<a class="home-post" href="snowflake/plan-vs-actuals/">
-<picture>
-<source srcset="assets/mascots/snowflake/head.webp" type="image/webp">
-<img class="home-avatar" src="assets/mascots/snowflake/head.png" width="176" height="176" alt="" loading="lazy">
-</picture>
-<span class="home-post__text"><strong>Plan vs actuals</strong><span>Snowflake · SQL</span></span>
-<time class="home-date" datetime="2026-10-09">Oct 9, 2026</time>
-</a>
-</li>
+[[latest-posts]]
 </ul>
 </div>
 <div>

@@ -1,7 +1,7 @@
 -- FDH_DEMO fictional sample only.
 -- FX_RATE_DAILY: one row per rate date, currency pair, and rate.
 -- from_ccy / to_ccy / rate means EUR per 1 unit of from_ccy.
--- Does not replace FACT_ACTUALS. Other posts keep using the pristine 610-row CSV.
+-- Does not replace FACT_ACTUALS. Other posts keep using the unmodified 610-row CSV.
 
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;

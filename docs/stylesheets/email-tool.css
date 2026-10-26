@@ -1065,7 +1065,7 @@ body:has(#email-builder) .md-header__title {
   line-height: calc(1.7 * 14px);
 }
 
-/* Web Designer syntax colours. These beat the shared .tok-* rules.
+/* Syntax colours. These beat the shared .tok-* rules.
    Colour and italic only, so red and amber stay on the lint underlines. */
 #email-checker .tok-key {
   color: #a78bfa;

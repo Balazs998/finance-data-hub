@@ -1,6 +1,6 @@
 -- FDH_DEMO fictional sample only.
 -- FACT_ACTUALS_SNAPSHOT: permanent copy of FACT_ACTUALS keyed by period and run.
--- Does not replace FACT_ACTUALS. Other posts keep using the pristine 610-row CSV.
+-- Does not replace FACT_ACTUALS. Other posts keep using the unmodified 610-row CSV.
 
 USE ROLE SYSADMIN;
 USE SCHEMA FDH_DEMO.SAMPLE;

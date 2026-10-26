@@ -1,6 +1,8 @@
 ---
-title: "Capex tracking: budget vs committed vs actual, with alerts only when something is wrong"
-description: "Build one view of budget, open commitments and actual spend per capex project, flag over-budget, unapproved and self-approved projects, and build the list an alert job sends only when there are exceptions, for the fictional FDH Motors on FDH_DEMO.MOTORS."
+date: 2026-10-25
+home_tag: Automaker series
+title: "Capex tracking: budget vs committed vs actual"
+description: "One Snowflake view of budget, commitments and actuals per capex project, with exception flags and an alert list, for fictional FDH Motors."
 social_image: automaker-capex-project-tracking.png
 ---
 
@@ -9,7 +11,7 @@ social_image: automaker-capex-project-tracking.png
 <p class="post-meta">Snowflake · Intermediate · ~25 min · Automaker series</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary.</p>
 </aside>
 

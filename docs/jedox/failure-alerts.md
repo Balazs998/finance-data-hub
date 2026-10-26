@@ -1,6 +1,7 @@
 ---
-title: "Jedox job alerts people read: email only when a load fails"
-description: "Turn noisy 'job finished' mails into one failure-only alert per night for Jedox Integrator loads, with a run log, a Groovy job and a test mode that's on by default."
+date: 2026-10-23
+title: "Jedox failure-only job alerts"
+description: "Replace noisy \"job finished\" mails with one failure-only alert per night for Jedox Integrator loads, with a run log, a Groovy job and test mode."
 social_image: failure-alerts.png
 ---
 
@@ -9,7 +10,7 @@ social_image: failure-alerts.png
 <p class="post-meta">Jedox · Integrator</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>The mailer calls follow the Jedox 26.1 Integrator Scripting API pages linked below. We haven't run this job on a live install, and the scheduler's own email templates are covered only as an open point.</p>
 </aside>
 
@@ -180,3 +181,5 @@ All files use synthetic sample data and placeholder names.
 [[download:alerts/test_alert_logic.groovy|Download test_alert_logic.groovy]]
 [[download:relational/v_fact_actuals.sql|Download v_fact_actuals.sql (610 rows, 15,446,573.09)]]
 [[download:relational/v_fact_budget.sql|Download v_fact_budget.sql (696 rows, 17,253,220.89)]]
+
+**Next:** [ERP control totals](../snowflake/automaker-erp-control-totals.md) proves no rows went missing between the ERP extract and the warehouse.

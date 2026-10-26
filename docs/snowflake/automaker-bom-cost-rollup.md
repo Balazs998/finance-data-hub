@@ -1,6 +1,8 @@
 ---
-title: "BOM cost rollup in Snowflake: standard cost per vehicle, price and usage variance"
-description: "Explode a multi-level bill of materials with a recursive CTE, roll up standard cost per vehicle by period, and split purchase cost into purchase price variance and usage variance by part, for the fictional FDH Motors on FDH_DEMO.MOTORS."
+date: 2026-10-25
+home_tag: Automaker series
+title: "BOM cost rollup and PPV in Snowflake"
+description: "Explode a multi-level BOM with a recursive CTE, roll up standard cost per vehicle, and split price and usage variance for fictional FDH Motors."
 social_image: automaker-bom-cost-rollup.png
 ---
 
@@ -9,7 +11,7 @@ social_image: automaker-bom-cost-rollup.png
 <p class="post-meta">Snowflake · Intermediate · ~30 min · Automaker series</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary.</p>
 </aside>
 

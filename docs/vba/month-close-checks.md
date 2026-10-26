@@ -1,4 +1,6 @@
 ---
+social_image: month-close-checks.png
+date: 2026-10-09
 title: Month-close checks in Excel VBA
 description: "Run an Excel VBA month-close check that flags a blank ReportingPeriod, empty Input_ drivers, and #REF! or #N/A errors on a Close checks sheet."
 ---
@@ -38,6 +40,8 @@ It does not run when the file opens. You run it, or you point a button at it. It
 1. Save the workbook as `.xlsm` if it is not already a macro workbook.
 2. Press Alt+F11.
 3. Choose File, then Import File, and pick `FPNA_MonthCloseChecks.bas`.
+
+Import the file rather than pasting it. If you do paste the code into a module, delete the first line (`Attribute VB_Name = ...`), which only the importer understands. The module turns off screen updating and workbook events while it runs and restores both when it finishes.
 
 ```vbnet
 --8<-- "files/vba/FPNA_MonthCloseChecks.bas"

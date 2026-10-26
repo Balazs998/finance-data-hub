@@ -69,7 +69,7 @@ class ContentTests(unittest.TestCase):
         )
 
         self.assertIn(
-            'title: "Plan vs. actuals in Snowflake SQL, without losing rows"',
+            'title: "Plan vs actuals in Snowflake SQL"',
             plan,
         )
         self.assertIn("FULL OUTER JOIN", plan.split("---", 2)[1])
@@ -90,6 +90,7 @@ class ContentTests(unittest.TestCase):
                 "[[download:samples/dim_account.csv|Download dim_account.csv]]",
                 "[[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]",
                 "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
+                "[[download:samples/README.md|Download README.md (sample data)]]",
                 "[[download:sql/plan_vs_actual.sql|Download plan_vs_actual.sql]]",
             ),
             load: (
@@ -133,7 +134,7 @@ class ContentTests(unittest.TestCase):
     def test_month_end_snapshots_stay_distinct_and_ungranted(self):
         page = (ROOT / "docs/snowflake/month-end-snapshots.md").read_text(encoding="utf-8")
         actuals = (ROOT / "docs/snowflake/month-end-actuals.md").read_text(encoding="utf-8")
-        self.assertIn('title: "What number did we report? Permanent month-end snapshots vs Time Travel"', page)
+        self.assertIn('title: "Month-end snapshots vs Time Travel"', page)
         self.assertIn("social_image: month-end-snapshots.png", page)
         self.assertIn('<p class="post-meta">Snowflake</p>', page)
         self.assertIn('class="docs-note"', page)
@@ -184,7 +185,7 @@ class ContentTests(unittest.TestCase):
     def test_excel_thin_front_end_keeps_reviewed_numbers_and_proposed_grants(self):
         page = (ROOT / "docs/vba/excel-thin-front-end.md").read_text(encoding="utf-8")
         views = (ROOT / "docs/files/thinfront/01_reporting_views.sql").read_text(encoding="utf-8")
-        grants = (ROOT / "docs/files/thinfront/02_excel_read_grants_PROPOSED.sql").read_text(
+        grants = (ROOT / "docs/files/thinfront/02_excel_read_grants_for_admin.sql").read_text(
             encoding="utf-8"
         )
         module = (ROOT / "docs/files/thinfront/FDH_ThinFront.bas").read_text(encoding="utf-8")
@@ -194,7 +195,7 @@ class ContentTests(unittest.TestCase):
         nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
 
         self.assertIn(
-            'title: "Excel as a thin front end: Snowflake views feed a refresh-only workbook"',
+            'title: "Excel as a thin front end for Snowflake"',
             page,
         )
         self.assertIn(
@@ -204,14 +205,16 @@ class ContentTests(unittest.TestCase):
         self.assertIn("social_image: excel-thin-front-end.png", page)
         self.assertIn('<p class="post-meta">VBA · Intermediate · ~20 min</p>', page)
         self.assertIn('class="docs-note"', page)
-        self.assertIn("The demo workbook hasn't been built yet", page)
+        self.assertNotIn("hasn't been built yet", page)
+        self.assertNotIn("pristine", page)
         self.assertIn("FDH_DEMO", page)
         self.assertNotIn("DRAFT v0.3", page)
         self.assertNotIn("VBA Pro", page)
         self.assertNotIn("keypair-migration", page)
-        self.assertIn("Key-pair auth for service users", page)
+        self.assertNotIn("Key-pair auth for service users", page)
+        self.assertIn("https://docs.snowflake.com/en/user-guide/key-pair-auth", page)
         self.assertIn("../snowflake/plan-vs-actuals.md", page)
-        self.assertIn("02_excel_read_grants_PROPOSED.sql", page)
+        self.assertIn("02_excel_read_grants_for_admin.sql", page)
         self.assertIn("commented out", page)
         self.assertIn("An admin reviews and runs these grants.", page)
         self.assertIn("as table `tVarianceByCC` on sheet Variance", page)
@@ -258,7 +261,7 @@ class ContentTests(unittest.TestCase):
 
         self.assertTrue(
             grants.startswith(
-                "-- Proposed grants. This pack does not run them; an admin reviews and runs them once."
+                "-- Grants for an admin. This pack does not run them; an admin reviews and runs them once."
             )
         )
         self.assertNotIn("NOT approved yet", grants)
@@ -296,7 +299,7 @@ class ContentTests(unittest.TestCase):
         self.assertIn("tVarianceByCC on sheet Variance", spec)
         self.assertTrue(readme.startswith("# Thin front end pack (fictional FDH_DEMO data)"))
         self.assertIn("0. Load the samples with load_snowflake.sql.", readme)
-        self.assertIn("02_excel_read_grants_PROPOSED.sql", readme)
+        self.assertIn("02_excel_read_grants_for_admin.sql", readme)
         self.assertIn("An admin reviews and runs these grants.", readme)
 
         labels = (
@@ -304,7 +307,7 @@ class ContentTests(unittest.TestCase):
             "[[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]",
             "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
             "[[download:thinfront/01_reporting_views.sql|Download 01_reporting_views.sql]]",
-            "[[download:thinfront/02_excel_read_grants_PROPOSED.sql|Download 02_excel_read_grants_PROPOSED.sql]]",
+            "[[download:thinfront/02_excel_read_grants_for_admin.sql|Download 02_excel_read_grants_for_admin.sql]]",
             "[[download:thinfront/FDH_ThinFront.bas|Download FDH_ThinFront.bas]]",
             "[[download:thinfront/BUILD-SPEC.md|Download BUILD-SPEC.md]]",
             "[[download:thinfront/README.md|Download README.md]]",
@@ -317,7 +320,7 @@ class ContentTests(unittest.TestCase):
             sorted(path.name for path in pack.iterdir() if path.is_file()),
             [
                 "01_reporting_views.sql",
-                "02_excel_read_grants_PROPOSED.sql",
+                "02_excel_read_grants_for_admin.sql",
                 "BUILD-SPEC.md",
                 "FDH_ThinFront.bas",
                 "README.md",
@@ -339,7 +342,7 @@ class ContentTests(unittest.TestCase):
             ):
                 self.assertNotIn(banned, text, path.name)
         self.assertIn('href="excel-thin-front-end/"', index)
-        self.assertIn("02_excel_read_grants_PROPOSED.sql", index)
+        self.assertIn("02_excel_read_grants_for_admin.sql", index)
         self.assertLess(
             nav.index("vba/month-close-checks.md"),
             nav.index("vba/excel-thin-front-end.md"),
@@ -351,7 +354,7 @@ class ContentTests(unittest.TestCase):
         page = (ROOT / "docs/snowflake/fx-rate-lock.md").read_text(encoding="utf-8")
         teaser = (ROOT / "docs/snowflake/asof-join.md").read_text(encoding="utf-8")
         self.assertIn(
-            'title: "FX conversion that survives close: rate choice, missing rates, and a period lock"',
+            'title: "Snowflake FX rate lock for month-end close"',
             page,
         )
         self.assertIn("social_image: fx-rate-lock.png", page)
@@ -382,13 +385,13 @@ class ContentTests(unittest.TestCase):
             self.assertIn(figure, page)
         self.assertIn("1111.11", teaser)
         self.assertIn(
-            "Flake checked the SQL against the docs and recomputed every total.",
+            "Every total was recomputed from the sample CSVs.",
             page,
         )
         self.assertNotIn("status:", page.lower())
         self.assertNotIn("DRAFT", page)
         self.assertNotIn("Siemens", page)
-        self.assertNotIn("social_image:", teaser)
+        self.assertIn("social_image: asof-join.png", teaser)
         labels = (
             "[[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]",
             "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
@@ -435,7 +438,7 @@ class ContentTests(unittest.TestCase):
     def test_cash_runway_keeps_fictional_motors_and_numeric_downloads(self):
         page = (ROOT / "docs/snowflake/automaker-13-week-cash-runway.md").read_text(encoding="utf-8")
         self.assertIn(
-            'title: "A 13-week cash forecast with scenarios, a liquidity floor and an honest runway number"',
+            'title: "13-week cash forecast and runway in Snowflake"',
             page,
         )
         self.assertIn("social_image: automaker-13-week-cash-runway.png", page)
@@ -627,7 +630,7 @@ class ContentTests(unittest.TestCase):
     def test_capex_project_tracking_keeps_fictional_totals_and_marks_the_diagram(self):
         page = (ROOT / "docs/snowflake/automaker-capex-project-tracking.md").read_text(encoding="utf-8")
         self.assertIn(
-            'title: "Capex tracking: budget vs committed vs actual, with alerts only when something is wrong"',
+            'title: "Capex tracking: budget vs committed vs actual"',
             page,
         )
         self.assertIn("social_image: automaker-capex-project-tracking.png", page)
@@ -716,7 +719,7 @@ class ContentTests(unittest.TestCase):
     def test_bom_cost_rollup_keeps_fictional_totals_and_stays_free(self):
         page = (ROOT / "docs/snowflake/automaker-bom-cost-rollup.md").read_text(encoding="utf-8")
         self.assertIn(
-            'title: "BOM cost rollup in Snowflake: standard cost per vehicle, price and usage variance"',
+            'title: "BOM cost rollup and PPV in Snowflake"',
             page,
         )
         self.assertIn("social_image: automaker-bom-cost-rollup.png", page)
@@ -809,7 +812,7 @@ class ContentTests(unittest.TestCase):
     def test_erp_control_totals_keeps_fictional_totals_and_stays_free(self):
         page = (ROOT / "docs/snowflake/automaker-erp-control-totals.md").read_text(encoding="utf-8")
         self.assertIn(
-            'title: "Prove every hop: control totals from ERP to Snowflake to Jedox, with a load log and an evidence table"',
+            'title: "ERP to Snowflake to Jedox control totals"',
             page,
         )
         self.assertIn("social_image: automaker-erp-control-totals.png", page)
@@ -925,7 +928,7 @@ class ContentTests(unittest.TestCase):
     def test_close_tracker_anomaly_flags_stay_free_and_read_only(self):
         page = (ROOT / "docs/snowflake/automaker-close-tracker-anomaly-flags.md").read_text(encoding="utf-8")
         self.assertIn(
-            'title: "Close tracking and journal anomaly flags in SQL: z-score, IQR and three plain rules"',
+            'title: "Close tracking and journal anomaly flags in SQL"',
             page,
         )
         self.assertIn("social_image: automaker-close-tracker-anomaly-flags.png", page)
@@ -1007,3 +1010,30 @@ class ContentTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CleanupGuardTests(unittest.TestCase):
+    """Guards from the 2026-10-26 review cleanup."""
+
+    def test_bas_files_use_crlf(self):
+        for path in (ROOT / "docs" / "files").rglob("*.bas"):
+            data = path.read_bytes()
+            self.assertIn(b"\r\n", data, path)
+            self.assertEqual(data.count(b"\n"), data.count(b"\r\n"), path)
+
+    def test_no_internal_reviewer_names_in_published_files(self):
+        names = re.compile(
+            r"\b(Flake|J-dox|Website QA|Picky Reader|Security Guard|Sample Data Steward|VBA Pro|Web Designer|Site Maintainer|Content Writer)\b"
+        )
+        for path in (ROOT / "docs").rglob("*"):
+            if not path.is_file() or path.suffix not in {".md", ".js", ".json", ".html", ".sql", ".bas", ".groovy", ".csv"}:
+                continue
+            if "codemirror" in path.name:
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            self.assertIsNone(names.search(text), path)
+
+    def test_worker_setup_is_not_published(self):
+        self.assertFalse((ROOT / "docs" / "WORKER-SETUP.md").exists())
+        self.assertNotIn("WORKER-SETUP", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
+        self.assertTrue((ROOT / "worker" / "SETUP.md").is_file())

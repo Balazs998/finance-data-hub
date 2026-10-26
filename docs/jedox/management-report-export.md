@@ -1,4 +1,6 @@
 ---
+social_image: management-report-export.png
+date: 2026-10-09
 title: A management report export Excel can trust
 description: "Shape a Jedox Cube extract that Excel can trust: one amount column, base elements only, no thousands separators, and a 20-row sample to check by hand."
 ---

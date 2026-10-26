@@ -1,5 +1,5 @@
--- Post 02: the logic lives in Snowflake; Excel only refreshes
--- Proposed objects (Sample Data Steward to confirm): V_PNL_MONTHLY, V_VARIANCE_BY_CC
+-- The logic lives in Snowflake; Excel only refreshes
+-- Views: V_PNL_MONTHLY, V_VARIANCE_BY_CC
 -- Sign convention: the sample stores revenue and cost as positive amounts.
 -- variance = actual - budget; favourable means revenue above budget or cost below budget.
 USE ROLE SYSADMIN;

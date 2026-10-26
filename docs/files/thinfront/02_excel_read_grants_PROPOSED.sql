@@ -1,7 +1,7 @@
--- Post 02: PROPOSED grants for the Excel read role. NOT approved yet.
--- Reviewed by Security Guard. Not run by this pack; an admin runs it once. Views only; no table grants.
--- EXCEL_READ_ROLE and EXCEL_WH are the site's brief-06 objects (Sample Data Steward to confirm).
--- The role also needs USAGE on FDH_DEMO, FDH_DEMO.SAMPLE and EXCEL_WH (brief-06 setup). Do not use FUTURE grants or GRANT ... ON ALL VIEWS; grant per view.
+-- Proposed grants. This pack does not run them; an admin reviews and runs them once.
+-- Views only; no table grants.
+-- EXCEL_READ_ROLE and EXCEL_WH are the Excel read role and warehouse.
+-- The role also needs USAGE on FDH_DEMO, FDH_DEMO.SAMPLE and EXCEL_WH. Do not use FUTURE grants or GRANT ... ON ALL VIEWS; grant per view.
 -- USE ROLE SECURITYADMIN;
 -- GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_PNL_MONTHLY TO ROLE EXCEL_READ_ROLE;
 -- GRANT SELECT ON VIEW FDH_DEMO.SAMPLE.V_VARIANCE_BY_CC TO ROLE EXCEL_READ_ROLE;

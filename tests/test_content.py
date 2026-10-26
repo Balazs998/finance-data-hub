@@ -213,7 +213,23 @@ class ContentTests(unittest.TestCase):
         self.assertIn("../snowflake/plan-vs-actuals.md", page)
         self.assertIn("02_excel_read_grants_PROPOSED.sql", page)
         self.assertIn("commented out", page)
-        self.assertIn("Security Guard approves them before ship", page)
+        self.assertIn("An admin reviews and runs these grants.", page)
+        self.assertIn("as table `tVarianceByCC` on sheet Variance", page)
+        self.assertIn("../files/samples/dim_account.csv", page)
+        self.assertIn("../files/samples/dim_cost_center.csv", page)
+        self.assertIn("../files/samples/load_snowflake.sql", page)
+        self.assertIn("DIM_ACCOUNT", page)
+        self.assertIn("DIM_COST_CENTER", page)
+        for banned in (
+            "Flake",
+            "Security Guard",
+            "Grok Bot",
+            "VBA Pro",
+            "Sample Data Steward",
+            "brief-06",
+            "Post 02",
+        ):
+            self.assertNotIn(banned, page)
 
         for figure in (
             "96 (88 with actuals, 8 budget-only for 2026-09)",
@@ -240,12 +256,13 @@ class ContentTests(unittest.TestCase):
         self.assertIn("CREATE OR REPLACE VIEW V_VARIANCE_BY_CC AS", views)
         self.assertNotRegex(views, r"(?im)^[ \t]*(GRANT|REVOKE)\b")
 
-        self.assertTrue(grants.startswith("-- Post 02: PROPOSED grants"))
-        self.assertIn("NOT approved yet", grants)
-        self.assertIn(
-            "Reviewed by Security Guard. Not run by this pack; an admin runs it once.",
-            grants,
+        self.assertTrue(
+            grants.startswith(
+                "-- Proposed grants. This pack does not run them; an admin reviews and runs them once."
+            )
         )
+        self.assertNotIn("NOT approved yet", grants)
+        self.assertNotIn("Reviewed by", grants)
         self.assertNotIn("Security Guard must approve before ship", grants)
         self.assertIn(
             "Keep the private key file outside the workbook's folder and any synced, shared or Git folder, and encrypt it with a passphrase.",
@@ -272,14 +289,20 @@ class ContentTests(unittest.TestCase):
         self.assertIn("no Declare / PtrSafe is needed", module)
         self.assertNotRegex(module, r"(?im)^[ \t]*(Private |Public )?Declare\b")
         self.assertIn("Workbook not built yet.", spec)
+        self.assertNotIn("Status: PROPOSED", spec)
         self.assertIn("15,446,573.09", spec)
         self.assertIn("17,253,220.89", spec)
         self.assertIn('expect 12', spec)
-        self.assertTrue(readme.startswith("# Post 02 thin front end pack (fictional FDH_DEMO data)"))
+        self.assertIn("tVarianceByCC on sheet Variance", spec)
+        self.assertTrue(readme.startswith("# Thin front end pack (fictional FDH_DEMO data)"))
+        self.assertIn("0. Load the samples with load_snowflake.sql.", readme)
         self.assertIn("02_excel_read_grants_PROPOSED.sql", readme)
-        self.assertIn("needs Security Guard approval", readme)
+        self.assertIn("An admin reviews and runs these grants.", readme)
 
         labels = (
+            "[[download:samples/dim_account.csv|Download dim_account.csv]]",
+            "[[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]",
+            "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
             "[[download:thinfront/01_reporting_views.sql|Download 01_reporting_views.sql]]",
             "[[download:thinfront/02_excel_read_grants_PROPOSED.sql|Download 02_excel_read_grants_PROPOSED.sql]]",
             "[[download:thinfront/FDH_ThinFront.bas|Download FDH_ThinFront.bas]]",
@@ -304,6 +327,17 @@ class ContentTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             self.assertNotIn("Siemens", text, path.name)
             self.assertIn("FDH_DEMO", text, path.name)
+            for banned in (
+                "Flake",
+                "Security Guard",
+                "Grok Bot",
+                "VBA Pro",
+                "Sample Data Steward",
+                "brief-06",
+                "Post 02",
+                "post 02",
+            ):
+                self.assertNotIn(banned, text, path.name)
         self.assertIn('href="excel-thin-front-end/"', index)
         self.assertIn("02_excel_read_grants_PROPOSED.sql", index)
         self.assertLess(

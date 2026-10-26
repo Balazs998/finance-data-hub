@@ -998,9 +998,16 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertNotIn("DRAFT v0.3", html)
         self.assertNotIn("VBA Pro", html)
+        self.assertNotIn("Flake", html)
+        self.assertNotIn("Security Guard", html)
+        self.assertNotIn("Grok Bot", html)
+        self.assertNotIn("Sample Data Steward", html)
         self.assertNotIn(".xlsm", html[html.find('<div class="downloads">') :])
-        self.assertEqual(html.count("md-button download"), 5)
+        self.assertEqual(html.count("md-button download"), 8)
         for relative in (
+            "samples/dim_account.csv",
+            "samples/dim_cost_center.csv",
+            "samples/load_snowflake.sql",
             "thinfront/01_reporting_views.sql",
             "thinfront/02_excel_read_grants_PROPOSED.sql",
             "thinfront/FDH_ThinFront.bas",
@@ -1014,12 +1021,17 @@ class BuiltSiteTests(unittest.TestCase):
         grants = (SITE / "files" / "thinfront" / "02_excel_read_grants_PROPOSED.sql").read_text(
             encoding="utf-8"
         )
-        self.assertIn("PROPOSED", grants)
-        self.assertIn("NOT approved yet", grants)
+        self.assertIn(
+            "Proposed grants. This pack does not run them; an admin reviews and runs them once.",
+            grants,
+        )
+        self.assertNotIn("NOT approved yet", grants)
+        self.assertNotIn("Reviewed by", grants)
         self.assertNotRegex(grants, r"(?im)^[ \t]*(GRANT|REVOKE)\b")
         readme = SITE / "files" / "thinfront" / "README.md"
         self.assertTrue(readme.is_file(), "thin front README was not copied as a download")
-        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Post 02 thin front end pack"))
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Thin front end pack"))
+        self.assertIn("Load the samples with load_snowflake.sql.", readme.read_text(encoding="utf-8"))
         self.assertFalse((SITE / "files" / "thinfront" / "index.html").exists())
         self.assertFalse(list((SITE / "files" / "thinfront").glob("*.xlsm")))
         self.assertEqual(

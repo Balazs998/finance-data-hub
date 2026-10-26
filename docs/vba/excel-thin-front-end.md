@@ -10,7 +10,7 @@ social_image: excel-thin-front-end.png
 
 <aside class="docs-note" role="note">
   <p class="docs-note__title">Based on official docs, not tested on a live install</p>
-  <p>The refresh module uses <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbook.connections">Workbook.Connections</a>, <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbookconnection.refresh">WorkbookConnection.Refresh</a> and <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.oledbconnection.backgroundquery">OLEDBConnection.BackgroundQuery</a>, and the connection follows the <a href="https://docs.snowflake.com/en/developer-guide/odbc/odbc">Snowflake ODBC driver docs</a>. We have not run it against a live Snowflake account. View check numbers were derived from the pristine sample CSVs. The demo workbook hasn't been built yet, so the module hasn't been run in Excel. Flake re-checks the views before publish.</p>
+  <p>The refresh module uses <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbook.connections">Workbook.Connections</a>, <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbookconnection.refresh">WorkbookConnection.Refresh</a> and <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.oledbconnection.backgroundquery">OLEDBConnection.BackgroundQuery</a>, and the connection follows the <a href="https://docs.snowflake.com/en/developer-guide/odbc/odbc">Snowflake ODBC driver docs</a>. We have not run it against a live Snowflake account. View check numbers were derived from the pristine sample CSVs. The demo workbook hasn't been built yet, so the module hasn't been run in Excel. Re-check the views against the sample totals before you share the workbook.</p>
 </aside>
 
 Most month-end packs are a chain: export from the warehouse, paste into a workbook, fix the formulas that broke, paste into slides. Every link in that chain is manual, and every paste is a chance to send last month's numbers. The fix isn't a cleverer macro. It's moving the logic out of Excel. Let Snowflake do the joins, the variance maths and the sign rules in views; let Excel do what it's great at: showing numbers, pivoting them, and refreshing on demand.
@@ -24,10 +24,10 @@ Most month-end packs are a chain: export from the warehouse, paste into a workbo
 ## Before you start
 
 !!! info "You'll need"
-    - Role / access: `SYSADMIN` to create the views. Excel reads as `EXCEL_READ_ROLE` on `EXCEL_WH`. The two `SELECT ON VIEW` grants are in `02_excel_read_grants_PROPOSED.sql`, commented out; Security Guard approves them before ship. No table grants, and `JEDOX_ETL_ROLE` is untouched.
+    - Role / access: `SYSADMIN` to create the views. Excel reads as `EXCEL_READ_ROLE` on `EXCEL_WH`. The two `SELECT ON VIEW` grants are in `02_excel_read_grants_PROPOSED.sql`, commented out. An admin reviews and runs these grants. No table grants, and `JEDOX_ETL_ROLE` is untouched.
     - Product version: Excel for Microsoft 365 on Windows (Power Query and VBA), the Snowflake ODBC driver, and a DSN named `SNOWFLAKE_DEMO`.
     - Previous posts: [Plan vs actuals in Snowflake](../snowflake/plan-vs-actuals.md) (the join pattern) and Key-pair auth for service users (how `EXCEL_ODBC_SVC` signs in)
-    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows) and [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), plus the [Downloads](#downloads)
+    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), [`dim_account.csv`](../files/samples/dim_account.csv) and [`dim_cost_center.csv`](../files/samples/dim_cost_center.csv). The views join `DIM_ACCOUNT` and `DIM_COST_CENTER`. Load the samples with [`load_snowflake.sql`](../files/samples/load_snowflake.sql), or use [Downloads](#downloads).
 
 ## The sample scenario
 
@@ -86,7 +86,7 @@ The March actual total (229,693.47 + 1,236,450.39 = 1,466,143.86) matches the fi
 
 ## 3. Connect Excel, refresh-only
 
-In Excel: **Data > Get Data > From Other Sources > From ODBC**, pick DSN `SNOWFLAKE_DEMO`, and use a native query such as `SELECT * FROM FDH_DEMO.SAMPLE.V_PNL_MONTHLY`. Load it as table `tPnlMonthly` on sheet PnL; repeat for `V_VARIANCE_BY_CC` as `tVarianceByCC`. The `SNOWFLAKE_DEMO` DSN sets `server` (`<account>.snowflakecomputing.com`), `uid` (EXCEL_ODBC_SVC), `authenticator=SNOWFLAKE_JWT`, `priv_key_file`, `database=FDH_DEMO`, `schema=SAMPLE`, `warehouse=EXCEL_WH`, `role=EXCEL_READ_ROLE`.
+In Excel: **Data > Get Data > From Other Sources > From ODBC**, pick DSN `SNOWFLAKE_DEMO`, and use a native query such as `SELECT * FROM FDH_DEMO.SAMPLE.V_PNL_MONTHLY`. Load it as table `tPnlMonthly` on sheet PnL; repeat for `V_VARIANCE_BY_CC` as table `tVarianceByCC` on sheet Variance. The `SNOWFLAKE_DEMO` DSN sets `server` (`<account>.snowflakecomputing.com`), `uid` (EXCEL_ODBC_SVC), `authenticator=SNOWFLAKE_JWT`, `priv_key_file`, `database=FDH_DEMO`, `schema=SAMPLE`, `warehouse=EXCEL_WH`, `role=EXCEL_READ_ROLE`.
 
 Then follow three rules:
 
@@ -211,8 +211,11 @@ Linked charts in slides are the most fragile link in the chain. A safer pattern 
 
 ## Downloads
 
-All files use synthetic sample data and placeholder names.
+All files use synthetic sample data and placeholder names. The views need `DIM_ACCOUNT` and `DIM_COST_CENTER`.
 
+[[download:samples/dim_account.csv|Download dim_account.csv]]
+[[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]
+[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]
 [[download:thinfront/01_reporting_views.sql|Download 01_reporting_views.sql]]
 [[download:thinfront/02_excel_read_grants_PROPOSED.sql|Download 02_excel_read_grants_PROPOSED.sql]]
 [[download:thinfront/FDH_ThinFront.bas|Download FDH_ThinFront.bas]]

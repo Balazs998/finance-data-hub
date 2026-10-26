@@ -11,6 +11,7 @@ extra:
 # Rule Studio stays in the repo and is not published, same as worker/SETUP.md.
 exclude_docs: |
   jedox/rule-studio/
+  javascripts/rule-*.js
 
 extra_css:
   - stylesheets/extra.css

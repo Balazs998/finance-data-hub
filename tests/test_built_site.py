@@ -448,6 +448,7 @@ SOCIAL_PAGES = {
     "snowflake/automaker-13-week-cash-runway/index.html": "automaker-13-week-cash-runway.png",
     "snowflake/automaker-cost-per-vehicle/index.html": "automaker-cost-per-vehicle.png",
     "snowflake/automaker-capex-project-tracking/index.html": "automaker-capex-project-tracking.png",
+    "snowflake/automaker-bom-cost-rollup/index.html": "automaker-bom-cost-rollup.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -466,6 +467,7 @@ SOCIAL_FILES = (
     "automaker-13-week-cash-runway.png",
     "automaker-cost-per-vehicle.png",
     "automaker-capex-project-tracking.png",
+    "automaker-bom-cost-rollup.png",
 )
 
 
@@ -1251,7 +1253,10 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("DRAFT", html)
         self.assertNotIn("Siemens", html)
         self.assertNotIn("/workspace/", html)
-        self.assertNotIn("rolling up BOM", html)
+        self.assertIn(
+            'href="../automaker-bom-cost-rollup/">rolling up BOM cost and purchase price variance</a>',
+            html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0],
+        )
         self.assertIn("FDH Motors", html)
         self.assertIn("FDH_DEMO.MOTORS", html)
         self.assertIn('class="docs-note"', html)
@@ -1291,6 +1296,65 @@ class BuiltSiteTests(unittest.TestCase):
             footer,
         )
         self.assertIn('href="../automaker-cost-per-vehicle/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: BOM cost rollup"',
+            footer,
+        )
+        self.assertIn('href="../automaker-bom-cost-rollup/"', footer)
+
+    def test_bom_cost_rollup_page_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "automaker-bom-cost-rollup" / "index.html"
+        self.assertTrue(page.is_file(), "BOM cost rollup page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "BOM cost rollup in Snowflake: standard cost per vehicle, price and usage variance",
+            html,
+        )
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("Siemens", html)
+        self.assertNotIn("/workspace/", html)
+        self.assertNotIn("paid template", html.lower())
+        self.assertNotIn("ERP-to-warehouse", html)
+        self.assertIn("FDH Motors", html)
+        self.assertIn("FDH_DEMO.MOTORS", html)
+        self.assertIn('class="docs-note"', html)
+        article = html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0]
+        self.assertIn('href="../automaker-cost-per-vehicle/"', article)
+        self.assertIn('href="../month-end-snapshots/"', article)
+        self.assertIn("Swipe to see the full diagram →", article)
+        self.assertIn('aria-label="BOM cost rollup"', article)
+        self.assertIn('src="../bom-tree.svg"', article)
+        self.assertNotIn("template", article.lower())
+        diagram = local_target(page, "../bom-tree.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "automaker-bom-cost-rollup.png"],
+        )
+        for relative in (
+            "bom/01_v_bom_exploded.sql",
+            "bom/02_v_std_cost_rollup.sql",
+            "bom/03_v_ppv.sql",
+            "bom/04_v_usage_var.sql",
+            "bom/05_checks.sql",
+            "bom/README.md",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 6)
+        readme = SITE / "files" / "bom" / "README.md"
+        self.assertTrue(readme.is_file())
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# BOM cost rollup"))
+        self.assertFalse((SITE / "files" / "bom" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Capex project tracking"',
+            footer,
+        )
+        self.assertIn('href="../automaker-capex-project-tracking/"', footer)
         self.assertIn(
             'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
             footer,

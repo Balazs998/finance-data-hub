@@ -173,6 +173,8 @@ Run `04_checks.sql`. You should see:
 - Segregation of duties is a one-line check once approvals are data.
 - Alert on a count, and send nothing when the count is 0.
 
+**Next in the automaker series:** [rolling up BOM cost and purchase price variance](automaker-bom-cost-rollup.md).
+
 ## Downloads
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.

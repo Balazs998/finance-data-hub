@@ -94,6 +94,7 @@ nav:
       - 13-week cash runway: snowflake/automaker-13-week-cash-runway.md
       - Cost per vehicle: snowflake/automaker-cost-per-vehicle.md
       - Capex project tracking: snowflake/automaker-capex-project-tracking.md
+      - BOM cost rollup: snowflake/automaker-bom-cost-rollup.md
   - Jedox:
       - jedox/index.md
       - Management report export: jedox/management-report-export.md

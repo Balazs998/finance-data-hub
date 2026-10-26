@@ -398,6 +398,110 @@ class ContentTests(unittest.TestCase):
             nav.index("snowflake/asof-join.md"),
         )
 
+    def test_cash_runway_keeps_fictional_motors_and_numeric_downloads(self):
+        page = (ROOT / "docs/snowflake/automaker-13-week-cash-runway.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "A 13-week cash forecast with scenarios, a liquidity floor and an honest runway number"',
+            page,
+        )
+        self.assertIn("social_image: automaker-13-week-cash-runway.png", page)
+        self.assertIn(
+            '<p class="post-meta">Snowflake · Intermediate · ~25 min · Automaker series</p>',
+            page,
+        )
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("cash-runway-13w.svg", page)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn("](month-end-snapshots.md)", page)
+        self.assertIn("FDH_DEMO.MOTORS", page)
+        self.assertIn("FDH Motors", page)
+        for figure in (
+            "4,000,000.00",
+            "1,500,000.00",
+            "158",
+            "146",
+            "13,604,777.09",
+            "14,383,187.74",
+            "3,221,589.35",
+            "1,228,558.33",
+            "4,741,467.15",
+            "2026-09-07",
+            "CF0006",
+            "CF0064",
+            "-190,457.04",
+        ):
+            self.assertIn(figure, page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        labels = (
+            "[[download:samples/motors/cash_opening.csv|Download cash_opening.csv]]",
+            "[[download:samples/motors/cash_flow.csv|Download cash_flow.csv]]",
+            "[[download:samples/motors/cash_scenario.csv|Download cash_scenario.csv]]",
+            "[[download:samples/motors/liquidity_floor.csv|Download liquidity_floor.csv]]",
+            "[[download:samples/motors/bom.csv|Download bom.csv]]",
+            "[[download:samples/motors/capex_actual.csv|Download capex_actual.csv]]",
+            "[[download:samples/motors/capex_commit.csv|Download capex_commit.csv]]",
+            "[[download:samples/motors/capex_project.csv|Download capex_project.csv]]",
+            "[[download:samples/motors/close_task.csv|Download close_task.csv]]",
+            "[[download:samples/motors/dim_market.csv|Download dim_market.csv]]",
+            "[[download:samples/motors/dim_model.csv|Download dim_model.csv]]",
+            "[[download:samples/motors/dim_part.csv|Download dim_part.csv]]",
+            "[[download:samples/motors/dim_plant.csv|Download dim_plant.csv]]",
+            "[[download:samples/motors/erp_gl_extract.csv|Download erp_gl_extract.csv]]",
+            "[[download:samples/motors/erp_gl_extract_2026-03.csv|Download erp_gl_extract_2026-03.csv]]",
+            "[[download:samples/motors/erp_gl_extract_2026-03_dropped.csv|Download erp_gl_extract_2026-03_dropped.csv]]",
+            "[[download:samples/motors/fact_production.csv|Download fact_production.csv]]",
+            "[[download:samples/motors/fact_vehicle_sales.csv|Download fact_vehicle_sales.csv]]",
+            "[[download:samples/motors/map_cost_center_plant.csv|Download map_cost_center_plant.csv]]",
+            "[[download:samples/motors/motors_recipients.csv|Download motors_recipients.csv]]",
+            "[[download:samples/motors/part_purchase.csv|Download part_purchase.csv]]",
+            "[[download:samples/motors/std_cost.csv|Download std_cost.csv]]",
+            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
+            "[[download:samples/motors/gen_motors.py|Download gen_motors.py]]",
+            "[[download:samples/motors/README.md|Download README.md (sample pack)]]",
+            "[[download:cash13/01_cash_tables_ddl_load.sql|Download 01_cash_tables_ddl_load.sql]]",
+            "[[download:cash13/02_v_cash_flow_week.sql|Download 02_v_cash_flow_week.sql]]",
+            "[[download:cash13/03_v_cash_13w.sql|Download 03_v_cash_13w.sql]]",
+            "[[download:cash13/04_v_cash_runway.sql|Download 04_v_cash_runway.sql]]",
+            "[[download:cash13/05_v_cash_week1_avf.sql|Download 05_v_cash_week1_avf.sql]]",
+            "[[download:cash13/06_v_receipt_slip.sql|Download 06_v_receipt_slip.sql]]",
+            "[[download:cash13/07_checks.sql|Download 07_checks.sql]]",
+            "[[download:cash13/README.md|Download README.md (SQL pack)]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/cash13"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_cash_tables_ddl_load.sql",
+                "02_v_cash_flow_week.sql",
+                "03_v_cash_13w.sql",
+                "04_v_cash_runway.sql",
+                "05_v_cash_week1_avf.sql",
+                "06_v_receipt_slip.sql",
+                "07_checks.sql",
+                "README.md",
+            ],
+        )
+        motors = ROOT / "docs/files/samples/motors"
+        for folder in (pack, motors):
+            for path in folder.iterdir():
+                if not path.is_file():
+                    continue
+                text = path.read_text(encoding="utf-8")
+                self.assertNotIn("Siemens", text, path.name)
+                self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+                self.assertNotIn("/workspace/", text, path.name)
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/asof-join.md"),
+            nav.index("snowflake/automaker-13-week-cash-runway.md"),
+        )
+
 
 
 

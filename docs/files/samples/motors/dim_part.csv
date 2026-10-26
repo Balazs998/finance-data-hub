@@ -1,0 +1,28 @@
+part,part_name,part_type,uom
+M-A,Model Aster vehicle,VEH,EA
+M-B,Model Birch vehicle,VEH,EA
+A-BODY-A,Body M-A,ASSY,EA
+A-BODY-B,Body M-B,ASSY,EA
+A-PT-A,Powertrain M-A,ASSY,EA
+A-PT-B,Powertrain M-B,ASSY,EA
+A-INT-A,Interior M-A,ASSY,EA
+A-INT-B,Interior M-B,ASSY,EA
+A-ELEC,Electrics module (shared),ASSY,EA
+P-STEEL,Steel coil,PART,KG
+P-ALU,Aluminium extrusion,PART,KG
+P-PANEL-A,Door panel set M-A,PART,EA
+P-PANEL-B,Door panel set M-B,PART,EA
+P-GLASS,Glass set,PART,EA
+P-PAINT,Paint,PART,L
+P-MOTOR-A,Motor 90 kW,PART,EA
+P-MOTOR-B,Motor 150 kW,PART,EA
+P-CELL-01,Battery cell gen 1,PART,EA
+P-CELL-02,Battery cell gen 2,PART,EA
+P-INV,Inverter,PART,EA
+P-SEAT-A,Seat set M-A,PART,EA
+P-SEAT-B,Seat set M-B,PART,EA
+P-DASH,Dashboard,PART,EA
+P-TRIM-B,Trim kit M-B,PART,EA
+P-HARN-01,Wiring harness (shared),PART,EA
+P-ECU-01,Control unit (shared),PART,EA
+P-SCREEN,Display,PART,EA

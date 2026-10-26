@@ -1,0 +1,4 @@
+scenario,receipt_mult,disburse_mult
+base,1.00,1.00
+down,0.90,1.05
+up,1.08,0.97

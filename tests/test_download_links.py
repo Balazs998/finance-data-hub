@@ -165,6 +165,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"Snapshots vs Time Travel": "snowflake/month-end-snapshots.md"},
                     {"FX rate lock": "snowflake/fx-rate-lock.md"},
                     {"ASOF JOIN": "snowflake/asof-join.md"},
+                    {"13-week cash runway": "snowflake/automaker-13-week-cash-runway.md"},
                 ]
             },
             {
@@ -199,6 +200,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Plan vs actuals](snowflake/plan-vs-actuals.md)",
             "## [Snapshots vs Time Travel](snowflake/month-end-snapshots.md)",
             "## [FX rate lock](snowflake/fx-rate-lock.md)",
+            "## [13-week cash runway](snowflake/automaker-13-week-cash-runway.md)",
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Failure-only alerts](jedox/failure-alerts.md)",
@@ -244,6 +246,28 @@ class DownloadShortcodeTests(unittest.TestCase):
         positions = [fx.index(name) for name in fx_files]
         self.assertEqual(positions, sorted(positions))
         self.assertNotIn("samples/", fx)
+        cash = index.split("## [13-week cash runway](snowflake/automaker-13-week-cash-runway.md)", 1)[1].split("## [", 1)[0]
+        cash_files = (
+            "samples/motors/cash_opening.csv",
+            "samples/motors/cash_flow.csv",
+            "samples/motors/cash_scenario.csv",
+            "samples/motors/liquidity_floor.csv",
+            "samples/motors/load_motors.sql",
+            "samples/motors/gen_motors.py",
+            "samples/motors/README.md",
+            "cash13/01_cash_tables_ddl_load.sql",
+            "cash13/02_v_cash_flow_week.sql",
+            "cash13/03_v_cash_13w.sql",
+            "cash13/04_v_cash_runway.sql",
+            "cash13/05_v_cash_week1_avf.sql",
+            "cash13/06_v_receipt_slip.sql",
+            "cash13/07_checks.sql",
+            "cash13/README.md",
+        )
+        positions = [cash.index(name) for name in cash_files]
+        self.assertEqual(positions, sorted(positions))
+        self.assertNotIn("samples/fact_actuals.csv", cash)
+        self.assertNotIn("fx/", cash)
         email = index.split("## [Automated value emails]", 1)[1].split("## [", 1)[0]
         self.assertIn("email/send_value_emails.groovy", email)
         self.assertIn("email/recipients.csv", email)
@@ -297,7 +321,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 44)
+        self.assertEqual(len(disk), 77)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

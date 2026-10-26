@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, and an FX rate lock."
+description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, and a 13-week cash runway for fictional FDH Motors."
 hide:
   - toc
 ---
@@ -54,6 +54,12 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 8 min read</p>
   </article></li>
   <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="automaker-13-week-cash-runway/">13-week cash runway</a></h3>
+    <p class="fdh-card__summary">Forecast 13 weeks of FDH Motors cash and read how many weeks stay above the liquidity floor.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 25 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
@@ -80,6 +86,18 @@ hide:
     <li><a href="../files/fx/05_asof_join_convert.sql" download="05_asof_join_convert.sql" data-goatcounter-click="download-05_asof_join_convert.sql" data-goatcounter-title="Download 05_asof_join_convert.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_asof_join_convert.sql</a></li>
     <li><a href="../files/fx/06_period_lock_and_snapshot.sql" download="06_period_lock_and_snapshot.sql" data-goatcounter-click="download-06_period_lock_and_snapshot.sql" data-goatcounter-title="Download 06_period_lock_and_snapshot.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_period_lock_and_snapshot.sql</a></li>
     <li><a href="../files/fx/07_restate_after_lock_demo.sql" download="07_restate_after_lock_demo.sql" data-goatcounter-click="download-07_restate_after_lock_demo.sql" data-goatcounter-title="Download 07_restate_after_lock_demo.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 07_restate_after_lock_demo.sql</a></li>
+    <li><a href="../files/samples/motors/load_motors.sql" download="load_motors.sql" data-goatcounter-click="download-load_motors.sql" data-goatcounter-title="Download load_motors.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> load_motors.sql</a></li>
+    <li><a href="../files/samples/motors/cash_opening.csv" download="cash_opening.csv" data-goatcounter-click="download-cash_opening.csv" data-goatcounter-title="Download cash_opening.csv" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> cash_opening.csv</a></li>
+    <li><a href="../files/samples/motors/cash_flow.csv" download="cash_flow.csv" data-goatcounter-click="download-cash_flow.csv" data-goatcounter-title="Download cash_flow.csv" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> cash_flow.csv</a></li>
+    <li><a href="../files/samples/motors/cash_scenario.csv" download="cash_scenario.csv" data-goatcounter-click="download-cash_scenario.csv" data-goatcounter-title="Download cash_scenario.csv" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> cash_scenario.csv</a></li>
+    <li><a href="../files/samples/motors/liquidity_floor.csv" download="liquidity_floor.csv" data-goatcounter-click="download-liquidity_floor.csv" data-goatcounter-title="Download liquidity_floor.csv" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> liquidity_floor.csv</a></li>
+    <li><a href="../files/cash13/01_cash_tables_ddl_load.sql" download="01_cash_tables_ddl_load.sql" data-goatcounter-click="download-01_cash_tables_ddl_load.sql" data-goatcounter-title="Download 01_cash_tables_ddl_load.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_cash_tables_ddl_load.sql</a></li>
+    <li><a href="../files/cash13/02_v_cash_flow_week.sql" download="02_v_cash_flow_week.sql" data-goatcounter-click="download-02_v_cash_flow_week.sql" data-goatcounter-title="Download 02_v_cash_flow_week.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_v_cash_flow_week.sql</a></li>
+    <li><a href="../files/cash13/03_v_cash_13w.sql" download="03_v_cash_13w.sql" data-goatcounter-click="download-03_v_cash_13w.sql" data-goatcounter-title="Download 03_v_cash_13w.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_v_cash_13w.sql</a></li>
+    <li><a href="../files/cash13/04_v_cash_runway.sql" download="04_v_cash_runway.sql" data-goatcounter-click="download-04_v_cash_runway.sql" data-goatcounter-title="Download 04_v_cash_runway.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_cash_runway.sql</a></li>
+    <li><a href="../files/cash13/05_v_cash_week1_avf.sql" download="05_v_cash_week1_avf.sql" data-goatcounter-click="download-05_v_cash_week1_avf.sql" data-goatcounter-title="Download 05_v_cash_week1_avf.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_v_cash_week1_avf.sql</a></li>
+    <li><a href="../files/cash13/06_v_receipt_slip.sql" download="06_v_receipt_slip.sql" data-goatcounter-click="download-06_v_receipt_slip.sql" data-goatcounter-title="Download 06_v_receipt_slip.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_v_receipt_slip.sql</a></li>
+    <li><a href="../files/cash13/07_checks.sql" download="07_checks.sql" data-goatcounter-click="download-07_checks.sql" data-goatcounter-title="Download 07_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 07_checks.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

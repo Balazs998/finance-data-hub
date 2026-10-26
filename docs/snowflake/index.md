@@ -90,6 +90,12 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 30 min read</p>
   </article></li>
   <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="finance-sql-snowflake/">Finance SQL patterns</a></h3>
+    <p class="fdh-card__summary">Actual vs budget per cell with a FULL OUTER JOIN, fiscal quarter-to-date and year-to-date with window functions, and reported vs current numbers.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 25 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
@@ -156,6 +162,11 @@ hide:
     <li><a href="../files/anomaly/04_v_je_rules.sql" download="04_v_je_rules.sql" data-goatcounter-click="download-04_v_je_rules.sql" data-goatcounter-title="Download 04_v_je_rules.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_je_rules.sql</a></li>
     <li><a href="../files/anomaly/05_v_je_flags_alert.sql" download="05_v_je_flags_alert.sql" data-goatcounter-click="download-05_v_je_flags_alert.sql" data-goatcounter-title="Download 05_v_je_flags_alert.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_v_je_flags_alert.sql</a></li>
     <li><a href="../files/anomaly/06_checks.sql" download="06_checks.sql" data-goatcounter-click="download-06_checks.sql" data-goatcounter-title="Download 06_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_checks.sql</a></li>
+    <li><a href="../files/finsql/01_v_fin_avb_cell.sql" download="01_v_fin_avb_cell.sql" data-goatcounter-click="download-01_v_fin_avb_cell.sql" data-goatcounter-title="Download 01_v_fin_avb_cell.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_v_fin_avb_cell.sql</a></li>
+    <li><a href="../files/finsql/02_v_fin_avb_ptd_ytd.sql" download="02_v_fin_avb_ptd_ytd.sql" data-goatcounter-click="download-02_v_fin_avb_ptd_ytd.sql" data-goatcounter-title="Download 02_v_fin_avb_ptd_ytd.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_v_fin_avb_ptd_ytd.sql</a></li>
+    <li><a href="../files/finsql/03_snapshot_vs_current_vs_budget.sql" download="03_snapshot_vs_current_vs_budget.sql" data-goatcounter-click="download-03_snapshot_vs_current_vs_budget.sql" data-goatcounter-title="Download 03_snapshot_vs_current_vs_budget.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_snapshot_vs_current_vs_budget.sql</a></li>
+    <li><a href="../files/finsql/04_forecast_pattern.sql" download="04_forecast_pattern.sql" data-goatcounter-click="download-04_forecast_pattern.sql" data-goatcounter-title="Download 04_forecast_pattern.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_forecast_pattern.sql</a></li>
+    <li><a href="../files/finsql/05_checks.sql" download="05_checks.sql" data-goatcounter-click="download-05_checks.sql" data-goatcounter-title="Download 05_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_checks.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

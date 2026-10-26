@@ -1,0 +1,18 @@
+-- Pattern only. The sample has no forecast data yet, so there's nothing to run.
+-- FDH_DEMO has no Forecast fact. It would need:
+-- FACT_FORECAST (LIKE FACT_ACTUALS, version 'Forecast', with a forecast_run column such as '6+6').
+-- Once it exists, the pattern adds a third side to V_FIN_AVB_CELL:
+--
+-- fc AS (
+-- SELECT cost_center, account, period, SUM(amount) AS forecast_amt
+-- FROM FACT_FORECAST
+-- WHERE version = 'Forecast'
+-- AND forecast_run = '<run>'
+-- GROUP BY cost_center, account, period
+-- )
+-- ... FULL OUTER JOIN fc on all three keys, matching against COALESCE of the earlier sides:
+-- ON f.cost_center = COALESCE(a.cost_center, b.cost_center)
+-- AND f.account = COALESCE(a.account, b.account)
+-- AND f.period = COALESCE(a.period, b.period)
+-- Columns: forecast_amt, COALESCE(actual_amt, 0) - COALESCE(forecast_amt, 0) AS actual_vs_forecast.
+-- No check figures until the data exists.

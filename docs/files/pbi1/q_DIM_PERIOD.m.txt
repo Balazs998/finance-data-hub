@@ -1,0 +1,10 @@
+// Power Query M for V_PBI_DIM_PERIOD. Fictional FDH_DEMO only.
+// Replace the placeholder server and warehouse with your own lab values.
+let
+ Source = Snowflake.Databases("<your_account>.snowflakecomputing.com", "<YOUR_WH>"),
+ Db = Source{[Name = "FDH_DEMO", Kind = "Database"]}[Data],
+ Sch = Db{[Name = "SAMPLE", Kind = "Schema"]}[Data],
+ V = Sch{[Name = "V_PBI_DIM_PERIOD", Kind = "View"]}[Data],
+ Typed = Table.TransformColumnTypes(V, {{"PERIOD_START", type date}, {"FISCAL_YEAR", Int64.Type}})
+in
+ Typed

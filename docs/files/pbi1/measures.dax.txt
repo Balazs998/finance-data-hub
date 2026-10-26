@@ -1,0 +1,12 @@
+// DAX measures for the check visual. Fictional FDH_DEMO only.
+Amount PBI = SUM ( V_PBI_FACT_FIN[AMOUNT] )
+Total SF = SUM ( V_PBI_CHECK_TOTALS[SF_TOTAL] )
+Check Diff = ROUND ( [Amount PBI] - [Total SF], 2 )
+// Amount PBI alone sums both versions. Use these in report visuals:
+Actual = CALCULATE ( [Amount PBI], V_PBI_FACT_FIN[VERSION] = "Actual" )
+Budget = CALCULATE ( [Amount PBI], V_PBI_FACT_FIN[VERSION] = "Budget" )
+Variance = [Actual] - [Budget]
+// Put VERSION (from V_PBI_CHECK_TOTALS) on rows of a table visual with Amount PBI, Total SF, Check Diff.
+// Relationship: V_PBI_CHECK_TOTALS[VERSION] 1 : * V_PBI_FACT_FIN[VERSION], single direction.
+// The Checks page must have no slicers or filters and be excluded from slicer sync.
+// Expect Actual 0.00, Budget 0.00, Total row 0.00.

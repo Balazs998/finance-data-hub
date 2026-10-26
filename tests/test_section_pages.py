@@ -123,6 +123,15 @@ SECTIONS = {
                 False,
             ),
             (
+                "Finance SQL patterns",
+                "finance-sql-snowflake/",
+                "Snowflake",
+                "Actual vs budget per cell with a FULL OUTER JOIN, fiscal quarter-to-date and year-to-date with window functions, and reported vs current numbers.",
+                "25 min read",
+                False,
+                False,
+            ),
+            (
                 "Snowflake to Jedox load",
                 "../jedox/snowflake-to-jedox/",
                 "Snowflake · Jedox",

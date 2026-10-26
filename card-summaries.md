@@ -15,6 +15,7 @@ One sentence on each section card.
 - BOM cost rollup: Explode the FDH Motors bill of materials, roll standard cost up to the vehicle, and split purchase price and usage variance.
 - ERP control totals: Record FDH Motors control totals at each hop from the ERP file to Snowflake to Jedox, and keep an append-only evidence row per run.
 - Close tracker anomaly flags: Track FDH Motors month-end close tasks by day, then flag unusual journal lines with a z-score, the interquartile range and three plain rules.
+- Finance SQL patterns: Actual vs budget per cell with a FULL OUTER JOIN, fiscal quarter-to-date and year-to-date with window functions, and reported vs current numbers.
 - Snowflake to Jedox load: Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.
 
 ## Jedox

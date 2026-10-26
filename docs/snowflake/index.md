@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, and a 13-week cash runway for fictional FDH Motors."
+description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, and cost per vehicle for fictional FDH Motors."
 hide:
   - toc
 ---
@@ -61,6 +61,12 @@ hide:
   </article></li>
   <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
+    <h3 class="fdh-card__title"><a href="automaker-cost-per-vehicle/">Cost per vehicle</a></h3>
+    <p class="fdh-card__summary">Allocate FDH Motors plant cost by units produced, then split the revenue gap into price, volume, mix, new and lost.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 30 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 10 min read</p>
@@ -98,6 +104,12 @@ hide:
     <li><a href="../files/cash13/05_v_cash_week1_avf.sql" download="05_v_cash_week1_avf.sql" data-goatcounter-click="download-05_v_cash_week1_avf.sql" data-goatcounter-title="Download 05_v_cash_week1_avf.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_v_cash_week1_avf.sql</a></li>
     <li><a href="../files/cash13/06_v_receipt_slip.sql" download="06_v_receipt_slip.sql" data-goatcounter-click="download-06_v_receipt_slip.sql" data-goatcounter-title="Download 06_v_receipt_slip.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_v_receipt_slip.sql</a></li>
     <li><a href="../files/cash13/07_checks.sql" download="07_checks.sql" data-goatcounter-click="download-07_checks.sql" data-goatcounter-title="Download 07_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 07_checks.sql</a></li>
+    <li><a href="../files/pvm/01_v_plant_cost.sql" download="01_v_plant_cost.sql" data-goatcounter-click="download-01_v_plant_cost.sql" data-goatcounter-title="Download 01_v_plant_cost.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_v_plant_cost.sql</a></li>
+    <li><a href="../files/pvm/02_v_cost_per_vehicle.sql" download="02_v_cost_per_vehicle.sql" data-goatcounter-click="download-02_v_cost_per_vehicle.sql" data-goatcounter-title="Download 02_v_cost_per_vehicle.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_v_cost_per_vehicle.sql</a></li>
+    <li><a href="../files/pvm/03_v_unit_economics.sql" download="03_v_unit_economics.sql" data-goatcounter-click="download-03_v_unit_economics.sql" data-goatcounter-title="Download 03_v_unit_economics.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_v_unit_economics.sql</a></li>
+    <li><a href="../files/pvm/04_v_pvm_variance.sql" download="04_v_pvm_variance.sql" data-goatcounter-click="download-04_v_pvm_variance.sql" data-goatcounter-title="Download 04_v_pvm_variance.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_pvm_variance.sql</a></li>
+    <li><a href="../files/pvm/05_jedox_rules.txt" download="05_jedox_rules.txt" data-goatcounter-click="download-05_jedox_rules.txt" data-goatcounter-title="Download 05_jedox_rules.txt" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_jedox_rules.txt</a></li>
+    <li><a href="../files/pvm/06_checks.sql" download="06_checks.sql" data-goatcounter-click="download-06_checks.sql" data-goatcounter-title="Download 06_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_checks.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

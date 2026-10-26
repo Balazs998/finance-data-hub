@@ -92,6 +92,7 @@ nav:
       - FX rate lock: snowflake/fx-rate-lock.md
       - ASOF JOIN: snowflake/asof-join.md
       - 13-week cash runway: snowflake/automaker-13-week-cash-runway.md
+      - Cost per vehicle: snowflake/automaker-cost-per-vehicle.md
   - Jedox:
       - jedox/index.md
       - Management report export: jedox/management-report-export.md

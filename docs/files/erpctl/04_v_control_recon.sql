@@ -1,4 +1,4 @@
--- Step 5: V_CONTROL_RECON. Each hop compared with the hop before it, per run. VIEW ONLY.
+-- Step 4: V_CONTROL_RECON. Each hop compared with the hop before it, per run. VIEW ONLY. Create it once, before the gate in step 5.
 -- Order: file -> snowflake -> snowflake_cells -> jedox. Row counts are compared only where the grain is the same
 -- (file vs snowflake = lines; snowflake_cells vs jedox = cells). Control totals are compared at every step.
 -- NULL handling: a missing hop (no LOAD_LOG row yet) gives NULL prev values and result MISSING_HOP, never a silent PASS.

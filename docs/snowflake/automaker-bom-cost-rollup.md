@@ -15,7 +15,7 @@ social_image: automaker-bom-cost-rollup.png
   <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary.</p>
 </aside>
 
-"What does an M-B cost us in parts, at standard?" The answer sits three levels down a bill of materials: the vehicle is made of assemblies, the assemblies are made of parts, and each part has a standard cost that changes by period. In many teams the rollup lives in an ERP report nobody can open up, and purchase price variance arrives as one number at month-end with no breakdown.
+"What does an M-B cost us in parts, at standard?" The answer sits in a bill of materials three levels (depth 0–2) deep: the vehicle is made of assemblies, the assemblies are made of parts, and each part has a standard cost that changes by period. In many teams the rollup lives in an ERP report nobody can open up, and purchase price variance arrives as one number at month-end with no breakdown.
 
 This post explodes the BOM with a recursive CTE, rolls standard cost up to the vehicle, and splits the difference between standard and actual into a price part and a usage part, per part. The example uses Snowflake, but recursive CTEs are standard SQL, so any database that supports `WITH RECURSIVE` can rebuild it.
 
@@ -23,7 +23,7 @@ This post explodes the BOM with a recursive CTE, rolls standard cost up to the v
 
 This pack creates **four views and no tables**:
 
-- `V_BOM_EXPLODED`: every part in each vehicle, per period, with extended quantity and depth
+- `V_BOM_EXPLODED`: every part in each vehicle, per period, with extended quantity and depth (the vehicle is depth 0 and has no row of its own, assemblies are 1, parts are 2)
 - `V_STD_COST_ROLLUP`: standard cost per vehicle by model and period
 - `V_PPV`: purchase price variance by part, plant and period
 - `V_USAGE_VAR`: usage variance by plant, part and period
@@ -74,7 +74,7 @@ FROM walk w JOIN DIM_PART d ON d.part = w.part;
 Three details matter:
 
 - **Validity is checked at every level** against the first day of the period: a line counts if `valid_from` ≤ the 1st and `valid_to` is NULL or ≥ the 1st (`valid_to` is inclusive). A change dated mid-month therefore takes effect the following month. In the demo, `A-PT-B` uses `P-CELL-01` ×110 until 2026-03-31 and `P-CELL-02` ×96 from 2026-04-01, so March and April explode differently.
-- **The depth guard** (`w.depth < 10`) stops the walk if the BOM ever contains a cycle, such as a part that is (by mistake) its own grandparent. Without it, a cycle makes the query run until it hits the statement timeout (`STATEMENT_TIMEOUT_IN_SECONDS`) or you cancel it. If check (a) returns any rows, look for a cycle ([recursive CTEs](https://docs.snowflake.com/en/user-guide/queries-cte)). The demo BOM is 3 levels deep and has no cycle; the guard is there for your real data.
+- **The depth guard** (`w.depth < 10`) stops the walk if the BOM ever contains a cycle, such as a part that is (by mistake) its own grandparent. Without it, a cycle makes the query run until it hits the statement timeout (`STATEMENT_TIMEOUT_IN_SECONDS`) or you cancel it. If check (a) returns any rows, look for a cycle ([recursive CTEs](https://docs.snowflake.com/en/user-guide/queries-cte)). The demo BOM is three levels (depth 0–2): the vehicle is depth 0 and has no row of its own, an assembly is 1 and a part is 2, so it never gets close. It has no cycle; the guard is there for your real data.
 - **`path`** records the route (`M-B>A-PT-B>P-CELL-01`). When the guard fires, the path shows you the loop.
 
 ## Step 2: Roll up standard cost
@@ -110,7 +110,7 @@ FROM PART_PURCHASE p
 LEFT JOIN STD_COST s ON s.part = p.part AND s.period = p.period;
 ```
 
-A purchase with no standard keeps a NULL `ppv` and `has_std = FALSE`, so it shows up in the check rather than vanishing from the total. In the demo every purchase has a standard.
+A purchase with no standard keeps a NULL `ppv` and `has_std = FALSE`, so it shows up in check d) rather than vanishing from the total. In the demo every purchase has a standard.
 
 PPV for 2026-03 is **46,159.51**, and **42,000.00** of it is one part: `P-ECU-01`, bought at a 30% price spike. Across all six purchase periods (2025-10 to 2026-03) PPV is 81,940.27.
 
@@ -144,22 +144,25 @@ WHERE j.period IN (SELECT DISTINCT period FROM PART_PURCHASE);
 
 **NULL handling:** the full outer join keeps parts that were bought but not needed, and parts needed but not bought, with 0 on the missing side. Only months with purchase data are compared; later months would otherwise show all standard quantity as unused. Usage variance is NULL only when the part has no standard cost.
 
-In the demo, exactly one row is non-zero: P300 bought 124.20 `P-PANEL-B` panels in 2026-03 against a standard of 115, at 420.00 each, giving **3,864.00** of over-consumption (8%).
+In the demo, exactly one row is non-zero: P300 bought 124.20 `P-PANEL-B` door panel sets in 2026-03 (the sample data records a fractional quantity) against a standard quantity of 115 sets for the 115 M-B vehicles it built, at a standard cost of 420.00 per set, giving **3,864.00** of over-consumption (8.0%).
 
 ## Check the result
 
 Run `05_checks.sql`. You should see:
 
+The letters match the comments in `05_checks.sql`.
+
 | Check | Expected |
 |---|---|
-| Rows at the depth limit | **0** |
-| Parts missing a standard cost | **1**: P-TRIM-B, 2026-05 |
-| Std cost per vehicle, 2026-03 | M-A **8,310.10**, M-B 11,707.40 |
-| M-B, 2026-04 | 11,323.40 (cell change) |
-| M-B, 2026-05 | NULL (missing P-TRIM-B standard) |
-| PPV 2026-03 | **46,159.51** (P-ECU-01 42,000.00) |
-| PPV 2025-10 to 2026-03 | 81,940.27 |
-| Usage variance | 1 row: P300 / P-PANEL-B / 2026-03, **3,864.00** |
+| a) Rows at the depth limit | **0** |
+| b) Parts missing a standard cost | **1**: P-TRIM-B, 2026-05 |
+| c) Std cost per vehicle, 2026-03 | M-A **8,310.10**, M-B 11,707.40 |
+| c) M-B, 2026-04 | 11,323.40 (cell change) |
+| c) M-B, 2026-05 | NULL (missing P-TRIM-B standard) |
+| d) PPV 2026-03 | **46,159.51** |
+| d) PPV 2025-10 to 2026-03 | 81,940.27 |
+| e) Biggest PPV part, 2026-03 | P-ECU-01, 42,000.00 |
+| f) Usage variance | 1 row: P300 / P-PANEL-B / 2026-03, **3,864.00** |
 
 ## If it doesn't match
 
@@ -169,7 +172,7 @@ Run `05_checks.sql`. You should see:
 - **Both cells show up in March.** `valid_to` is compared against the end of the month. Use the first day of the period.
 - **M-B 2026-05 shows a number instead of NULL.** `SUM` skipped the missing standard. Use the `COUNT(*) = COUNT(s.std_cost)` test.
 - **PPV for all periods reads 81,940.28.** You rounded each row first. Keep the view unrounded and round only the totals.
-- **Usage variance shows every M-C part at P200.** You gave M-C a BOM it doesn't have, or joined production without the BOM. M-C adds no standard quantity in the demo.
+- **P200 shows standard quantity for its M-C production.** M-C has no BOM in the demo, so the 18 M-C vehicles P200 built in 2026-03 should add no standard quantity for any part. You gave M-C a BOM it doesn't have, or joined production to parts without going through the BOM.
 - **Usage variance rows disappear.** You used an inner join between purchases and standard quantity. Use the full outer join.
 
 ## Wrap-up
@@ -185,6 +188,12 @@ Run `05_checks.sql`. You should see:
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.
 
+[[download:samples/motors/dim_part.csv|Download dim_part.csv]]
+[[download:samples/motors/bom.csv|Download bom.csv]]
+[[download:samples/motors/std_cost.csv|Download std_cost.csv]]
+[[download:samples/motors/part_purchase.csv|Download part_purchase.csv]]
+[[download:samples/motors/fact_production.csv|Download fact_production.csv]]
+[[download:samples/motors/load_motors.sql|Download load_motors.sql]]
 [[download:bom/01_v_bom_exploded.sql|Download 01_v_bom_exploded.sql]]
 [[download:bom/02_v_std_cost_rollup.sql|Download 02_v_std_cost_rollup.sql]]
 [[download:bom/03_v_ppv.sql|Download 03_v_ppv.sql]]

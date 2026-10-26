@@ -1240,7 +1240,7 @@ class BuiltSiteTests(unittest.TestCase):
             target = local_target(page, f"../../files/{relative}")
             self.assertIsNotNone(target, relative)
             self.assertTrue(target.is_file(), relative)
-        self.assertEqual(html.count("md-button download"), 7)
+        self.assertEqual(html.count("md-button download"), 18)
         readme = SITE / "files" / "pvm" / "README.md"
         self.assertTrue(readme.is_file())
         self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Cost per vehicle"))
@@ -1300,7 +1300,7 @@ class BuiltSiteTests(unittest.TestCase):
             target = local_target(page, f"../../files/{relative}")
             self.assertIsNotNone(target, relative)
             self.assertTrue(target.is_file(), relative)
-        self.assertEqual(html.count("md-button download"), 5)
+        self.assertEqual(html.count("md-button download"), 10)
         readme = SITE / "files" / "capex" / "README.md"
         self.assertTrue(readme.is_file())
         self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Capex tracking"))
@@ -1362,7 +1362,7 @@ class BuiltSiteTests(unittest.TestCase):
             target = local_target(page, f"../../files/{relative}")
             self.assertIsNotNone(target, relative)
             self.assertTrue(target.is_file(), relative)
-        self.assertEqual(html.count("md-button download"), 6)
+        self.assertEqual(html.count("md-button download"), 12)
         readme = SITE / "files" / "bom" / "README.md"
         self.assertTrue(readme.is_file())
         self.assertTrue(readme.read_text(encoding="utf-8").startswith("# BOM cost rollup"))
@@ -1437,7 +1437,7 @@ class BuiltSiteTests(unittest.TestCase):
             target = local_target(page, f"../../files/{relative}")
             self.assertIsNotNone(target, relative)
             self.assertTrue(target.is_file(), relative)
-        self.assertEqual(html.count("md-button download"), 8)
+        self.assertEqual(html.count("md-button download"), 11)
         readme = SITE / "files" / "erpctl" / "README.md"
         self.assertTrue(readme.is_file())
         self.assertTrue(readme.read_text(encoding="utf-8").startswith("# ERP -> Snowflake -> Jedox"))
@@ -1501,7 +1501,7 @@ class BuiltSiteTests(unittest.TestCase):
             target = local_target(page, f"../../files/{relative}")
             self.assertIsNotNone(target, relative)
             self.assertTrue(target.is_file(), relative)
-        self.assertEqual(html.count("md-button download"), 7)
+        self.assertEqual(html.count("md-button download"), 12)
         readme = SITE / "files" / "anomaly" / "README.md"
         self.assertTrue(readme.is_file())
         self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Close tracker and journal anomaly flags"))

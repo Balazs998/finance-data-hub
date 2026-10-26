@@ -1,4 +1,4 @@
--- Step 4: the Jedox hop. The Snowflake -> Jedox load (post "Snowflake to Jedox") reads V_ERP_GL_CELLS WHERE file_name = '<file>'.
+-- Step 5: the Jedox hop. The Snowflake -> Jedox load (post "Snowflake to Jedox") reads V_ERP_GL_CELLS WHERE file_name = '<file>'.
 -- Start the Jedox load only when hop snowflake = LOADED AND V_CONTROL_RECON step 1 = PASS for this run_id.
 -- After the Cube Load, the job reads back the slice it loaded with a Cube Extract (base elements only), counts the cells and
 -- sums them with a TableAggregation Transform, and inserts one jedox row into LOAD_LOG with a Relational Load in insert mode.
@@ -17,3 +17,11 @@
 -- so the job supplies run_at (session-local wall-clock time, TIMESTAMP_NTZ) and run_by_role itself:
 -- run_id = '<run_id>', hop = 'jedox', period = '2026-03', rows = <cells_read_back>, control_total = <sum_read_back>,
 -- hash = NULL, status = '<LOADED|WARNING>', run_at = '<job timestamp>', run_by_role = '<write role name>'
+
+-- Gate: run this first, in the same session as 03 (it uses $run_id). 1 = start the Jedox load, 0 = stop.
+-- V_CONTROL_RECON comes from step 4 (04_v_control_recon.sql).
+-- step 1 = PASS implies hop snowflake = LOADED (a DUPLICATE run shows DUPLICATE on step 1)
+USE SCHEMA FDH_DEMO.MOTORS;
+SELECT COALESCE(MAX(IFF(result = 'PASS', 1, 0)), 0) AS start_jedox
+FROM V_CONTROL_RECON
+WHERE run_id = $run_id AND step_no = 1;

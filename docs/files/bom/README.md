@@ -26,9 +26,10 @@ All data is made up. "FDH Motors", its plants (P100-P300), models (M-A, M-B), pa
 
 | Check | Expected |
 |---|---|
-| Rows at depth limit | 0 |
-| Missing std cost | 1: P-TRIM-B, 2026-05 (M-B 2026-05 rollup is NULL) |
-| Std cost per vehicle | M-A 2026-03 8,310.10; M-B 2026-03 11,707.40; M-B 2026-04 11,323.40 (P-CELL-01 x110 replaced by P-CELL-02 x96 from 2026-04-01) |
-| PPV 2026-03 | 46,159.51, of which P-ECU-01 42,000.00 |
-| PPV, all periods 2025-10..2026-03 | 81,940.27 |
-| Usage variance | 1 non-zero row: P300 / P-PANEL-B / 2026-03, 124.20 bought vs 115 std, x 420.00 = 3,864.00 |
+| a) Rows at depth limit | 0 |
+| b) Missing std cost | 1: P-TRIM-B, 2026-05 (M-B 2026-05 rollup is NULL) |
+| c) Std cost per vehicle | M-A 2026-03 8,310.10; M-B 2026-03 11,707.40; M-B 2026-04 11,323.40 (P-CELL-01 x110 replaced by P-CELL-02 x96 from 2026-04-01) |
+| d) PPV 2026-03 | 46,159.51 |
+| d) PPV, all periods 2025-10..2026-03 | 81,940.27 |
+| e) Biggest PPV part, 2026-03 | P-ECU-01 42,000.00 |
+| f) Usage variance | 1 non-zero row: P300 / P-PANEL-B / 2026-03, 124.20 bought vs 115 std, x 420.00 = 3,864.00 |

@@ -12,16 +12,16 @@ This is a SOX-style evidence pattern: it records what was checked, by which role
 
 ## Run order
 
-1. Load the sample pack (`load_motors.sql`), then PUT the two 2026-03 files (commands in file 01).
-2. `01_erp_gl_landing_ddl.sql` - landing table.
-3. `02_views.sql` - typed lines, trailer, cells.
-4. `03_load_and_log.sql` - per run: COPY the file, then log hops `file`, `snowflake`, `snowflake_cells`.
-5. `04_v_control_recon.sql` - recon view (create once; it reads LOAD_LOG).
-6. `05_jedox_hop.sql` - only after step 1 = PASS: the Jedox job loads the cells, reads them back, and writes hop `jedox` (template).
-7. `06_control_evidence.sql` - one evidence row per run.
-8. `07_checks.sql` - the checks below.
+0. Load the sample pack (`load_motors.sql`), then PUT the two 2026-03 files (commands in file 01). PUT gzip-compresses them by default (AUTO_COMPRESS = TRUE), which is why the COPY in file 03 reads `.csv.gz`.
+1. `01_erp_gl_landing_ddl.sql` - landing table.
+2. `02_views.sql` - typed lines, trailer, cells.
+3. `03_load_and_log.sql` - per run: COPY the file, then log hops `file`, `snowflake`, `snowflake_cells`.
+4. `04_v_control_recon.sql` - recon view (create once, before the gate; it reads LOAD_LOG).
+5. `05_jedox_hop.sql` - run the gate at the end of the file first; only if it returns 1 (recon step 1 = PASS): the Jedox job loads the cells, reads them back, and writes hop `jedox` (template).
+6. `06_control_evidence.sql` - one evidence row per run.
+7. `07_checks.sql` - the checks below.
 
-For R2 and R3, set the new run_id and file name and repeat steps 4, 6 (only if the gate returns 1), 7 and 8. Create the views (steps 3 and 5) once.
+The step numbers match the file headers and the post. For R2 and R3, set the new run_id and file name and repeat steps 3, 5 (the Jedox load only if the gate returns 1), 6 and 7. Create the views (steps 2 and 4) once.
 
 ## NULL handling
 

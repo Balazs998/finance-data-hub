@@ -470,10 +470,20 @@ class ContentTests(unittest.TestCase):
         self.assertNotIn("Siemens", page)
         self.assertNotIn("/workspace/", page)
         labels = (
+            "[[download:cash13/01_cash_tables_ddl_load.sql|Download 01_cash_tables_ddl_load.sql]]",
+            "[[download:cash13/02_v_cash_flow_week.sql|Download 02_v_cash_flow_week.sql]]",
+            "[[download:cash13/03_v_cash_13w.sql|Download 03_v_cash_13w.sql]]",
+            "[[download:cash13/04_v_cash_runway.sql|Download 04_v_cash_runway.sql]]",
+            "[[download:cash13/05_v_cash_week1_avf.sql|Download 05_v_cash_week1_avf.sql]]",
+            "[[download:cash13/06_v_receipt_slip.sql|Download 06_v_receipt_slip.sql]]",
+            "[[download:cash13/07_checks.sql|Download 07_checks.sql]]",
+            "[[download:cash13/README.md|Download README.md (SQL pack)]]",
             "[[download:samples/motors/cash_opening.csv|Download cash_opening.csv]]",
             "[[download:samples/motors/cash_flow.csv|Download cash_flow.csv]]",
             "[[download:samples/motors/cash_scenario.csv|Download cash_scenario.csv]]",
             "[[download:samples/motors/liquidity_floor.csv|Download liquidity_floor.csv]]",
+            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
+            "[[download:samples/motors/README.md|Download README.md (sample pack)]]",
             "[[download:samples/motors/bom.csv|Download bom.csv]]",
             "[[download:samples/motors/capex_actual.csv|Download capex_actual.csv]]",
             "[[download:samples/motors/capex_commit.csv|Download capex_commit.csv]]",
@@ -488,21 +498,11 @@ class ContentTests(unittest.TestCase):
             "[[download:samples/motors/erp_gl_extract_2026-03_dropped.csv|Download erp_gl_extract_2026-03_dropped.csv]]",
             "[[download:samples/motors/fact_production.csv|Download fact_production.csv]]",
             "[[download:samples/motors/fact_vehicle_sales.csv|Download fact_vehicle_sales.csv]]",
+            "[[download:samples/motors/gen_motors.py|Download gen_motors.py]]",
             "[[download:samples/motors/map_cost_center_plant.csv|Download map_cost_center_plant.csv]]",
             "[[download:samples/motors/motors_recipients.csv|Download motors_recipients.csv]]",
             "[[download:samples/motors/part_purchase.csv|Download part_purchase.csv]]",
             "[[download:samples/motors/std_cost.csv|Download std_cost.csv]]",
-            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
-            "[[download:samples/motors/gen_motors.py|Download gen_motors.py]]",
-            "[[download:samples/motors/README.md|Download README.md (sample pack)]]",
-            "[[download:cash13/01_cash_tables_ddl_load.sql|Download 01_cash_tables_ddl_load.sql]]",
-            "[[download:cash13/02_v_cash_flow_week.sql|Download 02_v_cash_flow_week.sql]]",
-            "[[download:cash13/03_v_cash_13w.sql|Download 03_v_cash_13w.sql]]",
-            "[[download:cash13/04_v_cash_runway.sql|Download 04_v_cash_runway.sql]]",
-            "[[download:cash13/05_v_cash_week1_avf.sql|Download 05_v_cash_week1_avf.sql]]",
-            "[[download:cash13/06_v_receipt_slip.sql|Download 06_v_receipt_slip.sql]]",
-            "[[download:cash13/07_checks.sql|Download 07_checks.sql]]",
-            "[[download:cash13/README.md|Download README.md (SQL pack)]]",
         )
         found = re.findall(r"\[\[download:[^\]]+\]\]", page)
         self.assertEqual(tuple(found), labels)
@@ -578,6 +578,17 @@ class ContentTests(unittest.TestCase):
         self.assertNotIn("Siemens", page)
         self.assertNotIn("/workspace/", page)
         labels = (
+            "[[download:samples/motors/fact_production.csv|Download fact_production.csv]]",
+            "[[download:samples/motors/fact_vehicle_sales.csv|Download fact_vehicle_sales.csv]]",
+            "[[download:samples/motors/map_cost_center_plant.csv|Download map_cost_center_plant.csv]]",
+            "[[download:samples/motors/dim_plant.csv|Download dim_plant.csv]]",
+            "[[download:samples/motors/dim_model.csv|Download dim_model.csv]]",
+            "[[download:samples/motors/dim_market.csv|Download dim_market.csv]]",
+            "[[download:samples/fact_actuals.csv|Download fact_actuals.csv]]",
+            "[[download:samples/fact_budget.csv|Download fact_budget.csv]]",
+            "[[download:samples/dim_account.csv|Download dim_account.csv]]",
+            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
+            "[[download:samples/load_snowflake.sql|Download load_snowflake.sql]]",
             "[[download:pvm/01_v_plant_cost.sql|Download 01_v_plant_cost.sql]]",
             "[[download:pvm/02_v_cost_per_vehicle.sql|Download 02_v_cost_per_vehicle.sql]]",
             "[[download:pvm/03_v_unit_economics.sql|Download 03_v_unit_economics.sql]]",
@@ -666,6 +677,11 @@ class ContentTests(unittest.TestCase):
         self.assertNotIn("Siemens", page)
         self.assertNotIn("/workspace/", page)
         labels = (
+            "[[download:samples/motors/capex_project.csv|Download capex_project.csv]]",
+            "[[download:samples/motors/capex_commit.csv|Download capex_commit.csv]]",
+            "[[download:samples/motors/capex_actual.csv|Download capex_actual.csv]]",
+            "[[download:samples/motors/motors_recipients.csv|Download motors_recipients.csv]]",
+            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
             "[[download:capex/01_v_capex_status.sql|Download 01_v_capex_status.sql]]",
             "[[download:capex/02_v_capex_exceptions.sql|Download 02_v_capex_exceptions.sql]]",
             "[[download:capex/03_v_capex_alert.sql|Download 03_v_capex_alert.sql]]",
@@ -749,6 +765,12 @@ class ContentTests(unittest.TestCase):
         self.assertNotIn("Siemens", page)
         self.assertNotIn("/workspace/", page)
         labels = (
+            "[[download:samples/motors/dim_part.csv|Download dim_part.csv]]",
+            "[[download:samples/motors/bom.csv|Download bom.csv]]",
+            "[[download:samples/motors/std_cost.csv|Download std_cost.csv]]",
+            "[[download:samples/motors/part_purchase.csv|Download part_purchase.csv]]",
+            "[[download:samples/motors/fact_production.csv|Download fact_production.csv]]",
+            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
             "[[download:bom/01_v_bom_exploded.sql|Download 01_v_bom_exploded.sql]]",
             "[[download:bom/02_v_std_cost_rollup.sql|Download 02_v_std_cost_rollup.sql]]",
             "[[download:bom/03_v_ppv.sql|Download 03_v_ppv.sql]]",
@@ -838,6 +860,9 @@ class ContentTests(unittest.TestCase):
         self.assertNotIn("Siemens", page)
         self.assertNotIn("/workspace/", page)
         labels = (
+            "[[download:samples/motors/erp_gl_extract_2026-03.csv|Download erp_gl_extract_2026-03.csv]]",
+            "[[download:samples/motors/erp_gl_extract_2026-03_dropped.csv|Download erp_gl_extract_2026-03_dropped.csv]]",
+            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
             "[[download:erpctl/01_erp_gl_landing_ddl.sql|Download 01_erp_gl_landing_ddl.sql]]",
             "[[download:erpctl/02_views.sql|Download 02_views.sql]]",
             "[[download:erpctl/03_load_and_log.sql|Download 03_load_and_log.sql]]",
@@ -926,6 +951,11 @@ class ContentTests(unittest.TestCase):
         for figure in ("1,602", "25", "35", "39", "33", "−1,840.25", "−5.06", "n−1"):
             self.assertIn(figure, page)
         labels = (
+            "[[download:samples/motors/close_task.csv|Download close_task.csv]]",
+            "[[download:samples/motors/erp_gl_extract.csv|Download erp_gl_extract.csv]]",
+            "[[download:samples/motors/motors_recipients.csv|Download motors_recipients.csv]]",
+            "[[download:samples/motors/load_motors.sql|Download load_motors.sql]]",
+            "[[download:samples/dim_account.csv|Download dim_account.csv]]",
             "[[download:anomaly/01_v_close_status.sql|Download 01_v_close_status.sql]]",
             "[[download:anomaly/02_v_je_zscore.sql|Download 02_v_je_zscore.sql]]",
             "[[download:anomaly/03_v_je_iqr.sql|Download 03_v_je_iqr.sql]]",

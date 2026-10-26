@@ -245,6 +245,11 @@ Every seeded problem is caught by at least one method, and no single method catc
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.
 
+[[download:samples/motors/close_task.csv|Download close_task.csv]]
+[[download:samples/motors/erp_gl_extract.csv|Download erp_gl_extract.csv]]
+[[download:samples/motors/motors_recipients.csv|Download motors_recipients.csv]]
+[[download:samples/motors/load_motors.sql|Download load_motors.sql]]
+[[download:samples/dim_account.csv|Download dim_account.csv]]
 [[download:anomaly/01_v_close_status.sql|Download 01_v_close_status.sql]]
 [[download:anomaly/02_v_je_zscore.sql|Download 02_v_je_zscore.sql]]
 [[download:anomaly/03_v_je_iqr.sql|Download 03_v_je_iqr.sql]]

@@ -10,7 +10,7 @@ social_image: automaker-cost-per-vehicle.png
 
 <aside class="docs-note" role="note">
   <p class="docs-note__title">Based on official docs, not tested on a live install</p>
-  <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary. The Jedox cubes and rules are based on the Jedox docs and were reviewed by J-dox, but not run on a live Jedox install.</p>
+  <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary. The Jedox cubes and rules are based on the Jedox docs, but were not run on a live Jedox install.</p>
 </aside>
 
 "What does one M-A cost us at the Riverbend plant this month, and why is revenue off plan?" Two simple questions, and in most finance teams neither has a quick answer. Cost sits on cost centers. Units sit in a production system. Revenue sits by model and market. Nobody owns the bridge between them.

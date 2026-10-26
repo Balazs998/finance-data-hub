@@ -1,4 +1,4 @@
--- Step 1: ERP_GL_LANDING. New demo table, approved by Sample Data Steward and in DATA-DICTIONARY.md.
+-- Step 1: ERP_GL_LANDING. New demo table in FDH_DEMO.MOTORS.
 -- Creates one TABLE (IF NOT EXISTS, never replaced: it is the raw, append-only landing area). Runs only in FDH_DEMO.MOTORS.
 -- Every file column lands as text, so the TRAILER row loads too. COPY transformations do not support WHERE,
 -- so the trailer is split off in the views (step 2), not in the COPY.

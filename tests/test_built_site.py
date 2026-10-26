@@ -450,6 +450,7 @@ SOCIAL_PAGES = {
     "snowflake/automaker-capex-project-tracking/index.html": "automaker-capex-project-tracking.png",
     "snowflake/automaker-bom-cost-rollup/index.html": "automaker-bom-cost-rollup.png",
     "snowflake/automaker-erp-control-totals/index.html": "automaker-erp-control-totals.png",
+    "snowflake/automaker-close-tracker-anomaly-flags/index.html": "automaker-close-tracker-anomaly-flags.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -470,6 +471,7 @@ SOCIAL_FILES = (
     "automaker-capex-project-tracking.png",
     "automaker-bom-cost-rollup.png",
     "automaker-erp-control-totals.png",
+    "automaker-close-tracker-anomaly-flags.png",
 )
 
 
@@ -1378,7 +1380,11 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn("Siemens", html)
         self.assertNotIn("/workspace/", html)
         self.assertNotIn("paid template", html.lower())
-        self.assertNotIn("close automation", html)
+        article_early = html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0]
+        self.assertIn(
+            'href="../automaker-close-tracker-anomaly-flags/">close automation and anomaly detection</a>',
+            article_early,
+        )
         self.assertIn("FDH Motors", html)
         self.assertIn("FDH_DEMO.MOTORS", html)
         self.assertIn("ERP_GL_LANDING", html)
@@ -1431,6 +1437,70 @@ class BuiltSiteTests(unittest.TestCase):
             footer,
         )
         self.assertIn('href="../automaker-bom-cost-rollup/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Close tracker anomaly flags"',
+            footer,
+        )
+        self.assertIn('href="../automaker-close-tracker-anomaly-flags/"', footer)
+
+    def test_close_tracker_anomaly_flags_page_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "automaker-close-tracker-anomaly-flags" / "index.html"
+        self.assertTrue(page.is_file(), "Close tracker anomaly flags page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "Close tracking and journal anomaly flags in SQL: z-score, IQR and three plain rules",
+            html,
+        )
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("Siemens", html)
+        self.assertNotIn("/workspace/", html)
+        self.assertNotIn("paid", html.lower())
+        self.assertNotIn("template", html.lower())
+        self.assertIn("FDH Motors", html)
+        self.assertIn("FDH_DEMO.MOTORS", html)
+        self.assertIn("V_JE_ALERT", html)
+        self.assertIn("gl.accountant@example.com", html)
+        self.assertIn('class="docs-note"', html)
+        article = html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0]
+        self.assertIn('href="../automaker-erp-control-totals/"', article)
+        self.assertEqual(article.count('href="../../jedox/failure-alerts/"'), 2)
+        self.assertIn('href="../">Snowflake notes</a>', article)
+        self.assertNotIn("automaker-13-week-cash-runway", article)
+        self.assertIn("Swipe to see the full diagram →", article)
+        self.assertIn('aria-label="Close tracker anomaly flags"', article)
+        self.assertIn('src="../close-anomaly.svg"', article)
+        self.assertNotRegex(article, r'href="[^"]*(?:paid|template)')
+        diagram = local_target(page, "../close-anomaly.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "automaker-close-tracker-anomaly-flags.png"],
+        )
+        for relative in (
+            "anomaly/01_v_close_status.sql",
+            "anomaly/02_v_je_zscore.sql",
+            "anomaly/03_v_je_iqr.sql",
+            "anomaly/04_v_je_rules.sql",
+            "anomaly/05_v_je_flags_alert.sql",
+            "anomaly/06_checks.sql",
+            "anomaly/README.md",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 7)
+        readme = SITE / "files" / "anomaly" / "README.md"
+        self.assertTrue(readme.is_file())
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# Close tracker and journal anomaly flags"))
+        self.assertFalse((SITE / "files" / "anomaly" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: ERP control totals"',
+            footer,
+        )
+        self.assertIn('href="../automaker-erp-control-totals/"', footer)
         self.assertIn(
             'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
             footer,

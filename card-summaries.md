@@ -14,6 +14,7 @@ One sentence on each section card.
 - Capex project tracking: Track FDH Motors capex budget, open commitments and actuals, and alert only when a project is over budget or unapproved.
 - BOM cost rollup: Explode the FDH Motors bill of materials, roll standard cost up to the vehicle, and split purchase price and usage variance.
 - ERP control totals: Record FDH Motors control totals at each hop from the ERP file to Snowflake to Jedox, and keep an append-only evidence row per run.
+- Close tracker anomaly flags: Track FDH Motors month-end close tasks by day, then flag unusual journal lines with a z-score, the interquartile range and three plain rules.
 - Snowflake to Jedox load: Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.
 
 ## Jedox

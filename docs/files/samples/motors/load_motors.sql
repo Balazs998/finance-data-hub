@@ -1,6 +1,6 @@
 -- FDH Motors (fictional) demo pack -> FDH_DEMO.MOTORS. Synthetic data from gen_motors.py (fixed seeds), EUR.
--- New schema only; FDH_DEMO.SAMPLE is not touched. Owner SYSADMIN. No grants here: Security Guard decides any
--- (JEDOX_ETL_ROLE stays views-only; CONTROL_EVIDENCE INSERT-only role belongs to the A5 post).
+-- New schema only; FDH_DEMO.SAMPLE is not touched. Owner SYSADMIN. No grants here: any later grant needs an admin's review
+-- (JEDOX_ETL_ROLE stays views-only; the CONTROL_EVIDENCE insert role is described in the ERP control totals note).
 USE ROLE SYSADMIN;
 CREATE DATABASE IF NOT EXISTS FDH_DEMO;
 CREATE SCHEMA IF NOT EXISTS FDH_DEMO.MOTORS;
@@ -27,7 +27,7 @@ CREATE OR REPLACE TABLE LIQUIDITY_FLOOR (floor_amount NUMBER(18,2));
 CREATE OR REPLACE TABLE ERP_GL_EXTRACT (doc_id VARCHAR(32), line_no NUMBER(4,0), company_code VARCHAR(8), posting_date DATE, period VARCHAR(7), cost_center VARCHAR(16), account VARCHAR(16), amount NUMBER(18,2), currency VARCHAR(3));
 CREATE OR REPLACE TABLE CLOSE_TASK (task_id VARCHAR(8), period VARCHAR(7), task_name VARCHAR(64), owner_role VARCHAR(32), due_workday NUMBER(2,0), due_date DATE, status VARCHAR(8), completed_at TIMESTAMP_NTZ);
 
--- A5 run tables: empty on purpose; rows come from demo runs (clean, dropped-row, duplicate-hash, Jedox warning).
+-- Control-total run tables: empty on purpose; rows come from demo runs (clean, dropped-row, duplicate-hash, Jedox warning).
 CREATE OR REPLACE TABLE LOAD_LOG (run_id VARCHAR(32), hop VARCHAR(16), period VARCHAR(7), rows NUMBER(10,0), control_total NUMBER(18,2), hash VARCHAR(64), status VARCHAR(16), run_at TIMESTAMP_NTZ, run_by_role VARCHAR(32));
 CREATE OR REPLACE TABLE CONTROL_EVIDENCE (control_id VARCHAR(16), period VARCHAR(7), run_id VARCHAR(32), performed_by_role VARCHAR(32), performed_at TIMESTAMP_NTZ, result VARCHAR(16), evidence_ref VARCHAR(256));
 
@@ -36,7 +36,7 @@ CREATE OR REPLACE STAGE MOTORS_STAGE FILE_FORMAT = CSV_HDR;
 
 -- From SnowSQL / Snowflake CLI in this folder:
 -- PUT file://*.csv @MOTORS_STAGE AUTO_COMPRESS=TRUE;
--- erp_gl_extract_2026-03*.csv carry a TRAILER row for the A5 control demo; load those in the post, not here.
+-- erp_gl_extract_2026-03*.csv carry a TRAILER row for the ERP control-totals demo; load those in the post, not here.
 
 COPY INTO DIM_PLANT FROM @MOTORS_STAGE/dim_plant.csv.gz;
 COPY INTO DIM_MODEL FROM @MOTORS_STAGE/dim_model.csv.gz;

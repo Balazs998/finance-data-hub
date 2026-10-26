@@ -1,4 +1,4 @@
-Jedox rules for MOTORS_COST and MOTORS_SALES (database FDH_DEMO). Based on Jedox docs and reviewed by J-dox. NOT run on a live Jedox install.
+Jedox rules for MOTORS_COST and MOTORS_SALES (database FDH_DEMO). Based on the Jedox docs. NOT run on a live Jedox install.
 
 MOTORS_COST: Version x Period x Plant x Model x Measure (UnitsProduced, Cost, CostPerVehicle)
 MOTORS_SALES: Version x Period x Model x Market x Measure (UnitsSold, NetRevenue, UnitPrice, ContributionPerVehicle, PriceEffect, VolumeEffect, MixEffect, NewLostEffect)

@@ -815,7 +815,10 @@ class ContentTests(unittest.TestCase):
             page,
         )
         self.assertIn("is only a template for that row", page)
-        self.assertNotIn("close automation", page)
+        self.assertIn(
+            "**Next in the automaker series:** [close automation and anomaly detection](automaker-close-tracker-anomaly-flags.md).",
+            page,
+        )
         self.assertNotIn("paid template", page.lower())
         self.assertNotRegex(page, r"\]\([^)]*(?:paid|template)")
         self.assertIn("FDH_DEMO.MOTORS", page)
@@ -892,6 +895,80 @@ class ContentTests(unittest.TestCase):
         self.assertLess(
             nav.index("snowflake/automaker-bom-cost-rollup.md"),
             nav.index("snowflake/automaker-erp-control-totals.md"),
+        )
+
+    def test_close_tracker_anomaly_flags_stay_free_and_read_only(self):
+        page = (ROOT / "docs/snowflake/automaker-close-tracker-anomaly-flags.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "Close tracking and journal anomaly flags in SQL: z-score, IQR and three plain rules"',
+            page,
+        )
+        self.assertIn("social_image: automaker-close-tracker-anomaly-flags.png", page)
+        self.assertIn(
+            '<p class="post-meta">Snowflake · Intermediate · ~30 min · Automaker series</p>',
+            page,
+        )
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("](automaker-erp-control-totals.md)", page)
+        self.assertEqual(page.count("](../jedox/failure-alerts.md)"), 2)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn('src="../close-anomaly.svg"', page)
+        self.assertIn("eight views and nothing else", page)
+        self.assertIn("gl.accountant@example.com", page)
+        self.assertIn("**That's the automaker series.** Start again from the [Snowflake notes](index.md).", page)
+        self.assertNotIn("automaker-13-week-cash-runway", page)
+        self.assertNotIn("paid", page.lower())
+        self.assertNotIn("template", page.lower())
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        for figure in ("1,602", "25", "35", "39", "33", "−1,840.25", "−5.06", "n−1"):
+            self.assertIn(figure, page)
+        labels = (
+            "[[download:anomaly/01_v_close_status.sql|Download 01_v_close_status.sql]]",
+            "[[download:anomaly/02_v_je_zscore.sql|Download 02_v_je_zscore.sql]]",
+            "[[download:anomaly/03_v_je_iqr.sql|Download 03_v_je_iqr.sql]]",
+            "[[download:anomaly/04_v_je_rules.sql|Download 04_v_je_rules.sql]]",
+            "[[download:anomaly/05_v_je_flags_alert.sql|Download 05_v_je_flags_alert.sql]]",
+            "[[download:anomaly/06_checks.sql|Download 06_checks.sql]]",
+            "[[download:anomaly/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/anomaly"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_v_close_status.sql",
+                "02_v_je_zscore.sql",
+                "03_v_je_iqr.sql",
+                "04_v_je_rules.sql",
+                "05_v_je_flags_alert.sql",
+                "06_checks.sql",
+                "README.md",
+            ],
+        )
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*(?:INSERT|UPDATE|DELETE|MERGE|TRUNCATE|COPY)\b", path.name)
+            self.assertNotIn("/workspace/", text, path.name)
+            self.assertNotIn("paid", text.lower(), path.name)
+            if path.suffix == ".sql":
+                self.assertIn("USE SCHEMA FDH_DEMO.MOTORS;", text, path.name)
+                self.assertNotRegex(text, r"(?im)^[ \t]*CREATE TABLE\b", path.name)
+        recipients = (ROOT / "docs/files/samples/motors/motors_recipients.csv").read_text(encoding="utf-8")
+        self.assertIn("GL_ACCOUNTANT,gl.accountant@example.com,Gl Accountant (Example)", recipients)
+        generator = (ROOT / "docs/files/samples/motors/gen_motors.py").read_text(encoding="utf-8")
+        self.assertIn('{"CAPEX_COMMITTEE", "GL_ACCOUNTANT"}', generator)
+        self.assertTrue((ROOT / "docs/snowflake/close-anomaly.svg").is_file())
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/automaker-erp-control-totals.md"),
+            nav.index("snowflake/automaker-close-tracker-anomaly-flags.md"),
         )
 
 

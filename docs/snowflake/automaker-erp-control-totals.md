@@ -202,6 +202,8 @@ Run `07_checks.sql`. You should see:
 - A missing hop or a NULL is a failure, never a pass.
 - Evidence is append-only rows, enforced by privileges, and exported as is. Call it SOX-style evidence, not compliance.
 
+**Next in the automaker series:** [close automation and anomaly detection](automaker-close-tracker-anomaly-flags.md).
+
 ## Downloads
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.

@@ -2,9 +2,9 @@
 
 All data is made up. "FDH Motors", its plants (P100-P300), models (M-A, M-B, M-C), markets (MK1-MK3) and amounts are placeholders from the Finance Data Hub sample pack, not a real company. Currency EUR.
 
-**Schema:** `FDH_DEMO.MOTORS`, reading cost from `FDH_DEMO.SAMPLE` (FACT_ACTUALS, FACT_BUDGET, DIM_ACCOUNT). Role for the walkthrough: `SYSADMIN` (owner). This pack adds **no grants**. `JEDOX_ETL_ROLE` stays views-only and gets nothing here. Any later view grant needs Security Guard approval.
+**Schema:** `FDH_DEMO.MOTORS`, reading cost from `FDH_DEMO.SAMPLE` (FACT_ACTUALS, FACT_BUDGET, DIM_ACCOUNT). Role for the walkthrough: `SYSADMIN` (owner). This pack adds **no grants**. `JEDOX_ETL_ROLE` stays views-only and gets nothing here. Any later view grant needs an admin's review.
 
-**Not run on a live account.** The SQL follows the Snowflake docs. The expected numbers below were recomputed from the CSVs in Python (Decimal) and match the sample pack's data dictionary. The Jedox rules in `05_jedox_rules.txt` are based on the Jedox docs and reviewed by J-dox, not run on a live Jedox install.
+**Not run on a live account.** The SQL follows the Snowflake docs. The expected numbers below were recomputed from the CSVs in Python (Decimal) and match the sample pack's data dictionary. The Jedox rules in `05_jedox_rules.txt` are based on the Jedox docs, not run on a live Jedox install.
 
 ## Run order
 

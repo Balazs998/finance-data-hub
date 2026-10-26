@@ -2,7 +2,7 @@
 
 All data is made up. "FDH Motors", its customers (CUST-xx), suppliers (SUPP-xx), projects (PRJxx) and amounts are placeholders from the Finance Data Hub sample pack, not a real company. Currency EUR.
 
-**Schema:** `FDH_DEMO.MOTORS`. Role for the walkthrough: `SYSADMIN` (owner). This pack adds **no grants**. `JEDOX_ETL_ROLE` stays views-only and gets nothing here; any later view grant needs Security Guard approval.
+**Schema:** `FDH_DEMO.MOTORS`. Role for the walkthrough: `SYSADMIN` (owner). This pack adds **no grants**. `JEDOX_ETL_ROLE` stays views-only and gets nothing here; any later view grant needs an admin's review.
 
 **Not run on a live account.** The SQL follows the Snowflake docs; the expected numbers below were recomputed from the CSVs with the same logic (Python, Decimal) and match the sample pack's data dictionary.
 

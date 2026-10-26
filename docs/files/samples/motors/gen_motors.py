@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FDH Motors (fictional) demo pack -> schema FDH_DEMO.MOTORS (automaker series A1-A6).
+"""FDH Motors (fictional) demo pack -> schema FDH_DEMO.MOTORS (automaker series).
 Deterministic: random.Random(20261025) per section, Decimal amounts, 2 dp ROUND_HALF_UP, EUR.
 Reads ../fact_actuals.csv and ../fact_budget.csv read-only; never writes outside this folder.
 Writes CSVs here and check_figures.txt."""
@@ -17,7 +17,7 @@ def w(name, hdr, rows):
         c = csv.writer(f, lineterminator="\n"); c.writerow(hdr); c.writerows(rows)
 def wd(d): return d + dt.timedelta(days=(0 if d.weekday() < 5 else 7 - d.weekday()))
 
-# =================== A4: 13-week cash (CASH_OPENING, CASH_FLOW, CASH_SCENARIO, LIQUIDITY_FLOOR) ===================
+# =================== 13-week cash (CASH_OPENING, CASH_FLOW, CASH_SCENARIO, LIQUIDITY_FLOOR) ===================
 def build_cash():
     R = random.Random(20261025)
     AS_OF, OPEN, FLOOR = dt.date(2026, 9, 7), D("4000000.00"), D("1500000.00")
@@ -37,7 +37,7 @@ def build_cash():
             d = ws + dt.timedelta(days=R.randint(0, 4))
             flows.append(["DISBURSEMENT", "payments_suppliers", supps[R.randrange(8)], d, d, q2(D(R.randint(15000000, 19000000)) / 100)])
         d = ws + dt.timedelta(days=3)
-        flows.append(["DISBURSEMENT", "capex", f"PRJ{(n % 6) + 1:02d} (A2 project)", d, d, q2(D(R.randint(4000000, 9000000)) / 100)])
+        flows.append(["DISBURSEMENT", "capex", f"PRJ{(n % 6) + 1:02d} (capex project)", d, d, q2(D(R.randint(4000000, 9000000)) / 100)])
         d = ws + dt.timedelta(days=1)
         flows.append(["DISBURSEMENT", "it_services", "SUPP-IT (fictional)", d, d, q2(D(R.randint(1000000, 2500000)) / 100)])
     for d in (dt.date(2026, 9, 30), dt.date(2026, 10, 30), dt.date(2026, 11, 30)):   # payroll on real pay date
@@ -100,7 +100,7 @@ ACT = [f"{y}-{m:02d}" for y, m in [(2025,10),(2025,11),(2025,12)] + [(2026,m) fo
 BUD = ACT + ["2026-09"]
 PLANTS = ["P100", "P200", "P300"]
 
-# =================== A1: plants, models, markets, mapping, production, sales ===================
+# =================== Plants, models, markets, mapping, production, sales ===================
 def build_a1():
     R = random.Random(20261026)
     w("dim_plant.csv", ["plant", "plant_name", "region"], [
@@ -156,7 +156,7 @@ def build_a1():
     rows.sort(); w("fact_vehicle_sales.csv", ["model", "market", "period", "version", "units_sold", "net_revenue"], rows)
     return MAP, prod, sales
 
-# =================== A2: capex ===================
+# =================== Capex ===================
 def build_a2():
     R = random.Random(20261027)
     P = [  # id, name, plant, owner_role, budget, status, approver, closed, closed_period, actual_ratio, open_ratio
@@ -194,11 +194,11 @@ def build_a2():
     w("capex_project.csv", ["project_id","project_name","plant","owner_role","budget_amount","approval_status","approved_by_role","approved_at","closed","closed_period"], pr)
     w("capex_commit.csv", ["po_id","project_id","period","amount","status"], cm)
     w("capex_actual.csv", ["invoice_id","project_id","period","amount"], ac)
-    roles = sorted({x[3] for x in P} | {"CAPEX_COMMITTEE"})
+    roles = sorted({x[3] for x in P} | {"CAPEX_COMMITTEE", "GL_ACCOUNTANT"})
     w("motors_recipients.csv", ["role","email","display_name"], [[r, r.lower().replace("_", ".") + "@example.com", r.title().replace("_", " ") + " (Example)"] for r in roles])
     return summ
 
-# =================== A3: parts, BOM, std cost, purchases ===================
+# =================== Parts, BOM, standard cost, purchases ===================
 PARTS = [("M-A","Model Aster vehicle","VEH","EA"),("M-B","Model Birch vehicle","VEH","EA"),
  ("A-BODY-A","Body M-A","ASSY","EA"),("A-BODY-B","Body M-B","ASSY","EA"),("A-PT-A","Powertrain M-A","ASSY","EA"),
  ("A-PT-B","Powertrain M-B","ASSY","EA"),("A-INT-A","Interior M-A","ASSY","EA"),("A-INT-B","Interior M-B","ASSY","EA"),
@@ -255,7 +255,7 @@ def build_a3(prod):
                 rows.append([part, pl, per, q2(qty), q2(price) if part not in ("P-STEEL","P-ALU") else price.quantize(D("0.0001"), ROUND_HALF_UP)])
     w("part_purchase.csv", ["part","plant","period","qty","unit_price"], rows)
 
-# =================== A5/A6: ERP GL extract, close tasks, control tables ===================
+# =================== ERP GL extract, close tasks, control tables ===================
 def load_actuals():
     with open(os.path.join(SAMPLE, "fact_actuals.csv")) as f: return list(csv.DictReader(f))
 def stats_flags(lines):

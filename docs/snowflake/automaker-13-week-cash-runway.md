@@ -10,7 +10,7 @@ social_image: automaker-13-week-cash-runway.png
 
 <aside class="docs-note" role="note">
   <p class="docs-note__title">Based on official docs, not tested on a live install</p>
-  <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary. Flake checked the SQL against the Snowflake docs and the recomputed numbers.</p>
+  <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary. The SQL was checked against the Snowflake docs and the recomputed numbers.</p>
 </aside>
 
 In a lot of finance teams the 13-week cash forecast is a spreadsheet that gets rebuilt every Monday. Weeks run across as columns, the scenarios are copies of copies, and nobody is quite sure whether the "down case" tab picked up last week's changes. Then someone asks the question that matters, "how many weeks until we're below our minimum cash?", and the answer takes an afternoon.

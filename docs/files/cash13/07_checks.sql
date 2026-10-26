@@ -4,7 +4,7 @@ USE SCHEMA FDH_DEMO.MOTORS;
 -- a) Runway, 3 rows
 SELECT scenario, first_breach_week, runway_weeks, min_closing, min_week, week13_closing, floor_alert FROM V_CASH_RUNWAY ORDER BY scenario;
 
--- a2) Every down week below the floor, 5 rows (DATA-DICTIONARY.md A4)
+-- a2) Every down week below the floor, 5 rows (sample data dictionary)
 -- Expect: wk 8 1228558.33; wk 9 1344072.25; wk 10 1335115.64; wk 11 1466540.06; wk 13 1141952.25
 -- Wk 12 (1674052.48) is not listed: it recovers above the floor. Down first_breach_week 8, runway_weeks 7.
 SELECT scenario, week_no, closing_balance, headroom FROM V_CASH_FLOOR_ALERT WHERE scenario = 'down' ORDER BY week_no;

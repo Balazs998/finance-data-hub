@@ -82,7 +82,7 @@ FROM (
 FILES = ('erp_gl_extract_2026-03.csv.gz');
 ```
 
-`PUT` gzips the CSV by default, so `COPY` reads `.csv.gz`.
+The file name ends in `.csv.gz` because PUT gzip-compresses the file on upload by default (`AUTO_COMPRESS = TRUE`), so the download is a plain `.csv` but the staged copy is compressed ([PUT](https://docs.snowflake.com/en/sql-reference/sql/put)).
 
 Then it writes three rows to `LOAD_LOG`:
 
@@ -100,7 +100,7 @@ The run variables use `SET` ([session variables](https://docs.snowflake.com/en/s
 
 ## Step 4: Compare the hops
 
-`V_CONTROL_RECON` compares each hop with the one before it. Control totals are compared at every step. Row counts are compared only where the grain matches: file vs snowflake (lines) and cells vs Jedox (cells).
+`04_v_control_recon.sql` creates `V_CONTROL_RECON`, which compares each hop with the one before it. Create it once, before the gate in Step 5 queries it. It reads LOAD_LOG when you query it, so the `jedox` row from Step 5 shows up without recreating the view. Control totals are compared at every step. Row counts are compared only where the grain matches: file vs snowflake (lines) and cells vs Jedox (cells).
 
 ```sql
 CREATE OR REPLACE VIEW V_CONTROL_RECON AS
@@ -137,9 +137,9 @@ LEFT JOIN LOAD_LOG c ON c.run_id = r.run_id AND c.hop = s.hop;
 | R2 dropped line | 284 vs 283, 1,466,143.86 vs 1,460,108.50, diff −6,035.36, **MISMATCH** | 1,460,108.50, PASS | no Jedox load, MISSING_HOP |
 | R3 same file again | DUPLICATE | DUPLICATE | DUPLICATE |
 
-R2 has exactly one mismatch, at the first hop, which is where the line went missing: `FDH1-202603-CC4000-600000` line 1, 6,035.36. Because step 1 failed, the gate keeps the incomplete file out of Jedox, so step 3 shows MISSING_HOP and the evidence row is FAIL. Without the trailer check, Jedox would have matched Snowflake exactly and the gap would never show. That's why you compare against the trailer, not only Snowflake against Jedox.
+R2 has exactly one mismatch, at the first hop, which is where the line went missing: `FDH1-202603-CC4000-600000` line 1, 6,035.36. Because step 1 failed, the gate in Step 5 keeps the incomplete file out of Jedox, so step 3 shows MISSING_HOP and the evidence row is FAIL. Without the trailer check, Jedox would have matched Snowflake exactly and the gap would never show. That's why you compare against the trailer, not only Snowflake against Jedox.
 
-## Step 5: Gate the load, then the Jedox hop writes its own row
+## Step 5: The Jedox hop writes its own row
 
 ```sql
 -- Gate: 1 = start the Jedox load, 0 = stop.
@@ -149,7 +149,7 @@ FROM V_CONTROL_RECON
 WHERE run_id = $run_id AND step_no = 1;
 ```
 
-The gate comes first: start the Jedox load only when hop `snowflake` = LOADED and `V_CONTROL_RECON` step 1 = PASS for this run_id. A file that doesn't match its trailer never reaches the planning model.
+The gate comes first: start the Jedox load only when hop `snowflake` = LOADED and `V_CONTROL_RECON` step 1 = PASS for this run_id. (`V_CONTROL_RECON` already exists from Step 4.) The gate query is at the end of `05_jedox_hop.sql`. A file that doesn't match its trailer never reaches the planning model.
 
 The Jedox load reads `V_ERP_GL_CELLS` for the file (`file_name = $file_name`), as in the [Snowflake to Jedox](../jedox/snowflake-to-jedox.md) post. Jedox's Integrator State gives a status but no row count (see the [failure-alerts post](../jedox/failure-alerts.md)). After the Cube Load, the job reads back the slice it loaded with a Cube Extract (base elements only), counts the cells and sums them with a TableAggregation Transform, and inserts one `jedox` row into LOAD_LOG with a Relational Load in insert mode ([Cube Extract](https://knowledgebase.jedox.com/integration/extracts/cube-extract.htm), [TableAggregation Transform](https://knowledgebase.jedox.com/integration/transforms/tableaggregation-transform.htm), [Relational Load](https://knowledgebase.jedox.com/integration/loads/relational-load.htm)). Never use mode update (it deletes the table's rows first) or create (it drops the table).
 
@@ -164,7 +164,7 @@ A Relational Load can't run `CURRENT_TIMESTAMP()` or `CURRENT_ROLE()`, so the jo
 
 The read-back uses Empty cells = excludeEmpty. The cube doesn't store zero values (the Jedox default), so a cell that loads as 0.00 is deleted, not stored, and the read-back would count one cell fewer than `V_ERP_GL_CELLS`. 2026-03 has no zero cells (58 of 58 non-zero). ([Zero values](https://knowledgebase.jedox.com/jedox/in-memory-db/zero-values.htm))
 
-`05_jedox_hop.sql` is only a template for that row, after the gate query above. Which role inserts it is a security decision: `JEDOX_ETL_ROLE` stays views-only, so it should be a separate write role with INSERT on `MOTORS.LOAD_LOG` plus USAGE on the database, schema and warehouse. Nothing else: no SELECT, UPDATE, DELETE or ownership. Use a separate role, never `JEDOX_ETL_ROLE`. This pack grants nothing and creates no role.
+`05_jedox_hop.sql` is only a template for that row. Which role inserts it is a security decision: `JEDOX_ETL_ROLE` stays views-only, so it should be a separate write role with INSERT on `MOTORS.LOAD_LOG` plus USAGE on the database, schema and warehouse. Nothing else: no SELECT, UPDATE, DELETE or ownership. Use a separate role, never `JEDOX_ETL_ROLE`. This pack grants nothing and creates no role.
 
 ## Step 6: Write the evidence
 

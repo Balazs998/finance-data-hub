@@ -258,13 +258,6 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertNotIn("samples/", fx)
         cash = index.split("## [13-week cash runway](snowflake/automaker-13-week-cash-runway.md)", 1)[1].split("## [", 1)[0]
         cash_files = (
-            "samples/motors/cash_opening.csv",
-            "samples/motors/cash_flow.csv",
-            "samples/motors/cash_scenario.csv",
-            "samples/motors/liquidity_floor.csv",
-            "samples/motors/load_motors.sql",
-            "samples/motors/gen_motors.py",
-            "samples/motors/README.md",
             "cash13/01_cash_tables_ddl_load.sql",
             "cash13/02_v_cash_flow_week.sql",
             "cash13/03_v_cash_13w.sql",
@@ -273,6 +266,13 @@ class DownloadShortcodeTests(unittest.TestCase):
             "cash13/06_v_receipt_slip.sql",
             "cash13/07_checks.sql",
             "cash13/README.md",
+            "samples/motors/cash_opening.csv",
+            "samples/motors/cash_flow.csv",
+            "samples/motors/cash_scenario.csv",
+            "samples/motors/liquidity_floor.csv",
+            "samples/motors/load_motors.sql",
+            "samples/motors/README.md",
+            "samples/motors/gen_motors.py",
         )
         positions = [cash.index(name) for name in cash_files]
         self.assertEqual(positions, sorted(positions))

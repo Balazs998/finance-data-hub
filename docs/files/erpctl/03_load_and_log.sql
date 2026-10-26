@@ -2,6 +2,7 @@
 -- Writes: INSERT into ERP_GL_LANDING (via COPY) and LOAD_LOG only. Never UPDATE or DELETE.
 -- Demo runs: R1 = erp_gl_extract_2026-03.csv.gz (clean), R2 = erp_gl_extract_2026-03_dropped.csv.gz (one line dropped),
 -- R3 = erp_gl_extract_2026-03.csv.gz again (duplicate: COPY skips it, 0 lines land, status DUPLICATE).
+-- The Jedox gate is in 05_jedox_hop.sql (step 5), after V_CONTROL_RECON exists (step 4).
 -- Per run, change run_id, file_name and the FILES list together.
 -- Log times are stored as session-local wall-clock time (TIMESTAMP_NTZ).
 USE SCHEMA FDH_DEMO.MOTORS;
@@ -38,7 +39,6 @@ SELECT $run_id, 'snowflake', '2026-03', b.n, COALESCE(b.total, 0), TO_VARCHAR(b.
 FROM b;
 
 -- Hop 2b, Snowflake output: the cells (cost_center x account x period) from the lines that landed in this run.
--- The Jedox gate is in 05_jedox_hop.sql, after 04_v_control_recon.sql creates V_CONTROL_RECON.
 INSERT INTO LOAD_LOG (run_id, hop, period, rows, control_total, hash, status, run_at, run_by_role)
 WITH c AS (
  SELECT cost_center, account, period, SUM(amount) AS amount

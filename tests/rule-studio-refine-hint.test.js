@@ -73,8 +73,11 @@ function hintCount() {
   return count;
 }
 
-test("the refine hint stays on the page once", { timeout: 120000 }, async function () {
-  assert.ok(fs.existsSync(path.join(site, "jedox/rule-studio/index.html")), "Run mkdocs build before this test.");
+test("the refine hint stays on the page once", { timeout: 120000 }, async function (t) {
+  if (!fs.existsSync(path.join(site, "jedox/rule-studio/index.html"))) {
+    t.skip("Rule Studio is kept in the repo and is not published.");
+    return;
+  }
   const executablePath = chromePath();
   assert.ok(executablePath, "Chrome is required to count the visible hint.");
   const puppeteerCore = puppeteer();

@@ -190,9 +190,12 @@ def rule_studio_csp(page_html: str, config, turnstile: bool = True) -> str:
     """
     code = str(config.extra.get("goatcounter_code") or "").strip()
     connect = ["'self'"]
-    worker = _worker_origin()
-    if worker:
-        connect.append(worker)
+    # The worker and Turnstile are only needed when the Rule Studio page
+    # itself is built. Published pages do not load either.
+    if turnstile:
+        worker = _worker_origin()
+        if worker:
+            connect.append(worker)
     if code and CODE_PATTERN.fullmatch(code):
         connect.append(f"https://{code}.goatcounter.com")
     script = " ".join(
@@ -257,7 +260,8 @@ def on_post_page(output, page, config):
     version = asset_version()
     output = _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
     # Every page gets a Content-Security-Policy meta tag (GitHub Pages can't
-    # send headers). Only Rule Studio allows the Turnstile frame and script.
+    # send headers). Worker and Turnstile are allowed only on Rule Studio,
+    # and that page is excluded from the build.
     if "<head>" in output:
         policy = rule_studio_csp(output, config, turnstile=_is_rule_studio(page))
         tag = f'<meta http-equiv="Content-Security-Policy" content="{policy}">'
@@ -396,7 +400,40 @@ def on_page_context(context, page, config, nav):
     return context
 
 
+def format_published_date(day) -> str:
+    """Home and article dates share this wording, for example Oct 26, 2026."""
+    return f"{day:%b} {day.day}, {day.year}"
+
+
+def insert_published_date(markdown: str, page) -> str:
+    """Show each post's front matter date on its own line under the title."""
+    meta = getattr(page, "meta", None)
+    if not isinstance(meta, dict):
+        return markdown
+    raw = str(meta.get("date") or "").strip()
+    if not raw:
+        return markdown
+    try:
+        day = datetime.strptime(raw, "%Y-%m-%d").date()
+    except ValueError as exc:
+        raise PluginError(
+            f"{page.file.src_uri}: date must be YYYY-MM-DD, got {raw!r}"
+        ) from exc
+    block = (
+        '<p class="post-date"><time datetime="'
+        + day.isoformat()
+        + '">'
+        + html.escape(format_published_date(day))
+        + "</time></p>\n"
+    )
+    match = re.search(r"(?m)^# .+?\n", markdown)
+    if not match:
+        return block + "\n" + markdown
+    return markdown[: match.end()] + "\n" + block + markdown[match.end() :]
+
+
 def on_page_markdown(markdown, page, config, files):
+    markdown = insert_published_date(markdown, page)
     docs_dir = Path(config["docs_dir"])
     if page.file.src_uri == "downloads.md":
         if FILE_INDEX not in markdown:
@@ -944,7 +981,7 @@ def render_latest_posts(docs_dir: Path, nav, count: int = LATEST_POSTS_COUNT) ->
         avatar = _avatar_html(section, jedox_seen)
         if section == "jedox":
             jedox_seen += 1
-        label = f"{day:%b} {day.day}, {day.year}"
+        label = format_published_date(day)
         items.append(
             "<li>\n"
             f'<a class="home-post" href="{html.escape(href)}">\n'

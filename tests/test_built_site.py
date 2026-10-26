@@ -444,7 +444,6 @@ SOCIAL_PAGES = {
     "about/index.html": "home.png",
     "jedox/management-report-export/index.html": "management-report-export.png",
     "vba/month-close-checks/index.html": "month-close-checks.png",
-    "jedox/rule-studio/index.html": "rule-studio.png",
     "snowflake/month-end-actuals/index.html": "month-end-actuals.png",
     "snowflake/month-end-snapshots/index.html": "month-end-snapshots.png",
     "snowflake/fx-rate-lock/index.html": "fx-rate-lock.png",
@@ -567,6 +566,42 @@ class SocialPreviewTests(unittest.TestCase):
             "key-pair service user",
             meta_contents(load, "property", "og:description")[0],
         )
+
+    def test_every_dated_post_shows_its_published_date(self):
+        import yaml
+        from datetime import datetime
+
+        seen = 0
+        for path in (ROOT / "docs").rglob("*.md"):
+            text = path.read_text(encoding="utf-8")
+            if not text.startswith("---"):
+                continue
+            end = text.find("\n---", 3)
+            if end < 0:
+                continue
+            meta = yaml.safe_load(text[3:end]) or {}
+            if not isinstance(meta, dict) or not meta.get("date"):
+                continue
+            day = datetime.strptime(str(meta["date"]), "%Y-%m-%d").date()
+            label = f"{day:%b} {day.day}, {day.year}"
+            rel = path.relative_to(ROOT / "docs").as_posix()
+            if rel == "index.md":
+                built = SITE / "index.html"
+            elif rel.endswith("/index.md"):
+                built = SITE / rel[: -len("index.md")] / "index.html"
+            else:
+                built = SITE / rel[: -len(".md")] / "index.html"
+            self.assertTrue(built.is_file(), rel)
+            html = built.read_text(encoding="utf-8")
+            self.assertIn(
+                f'<p class="post-date"><time datetime="{day.isoformat()}">{label}</time></p>',
+                html,
+                rel,
+            )
+            seen += 1
+        self.assertGreaterEqual(seen, 20)
+        about = (SITE / "about" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="post-date"', about)
 
         for name in SOCIAL_FILES:
             path = SITE / "assets" / "social" / name

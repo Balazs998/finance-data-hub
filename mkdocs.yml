@@ -8,11 +8,14 @@ copyright: 'Balazs Tivadar Turcsics · Finance Data Hub · <a href="https://bala
 extra:
   goatcounter_code: financedatahub
 
+# Rule Studio stays in the repo and is not published, same as worker/SETUP.md.
+exclude_docs: |
+  jedox/rule-studio/
+
 extra_css:
   - stylesheets/extra.css
   - stylesheets/docs-note.css
   - stylesheets/email-tool.css
-  - stylesheets/rule-studio.css
   - stylesheets/section.css
 
 extra_javascript:
@@ -28,11 +31,6 @@ extra_javascript:
   - javascripts/codemirror-bundle.js
   - javascripts/email-builder-ui.js
   - javascripts/email-checker-ui.js
-  - javascripts/rule-checks.js
-  - javascripts/rule-diff.js
-  - javascripts/rule-mock.js
-  - javascripts/rule-studio-config.js
-  - javascripts/rule-studio-ui.js
 
 theme:
   name: material
@@ -107,7 +105,6 @@ nav:
       - Create your own email:
           - Builder: jedox/email-builder.md
           - Check your email script: jedox/email-checker.md
-      - Business Rule Studio: jedox/rule-studio/index.md
   - VBA:
       - vba/index.md
       - Email macros after New Outlook: vba/new-outlook-email.md

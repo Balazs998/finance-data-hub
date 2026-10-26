@@ -286,6 +286,12 @@
   text-decoration-color: rgba(56, 189, 248, 1);
 }
 
+.md-typeset .post-date {
+  margin: 0.15rem 0 0.2rem;
+  color: var(--dn-text-muted);
+  font-size: 0.8rem;
+}
+
 .md-typeset .post-meta {
   margin: 0.15rem 0 1rem;
   color: var(--dn-text-muted);

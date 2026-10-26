@@ -96,14 +96,9 @@ class RuleStudioTests(unittest.TestCase):
 
 
 class RuleStudioPageTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.page = ROOT / "site" / "jedox" / "rule-studio" / "index.html"
-        if not cls.page.is_file():
-            raise AssertionError("Rule Studio page was not built. Run mkdocs build first.")
-
     def test_page_uses_the_mock_worker_and_the_demo_model(self):
-        html = self.page.read_text(encoding="utf-8")
+        html = (ROOT / "docs/jedox/rule-studio/index.md").read_text(encoding="utf-8")
+        self.assertTrue((ROOT / "docs/jedox/rule-studio/index.md").is_file())
         self.assertIn("Business Rule Studio", html)
         self.assertIn("Mock provider", html)
         self.assertIn("Role (hint)", html)
@@ -154,8 +149,23 @@ class RuleStudioPageTests(unittest.TestCase):
             html,
         )
 
+    def test_rule_studio_is_not_published(self):
+        site = ROOT / "site"
+        self.assertFalse((site / "jedox" / "rule-studio" / "index.html").exists())
+        self.assertNotIn("rule-studio", (site / "sitemap.xml").read_text(encoding="utf-8"))
+        self.assertNotIn("jedox/rule-studio/index.md", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
+        for page in site.rglob("*.html"):
+            html = page.read_text(encoding="utf-8")
+            self.assertNotIn("rule-studio", html, page)
+            self.assertNotIn("fdh-rule-studio", html, page)
+            self.assertNotIn("challenges.cloudflare.com", html, page)
+        search = site / "search" / "search_index.json"
+        if search.is_file():
+            self.assertNotIn("rule-studio", search.read_text(encoding="utf-8"))
+
     def test_rule_studio_content_security_policy(self):
-        html = self.page.read_text(encoding="utf-8")
+        home_path = ROOT / "site" / "index.html"
+        html = home_path.read_text(encoding="utf-8")
         head = html.split("</head>", 1)[0]
         meta = re.search(r'<meta http-equiv="Content-Security-Policy" content="([^"]+)">', head)
         self.assertIsNotNone(meta)
@@ -180,13 +190,14 @@ class RuleStudioPageTests(unittest.TestCase):
             hashed += 1
         self.assertGreaterEqual(hashed, len(scripts))
         self.assertIn("default-src 'self'", policy)
-        self.assertIn("script-src 'self' https://challenges.cloudflare.com https://gc.zgo.at", policy)
-        self.assertIn("frame-src https://challenges.cloudflare.com", policy)
+        self.assertIn("script-src 'self' https://gc.zgo.at", policy)
+        self.assertNotIn("challenges.cloudflare.com", policy)
+        self.assertIn("frame-src 'none'", policy)
         self.assertIn(
-            "connect-src 'self' https://fdh-rule-studio.balazs998.workers.dev https://financedatahub.goatcounter.com",
+            "connect-src 'self' https://financedatahub.goatcounter.com",
             policy,
         )
-        self.assertIn("https://challenges.cloudflare.com", policy)
+        self.assertNotIn("workers.dev", policy)
         self.assertIn("img-src 'self' data:", policy)
         self.assertIn("style-src 'self' 'unsafe-inline'", policy)
         self.assertIn("object-src 'none'", policy)
@@ -196,15 +207,16 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertIn("font-rest.css", html)
         self.assertNotIn("fonts.googleapis.com", html)
         self.assertNotIn("fonts.gstatic.com", html)
-        home = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("font-rest.css", home)
-        self.assertNotIn("fonts.googleapis.com", home)
-        self.assertNotIn("fonts.gstatic.com", home)
-        # Every page has a CSP; only Rule Studio allows the Turnstile origin.
-        self.assertIn('http-equiv="Content-Security-Policy"', home)
-        csp = home.split('http-equiv="Content-Security-Policy" content="', 1)[1].split('"', 1)[0]
-        self.assertNotIn("challenges.cloudflare.com", csp)
-        self.assertIn("frame-src 'none'", csp)
+        for page in (ROOT / "site").rglob("*.html"):
+            page_html = page.read_text(encoding="utf-8")
+            self.assertNotIn("challenges.cloudflare.com", page_html, page)
+            self.assertNotIn("workers.dev", page_html, page)
+            if 'http-equiv="Content-Security-Policy"' not in page_html:
+                continue
+            csp = page_html.split('http-equiv="Content-Security-Policy" content="', 1)[1].split('"', 1)[0]
+            self.assertNotIn("challenges.cloudflare.com", csp, page)
+            self.assertNotIn("workers.dev", csp, page)
+            self.assertIn("frame-src 'none'", csp, page)
 
 
 if __name__ == "__main__":

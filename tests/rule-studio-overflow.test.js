@@ -61,8 +61,11 @@ function startServer() {
   });
 }
 
-test("a long one-line rule stays within the viewport", { timeout: 120000 }, async function () {
-  assert.ok(fs.existsSync(path.join(site, "jedox/rule-studio/index.html")), "Run mkdocs build before this test.");
+test("a long one-line rule stays within the viewport", { timeout: 120000 }, async function (t) {
+  if (!fs.existsSync(path.join(site, "jedox/rule-studio/index.html"))) {
+    t.skip("Rule Studio is kept in the repo and is not published.");
+    return;
+  }
   const executablePath = chromePath();
   assert.ok(executablePath, "Chrome is required to measure document scrollWidth.");
   const puppeteerCore = puppeteer();

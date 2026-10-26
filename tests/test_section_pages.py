@@ -255,15 +255,6 @@ SECTIONS = {
                 False,
                 True,
             ),
-            (
-                "Business Rule Studio",
-                "rule-studio/",
-                "Jedox",
-                "The demo cubes are the fictional FDH_DEMO model.",
-                "Interactive tool",
-                False,
-                True,
-            ),
         ),
         "downloads": (
             ("../files/jedox/mgmt_report_export_sample.csv", "mgmt_report_export_sample.csv"),

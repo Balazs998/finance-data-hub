@@ -95,6 +95,7 @@ nav:
       - Cost per vehicle: snowflake/automaker-cost-per-vehicle.md
       - Capex project tracking: snowflake/automaker-capex-project-tracking.md
       - BOM cost rollup: snowflake/automaker-bom-cost-rollup.md
+      - ERP control totals: snowflake/automaker-erp-control-totals.md
   - Jedox:
       - jedox/index.md
       - Management report export: jedox/management-report-export.md

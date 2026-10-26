@@ -169,6 +169,7 @@ class DownloadShortcodeTests(unittest.TestCase):
                     {"Cost per vehicle": "snowflake/automaker-cost-per-vehicle.md"},
                     {"Capex project tracking": "snowflake/automaker-capex-project-tracking.md"},
                     {"BOM cost rollup": "snowflake/automaker-bom-cost-rollup.md"},
+                    {"ERP control totals": "snowflake/automaker-erp-control-totals.md"},
                 ]
             },
             {
@@ -207,6 +208,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             "## [Cost per vehicle](snowflake/automaker-cost-per-vehicle.md)",
             "## [Capex project tracking](snowflake/automaker-capex-project-tracking.md)",
             "## [BOM cost rollup](snowflake/automaker-bom-cost-rollup.md)",
+            "## [ERP control totals](snowflake/automaker-erp-control-totals.md)",
             "## [Management report export](jedox/management-report-export.md)",
             "## [Relational extracts](jedox/relational-extracts.md)",
             "## [Failure-only alerts](jedox/failure-alerts.md)",
@@ -319,6 +321,23 @@ class DownloadShortcodeTests(unittest.TestCase):
         self.assertEqual(bom.count("[[download:"), len(bom_files))
         self.assertNotIn("samples/", bom)
         self.assertNotIn("capex/", bom)
+        self.assertNotIn("erpctl/", bom)
+        erp = index.split("## [ERP control totals](snowflake/automaker-erp-control-totals.md)", 1)[1].split("## [", 1)[0]
+        erp_files = (
+            "erpctl/01_erp_gl_landing_ddl.sql",
+            "erpctl/02_views.sql",
+            "erpctl/03_load_and_log.sql",
+            "erpctl/04_v_control_recon.sql",
+            "erpctl/05_jedox_hop.sql",
+            "erpctl/06_control_evidence.sql",
+            "erpctl/07_checks.sql",
+            "erpctl/README.md",
+        )
+        positions = [erp.index(name) for name in erp_files]
+        self.assertEqual(positions, sorted(positions))
+        self.assertEqual(erp.count("[[download:"), len(erp_files))
+        self.assertNotIn("samples/", erp)
+        self.assertNotIn("bom/", erp)
         email = index.split("## [Automated value emails]", 1)[1].split("## [", 1)[0]
         self.assertIn("email/send_value_emails.groovy", email)
         self.assertIn("email/recipients.csv", email)
@@ -372,7 +391,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 95)
+        self.assertEqual(len(disk), 103)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

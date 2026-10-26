@@ -13,6 +13,7 @@ One sentence on each section card.
 - Cost per vehicle: Allocate FDH Motors plant cost by units produced, then split the revenue gap into price, volume, mix, new and lost.
 - Capex project tracking: Track FDH Motors capex budget, open commitments and actuals, and alert only when a project is over budget or unapproved.
 - BOM cost rollup: Explode the FDH Motors bill of materials, roll standard cost up to the vehicle, and split purchase price and usage variance.
+- ERP control totals: Record FDH Motors control totals at each hop from the ERP file to Snowflake to Jedox, and keep an append-only evidence row per run.
 - Snowflake to Jedox load: Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.
 
 ## Jedox

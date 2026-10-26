@@ -177,6 +177,8 @@ Run `05_checks.sql`. You should see:
 - Return NULL when a standard is missing, never a quietly lower number.
 - Price and usage variance answer different questions: who paid too much, and who used too much.
 
+**Next in the automaker series:** [ERP-to-warehouse load controls](automaker-erp-control-totals.md).
+
 ## Downloads
 
 All files use made-up sample data and placeholder names. FDH Motors is not a real company.

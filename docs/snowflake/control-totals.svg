@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 320" width="840" height="320" role="img" aria-labelledby="t d">
+<title id="t">FDH Motors control totals at every hop: ERP file, Snowflake lines, Snowflake cells, Jedox</title>
+<desc id="d">The 2026-03 ERP file trailer says 284 lines and 1,466,143.86. The lines land in ERP_GL_LANDING and V_ERP_GL_LANDED (284 lines, 1,466,143.86), aggregate in V_ERP_GL_CELLS to 58 cells (1,466,143.86), and the Jedox job reports 58 cells. Check 1 compares rows and total, check 2 compares the total, check 3 compares cells and total; all pass on the clean run. Each hop writes a row to LOAD_LOG; V_CONTROL_RECON compares the hops and appends one row per run to CONTROL_EVIDENCE: R1 PASS, R2 FAIL (one dropped line, -6,035.36, so the Jedox load is blocked and step 3 shows MISSING_HOP), R3 DUPLICATE. Fictional sample data; the Jedox hop is not run on a live system.</desc>
+<defs><marker id="m38BDF8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#38BDF8"/></marker><marker id="m8B7CF6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8B7CF6"/></marker><marker id="m9AA7B4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#9AA7B4"/></marker></defs>
+<style>.h{font-family:"Space Grotesk",sans-serif;font-weight:600}.l{font-family:Inter,sans-serif}.n{font-family:"JetBrains Mono",monospace}</style>
+<rect width="840" height="320" fill="#0F1720"/><rect x="8" y="8" width="824" height="304" rx="12" fill="#18222E"/>
+<text class="h" x="24" y="38" font-size="20" fill="#E6EDF3">Control totals at every hop</text>
+<text class="l" x="816" y="38" font-size="15" fill="#9AA7B4" text-anchor="end">2026-03 clean run (R1) · fictional data</text>
+<rect x="24.0" y="52" width="140" height="100" rx="10" fill="#0F1720" stroke="#38BDF8" stroke-width="2"/>
+<text class="h" x="94.0" y="74" font-size="16" fill="#E6EDF3" text-anchor="middle">ERP file</text>
+<text class="n" x="94.0" y="92" font-size="13" fill="#9AA7B4" text-anchor="middle">TRAILER row</text>
+<text class="n" x="94.0" y="130" font-size="13" fill="#E6EDF3" text-anchor="middle">284 lines</text>
+<text class="n" x="94.0" y="145" font-size="13" fill="#E6EDF3" text-anchor="middle">1,466,143.86</text>
+<rect x="241.33333333333331" y="52" width="140" height="100" rx="10" fill="#0F1720" stroke="#38BDF8" stroke-width="2"/>
+<text class="h" x="311.3333333333333" y="74" font-size="16" fill="#E6EDF3" text-anchor="middle">Landed lines</text>
+<text class="n" x="311.3333333333333" y="92" font-size="13" fill="#9AA7B4" text-anchor="middle">ERP_GL_LANDING</text>
+<text class="n" x="311.3333333333333" y="107" font-size="13" fill="#9AA7B4" text-anchor="middle">V_ERP_GL_LANDED</text>
+<text class="n" x="311.3333333333333" y="130" font-size="13" fill="#E6EDF3" text-anchor="middle">284 lines</text>
+<text class="n" x="311.3333333333333" y="145" font-size="13" fill="#E6EDF3" text-anchor="middle">1,466,143.86</text>
+<rect x="458.66666666666663" y="52" width="140" height="100" rx="10" fill="#0F1720" stroke="#38BDF8" stroke-width="2"/>
+<text class="h" x="528.6666666666666" y="74" font-size="16" fill="#E6EDF3" text-anchor="middle">Cells</text>
+<text class="n" x="528.6666666666666" y="92" font-size="13" fill="#9AA7B4" text-anchor="middle">V_ERP_GL_CELLS</text>
+<text class="n" x="528.6666666666666" y="130" font-size="13" fill="#E6EDF3" text-anchor="middle">58 cells</text>
+<text class="n" x="528.6666666666666" y="145" font-size="13" fill="#E6EDF3" text-anchor="middle">1,466,143.86</text>
+<rect x="676.0" y="52" width="140" height="100" rx="10" fill="#0F1720" stroke="#8B7CF6" stroke-width="2"/>
+<text class="h" x="746.0" y="74" font-size="16" fill="#E6EDF3" text-anchor="middle">Jedox</text>
+<text class="n" x="746.0" y="92" font-size="13" fill="#9AA7B4" text-anchor="middle">job count</text>
+<text class="n" x="746.0" y="130" font-size="13" fill="#E6EDF3" text-anchor="middle">58 cells</text>
+<text class="n" x="746.0" y="145" font-size="13" fill="#E6EDF3" text-anchor="middle">1,466,143.86</text>
+<line x1="167.0" y1="102.0" x2="238.33333333333331" y2="102.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<line x1="384.3333333333333" y1="102.0" x2="455.66666666666663" y2="102.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<line x1="601.6666666666666" y1="102.0" x2="673.0" y2="102.0" stroke="#38BDF8" stroke-width="2" marker-end="url(#m38BDF8)"/>
+<line x1="202.66666666666666" y1="106.0" x2="202.66666666666666" y2="164" stroke="#A3E635" stroke-dasharray="3 3"/>
+<rect x="99.66666666666666" y="164" width="206" height="44" rx="10" fill="#A3E635" fill-opacity="0.08" stroke="#A3E635" stroke-width="1.5"/>
+<text class="l" x="202.66666666666666" y="182" font-size="13" fill="#A3E635" text-anchor="middle">✓ Check 1 · rows + total · PASS</text>
+<text class="n" x="202.66666666666666" y="200" font-size="13" fill="#E6EDF3" text-anchor="middle">284 = 284 · diff 0.00</text>
+<line x1="420.0" y1="106.0" x2="420.0" y2="164" stroke="#A3E635" stroke-dasharray="3 3"/>
+<rect x="317.0" y="164" width="206" height="44" rx="10" fill="#A3E635" fill-opacity="0.08" stroke="#A3E635" stroke-width="1.5"/>
+<text class="l" x="420.0" y="182" font-size="13" fill="#A3E635" text-anchor="middle">✓ Check 2 · total · PASS</text>
+<text class="n" x="420.0" y="200" font-size="13" fill="#E6EDF3" text-anchor="middle">diff 0.00</text>
+<line x1="637.3333333333333" y1="106.0" x2="637.3333333333333" y2="164" stroke="#A3E635" stroke-dasharray="3 3"/>
+<rect x="534.3333333333333" y="164" width="206" height="44" rx="10" fill="#A3E635" fill-opacity="0.08" stroke="#A3E635" stroke-width="1.5"/>
+<text class="l" x="637.3333333333333" y="182" font-size="13" fill="#A3E635" text-anchor="middle">✓ Check 3 · cells + total · PASS</text>
+<text class="n" x="637.3333333333333" y="200" font-size="13" fill="#E6EDF3" text-anchor="middle">58 = 58 · diff 0.00</text>
+<rect x="24" y="216" width="286" height="46" rx="10" fill="#0F1720" stroke="#9AA7B4" stroke-width="1.5"/>
+<text class="n" x="40" y="237" font-size="15" fill="#E6EDF3">LOAD_LOG</text>
+<text class="l" x="40" y="254" font-size="13" fill="#9AA7B4">one row per hop: file → … → jedox</text>
+<line x1="312" y1="241" x2="348" y2="241" stroke="#9AA7B4" stroke-width="2" marker-end="url(#m9AA7B4)"/>
+<rect x="352" y="216" width="164" height="46" rx="10" fill="#0F1720" stroke="#8B7CF6" stroke-width="1.5"/>
+<text class="n" x="434" y="237" font-size="13" fill="#E6EDF3" text-anchor="middle">V_CONTROL_RECON</text>
+<text class="l" x="434" y="254" font-size="13" fill="#9AA7B4" text-anchor="middle">hop vs previous hop</text>
+<line x1="518" y1="241" x2="552" y2="241" stroke="#8B7CF6" stroke-width="2" marker-end="url(#m8B7CF6)"/>
+<rect x="556" y="216" width="260" height="46" rx="10" fill="#0F1720" stroke="#8B7CF6" stroke-width="1.5"/>
+<text class="n" x="686" y="237" font-size="13" fill="#E6EDF3" text-anchor="middle">CONTROL_EVIDENCE (append)</text>
+<text class="n" x="686" y="254" font-size="13" fill="#9AA7B4" text-anchor="middle"><tspan fill="#A3E635">R1 PASS</tspan> · <tspan fill="#F87171">R2 FAIL</tspan> · R3 DUPLICATE</text>
+<text class="l" x="24" y="284" font-size="15" fill="#9AA7B4">R2 drops one line: check 1 catches −6,035.36, so the Jedox load is blocked (MISSING_HOP).</text>
+<text class="l" x="24" y="303" font-size="15" fill="#9AA7B4">Evidence pattern, not an audit certification.</text>
+</svg>

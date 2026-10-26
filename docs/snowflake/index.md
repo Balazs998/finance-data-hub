@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, cost per vehicle, capex project tracking, and a BOM cost rollup for fictional FDH Motors."
+description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, cost per vehicle, capex project tracking, a BOM cost rollup, and ERP control totals for fictional FDH Motors."
 hide:
   - toc
 ---
@@ -79,6 +79,12 @@ hide:
   </article></li>
   <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
+    <h3 class="fdh-card__title"><a href="automaker-erp-control-totals/">ERP control totals</a></h3>
+    <p class="fdh-card__summary">Record FDH Motors control totals at each hop from the ERP file to Snowflake to Jedox, and keep an append-only evidence row per run.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 35 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 10 min read</p>
@@ -131,6 +137,13 @@ hide:
     <li><a href="../files/bom/03_v_ppv.sql" download="03_v_ppv.sql" data-goatcounter-click="download-03_v_ppv.sql" data-goatcounter-title="Download 03_v_ppv.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_v_ppv.sql</a></li>
     <li><a href="../files/bom/04_v_usage_var.sql" download="04_v_usage_var.sql" data-goatcounter-click="download-04_v_usage_var.sql" data-goatcounter-title="Download 04_v_usage_var.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_usage_var.sql</a></li>
     <li><a href="../files/bom/05_checks.sql" download="05_checks.sql" data-goatcounter-click="download-05_checks.sql" data-goatcounter-title="Download 05_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_checks.sql</a></li>
+    <li><a href="../files/erpctl/01_erp_gl_landing_ddl.sql" download="01_erp_gl_landing_ddl.sql" data-goatcounter-click="download-01_erp_gl_landing_ddl.sql" data-goatcounter-title="Download 01_erp_gl_landing_ddl.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_erp_gl_landing_ddl.sql</a></li>
+    <li><a href="../files/erpctl/02_views.sql" download="02_views.sql" data-goatcounter-click="download-02_views.sql" data-goatcounter-title="Download 02_views.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_views.sql</a></li>
+    <li><a href="../files/erpctl/03_load_and_log.sql" download="03_load_and_log.sql" data-goatcounter-click="download-03_load_and_log.sql" data-goatcounter-title="Download 03_load_and_log.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_load_and_log.sql</a></li>
+    <li><a href="../files/erpctl/04_v_control_recon.sql" download="04_v_control_recon.sql" data-goatcounter-click="download-04_v_control_recon.sql" data-goatcounter-title="Download 04_v_control_recon.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_v_control_recon.sql</a></li>
+    <li><a href="../files/erpctl/05_jedox_hop.sql" download="05_jedox_hop.sql" data-goatcounter-click="download-05_jedox_hop.sql" data-goatcounter-title="Download 05_jedox_hop.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_jedox_hop.sql</a></li>
+    <li><a href="../files/erpctl/06_control_evidence.sql" download="06_control_evidence.sql" data-goatcounter-click="download-06_control_evidence.sql" data-goatcounter-title="Download 06_control_evidence.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 06_control_evidence.sql</a></li>
+    <li><a href="../files/erpctl/07_checks.sql" download="07_checks.sql" data-goatcounter-click="download-07_checks.sql" data-goatcounter-title="Download 07_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 07_checks.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

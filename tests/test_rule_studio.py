@@ -200,7 +200,11 @@ class RuleStudioPageTests(unittest.TestCase):
         self.assertIn("font-rest.css", home)
         self.assertNotIn("fonts.googleapis.com", home)
         self.assertNotIn("fonts.gstatic.com", home)
-        self.assertNotIn('http-equiv="Content-Security-Policy"', home)
+        # Every page has a CSP; only Rule Studio allows the Turnstile origin.
+        self.assertIn('http-equiv="Content-Security-Policy"', home)
+        csp = home.split('http-equiv="Content-Security-Policy" content="', 1)[1].split('"', 1)[0]
+        self.assertNotIn("challenges.cloudflare.com", csp)
+        self.assertIn("frame-src 'none'", csp)
 
 
 if __name__ == "__main__":

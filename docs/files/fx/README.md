@@ -4,7 +4,7 @@ All objects and amounts here are made-up sample data for the Finance Data Hub tu
 
 **Run order**
 
-1. Load the pristine `fact_actuals.csv` (610 rows) with `load_snowflake.sql` from the samples folder if you have not already.
+1. Load the unmodified `fact_actuals.csv` (610 rows) with `load_snowflake.sql` from the samples folder if you have not already.
 2. `01_fx_rate_daily_ddl.sql` — create `FX_RATE_DAILY`.
 3. `02_fx_rate_period_ddl.sql` — create `FX_RATE_PERIOD`.
 4. `03_seed_fx_rates.sql` — fictional daily and period rates. Omits period `2026-05`. The gap check returns 1.

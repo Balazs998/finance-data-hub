@@ -38,10 +38,13 @@ BLOCK_SHORTCODE = re.compile(
 )
 FENCE = re.compile(r"(?ms)^(```+)[^\n]*\n.*?^\1[ \t]*$")
 FILE_INDEX = "[[file-index]]"
+LATEST_POSTS = "[[latest-posts]]"
+LATEST_POSTS_COUNT = 6
 SAMPLE_DATA_TITLE = "Sample data"
 # Shared sample files, listed once at the top of the Downloads page in this
 # order. Several notes link them; their own groups leave them out.
 SAMPLE_DATA_FILES = (
+    "samples/README.md",
     "samples/dim_account.csv",
     "samples/dim_cost_center.csv",
     "samples/fact_actuals.csv",
@@ -178,7 +181,7 @@ def _inline_script_hashes(page_html: str) -> list[str]:
     return hashes
 
 
-def rule_studio_csp(page_html: str, config) -> str:
+def rule_studio_csp(page_html: str, config, turnstile: bool = True) -> str:
     """CSP for the Rule Studio page.
 
     Every inline script in the built page is hashed, including both scripts
@@ -195,7 +198,7 @@ def rule_studio_csp(page_html: str, config) -> str:
     script = " ".join(
         [
             "'self'",
-            "https://challenges.cloudflare.com",
+            *(["https://challenges.cloudflare.com"] if turnstile else []),
             "https://gc.zgo.at",
             *_inline_script_hashes(page_html),
         ]
@@ -204,7 +207,7 @@ def rule_studio_csp(page_html: str, config) -> str:
         [
             "default-src 'self'",
             f"script-src {script}",
-            "frame-src https://challenges.cloudflare.com",
+            "frame-src " + ("https://challenges.cloudflare.com" if turnstile else "'none'"),
             "connect-src " + " ".join(connect),
             "img-src 'self' data:",
             "style-src 'self' 'unsafe-inline'",
@@ -253,8 +256,10 @@ def _drop_unused_email_assets(output: str) -> str:
 def on_post_page(output, page, config):
     version = asset_version()
     output = _VERSIONED_ASSET.sub(rf'\1?v={version}"', output)
-    if _is_rule_studio(page):
-        policy = rule_studio_csp(output, config)
+    # Every page gets a Content-Security-Policy meta tag (GitHub Pages can't
+    # send headers). Only Rule Studio allows the Turnstile frame and script.
+    if "<head>" in output:
+        policy = rule_studio_csp(output, config, turnstile=_is_rule_studio(page))
         tag = f'<meta http-equiv="Content-Security-Policy" content="{policy}">'
         output = output.replace("<head>", "<head>\n    " + tag, 1)
     output = _defer_section_stylesheet(output)
@@ -402,6 +407,10 @@ def on_page_markdown(markdown, page, config, files):
         markdown = markdown.replace(
             FILE_INDEX,
             render_file_index(docs_dir, config["nav"]).rstrip("\n"),
+        )
+    if page.file.src_uri == "index.md" and LATEST_POSTS in markdown:
+        markdown = markdown.replace(
+            LATEST_POSTS, render_latest_posts(docs_dir, config["nav"])
         )
     return render_shortcodes(
         markdown,
@@ -860,3 +869,90 @@ def _map_outside_fences(markdown: str, transform) -> str:
         cursor = match.end()
     pieces.append(transform(markdown[cursor:]))
     return "".join(pieces)
+
+
+# Home page "Latest posts": built from each post's front matter ``date``
+# (YYYY-MM-DD), newest first. Ties keep the later nav position first.
+_SECTION_LABELS = {"snowflake": "Snowflake", "jedox": "Jedox", "vba": "VBA"}
+_SECTION_TAGS = {"snowflake": "SQL", "jedox": "Integrator", "vba": "Excel"}
+_JEDOX_AVATARS = ("head-presenting", "head-thumbsup", "head-laptop")
+
+
+def _front_matter(text: str) -> dict:
+    import yaml
+
+    if not text.startswith("---"):
+        return {}
+    end = text.find("\n---", 3)
+    if end < 0:
+        return {}
+    data = yaml.safe_load(text[3:end]) or {}
+    return data if isinstance(data, dict) else {}
+
+
+def _avatar_html(section: str, index: int) -> str:
+    if section == "jedox":
+        name = _JEDOX_AVATARS[index % len(_JEDOX_AVATARS)]
+        base = f"assets/mascots/jedox/{name}"
+        cls = "home-avatar"
+        size = (176, 176)
+    elif section == "vba":
+        base = "assets/mascots/section/vba-laptop"
+        cls = "home-avatar home-avatar--vba"
+        size = (210, 260)
+    else:
+        base = "assets/mascots/snowflake/head"
+        cls = "home-avatar"
+        size = (176, 176)
+    return (
+        "<picture>\n"
+        f'<source srcset="{base}.webp" type="image/webp">\n'
+        f'<img class="{cls}" src="{base}.png" width="{size[0]}" height="{size[1]}" alt="" loading="lazy">\n'
+        "</picture>"
+    )
+
+
+def render_latest_posts(docs_dir: Path, nav, count: int = LATEST_POSTS_COUNT) -> str:
+    posts = []
+    for position, (label, src) in enumerate(_nav_pages(nav)):
+        section = src.split("/", 1)[0]
+        if section not in _SECTION_LABELS:
+            continue
+        path = docs_dir / src
+        if not path.is_file():
+            continue
+        meta = _front_matter(path.read_text(encoding="utf-8"))
+        raw = meta.get("date")
+        if not raw:
+            continue
+        try:
+            day = datetime.strptime(str(raw), "%Y-%m-%d").date()
+        except ValueError as exc:
+            raise PluginError(f"{src}: date must be YYYY-MM-DD, got {raw!r}") from exc
+        title = str(meta.get("short_title") or label or meta.get("title") or src)
+        tag = str(meta.get("home_tag") or _SECTION_TAGS[section])
+        posts.append((day, position, src, section, title, tag))
+    if not posts:
+        raise PluginError("No post has a front matter date, so Latest posts would be empty.")
+    posts.sort(key=lambda item: (item[0], item[1]), reverse=True)
+    items = []
+    jedox_seen = 0
+    for day, _pos, src, section, title, tag in posts[:count]:
+        href = src[: -len(".md")] + "/"
+        if href.endswith("/index/"):
+            href = href[: -len("index/")]
+        avatar = _avatar_html(section, jedox_seen)
+        if section == "jedox":
+            jedox_seen += 1
+        label = f"{day:%b} {day.day}, {day.year}"
+        items.append(
+            "<li>\n"
+            f'<a class="home-post" href="{html.escape(href)}">\n'
+            f"{avatar}\n"
+            f'<span class="home-post__text"><strong>{html.escape(title)}</strong>'
+            f"<span>{_SECTION_LABELS[section]} · {html.escape(tag)}</span></span>\n"
+            f'<time class="home-date" datetime="{day.isoformat()}">{label}</time>\n'
+            "</a>\n"
+            "</li>"
+        )
+    return "\n".join(items)

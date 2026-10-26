@@ -115,8 +115,8 @@ class HomePageTests(unittest.TestCase):
             self.html,
         )
         self.assertIn(
-            "Tested Snowflake SQL, Jedox Integrator jobs and Excel VBA, "
-            "each with sample data you can download and run.",
+            "Snowflake SQL, Jedox Integrator jobs and Excel VBA, checked against "
+            "the official docs, each with sample data you can download and run.",
             self.html,
         )
         self.assertEqual(self.html.count('class="home-bar"'), 1)
@@ -139,16 +139,13 @@ class HomePageTests(unittest.TestCase):
             "Controllers",
             "Trust that no row went missing.",
             "Data people",
-            "Copy tested SQL, Groovy and VBA.",
+            "Copy SQL, Groovy and VBA checked against the docs.",
             "Follow the data, step by step",
             "Join budget and actuals without losing a row.",
             "Clear the slice, then load fresh actuals into the cube.",
             "One Integrator job sends every owner their numbers.",
             "Latest posts",
-            "Jedox · Groovy",
-            "Jedox · Integrator",
-            "Jedox · Builder",
-            "Snowflake · SQL",
+            "Snowflake · Automaker series",
             "Why it matters",
             "Same sample data, three joins:",
             ">605<",
@@ -159,26 +156,24 @@ class HomePageTests(unittest.TestCase):
             "full join",
             "✓ no rows lost",
             "Rows kept by each join. Only the full join keeps all&nbsp;701.",
-            "Oct 9, 2026",
         ):
             self.assertIn(text, self.html)
         self.assertNotIn('class="home-new"', self.html)
-        self.assertEqual(self.html.count('class="home-date"'), 4)
-        self.assertEqual(self.html.count(">Oct 9, 2026<"), 4)
+        self.assertNotIn("Tested Snowflake SQL", self.html)
+        self.assertNotIn("Copy tested", self.html)
+        self.assertEqual(self.html.count('class="home-date"'), 6)
         self.assertEqual(self.html.count('class="home-step"'), 3)
         self.assertIn(
             'class="home-card home-why" href="snowflake/plan-vs-actuals/"',
             self.html,
         )
         latest = self.html.split('id="latest-posts"', 1)[1].split('id="why-it-matters"', 1)[0]
-        plan_post = latest.split('href="snowflake/plan-vs-actuals/"', 1)[1].split("</li>", 1)[0]
-        self.assertIn('class="home-date"', plan_post)
-        jedox_srcs = re.findall(
-            r'href="jedox/[^"]+"[\s\S]*?src="(assets/mascots/jedox/[^"]+)"',
-            latest,
-        )
-        self.assertEqual(len(jedox_srcs), 3)
-        self.assertEqual(len(set(jedox_srcs)), 3)
+        # Latest posts is generated from front matter dates, newest first.
+        dates = re.findall(r'<time class="home-date" datetime="(\d{4}-\d{2}-\d{2})">', latest)
+        self.assertEqual(len(dates), 6)
+        self.assertEqual(dates, sorted(dates, reverse=True))
+        self.assertIn('href="snowflake/automaker-close-tracker-anomaly-flags/"', latest)
+        self.assertNotIn("[[latest-posts]]", self.html)
 
     def test_newsletter_box_is_absent(self):
         for banned in (
@@ -233,13 +228,17 @@ class HomePageTests(unittest.TestCase):
         for alt in HERO_ALTS:
             self.assertIn(f'alt="{alt}"', hero)
         self.assertNotIn('loading="lazy"', hero)
-        avatars = re.findall(r"<img\b[^>]*class=\"home-avatar\"[^>]*>", self.html)
-        self.assertEqual(len(avatars), 4)
+        avatars = re.findall(r"<img\b[^>]*class=\"home-avatar[^\"]*\"[^>]*>", self.html)
+        self.assertEqual(len(avatars), 6)
         for tag in avatars:
             self.assertIn('alt=""', tag)
             self.assertIn('loading="lazy"', tag)
-            self.assertIn('width="176"', tag)
-            self.assertIn('height="176"', tag)
+            if "home-avatar--vba" in tag:
+                self.assertIn('width="210"', tag)
+                self.assertIn('height="260"', tag)
+            else:
+                self.assertIn('width="176"', tag)
+                self.assertIn('height="176"', tag)
         for block in pictures:
             source = re.search(
                 r'<source\b[^>]*\bsrcset="([^"]+)"[^>]*\btype="image/webp"',
@@ -284,7 +283,8 @@ class HomePageTests(unittest.TestCase):
         self.assertNotIn("max-width: 90rem;", self.css)
         self.assertIn("overflow-x: auto;", block)
         self.assertIn("-webkit-overflow-scrolling: touch;", block)
-        self.assertIn("min-width: 240px;", block)
+        self.assertIn("flex: 0 0 82%;", block)
+        self.assertIn("scroll-padding-inline: 16px;", block)
         self.assertIn("grid-template-columns: 1fr;", block)
 
         reduced = media_blocks(self.css, "prefers-reduced-motion: reduce")

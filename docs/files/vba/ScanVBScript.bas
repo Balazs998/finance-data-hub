@@ -9,6 +9,7 @@ Sub ScanVBScript()
 
     Dim folder As String
     folder = ThisWorkbook.Path & "\FDH_Macros\"
+    If Dir(folder, vbDirectory) = "" Then MsgBox "No FDH_Macros folder next to this workbook. Nothing was scanned.", vbExclamation: Exit Sub
 
     Dim ws As Worksheet
     Set ws = ThisWorkbook.Worksheets.Add

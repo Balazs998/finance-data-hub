@@ -2,7 +2,7 @@
   "pack": "jedox-rules",
   "jedox_version": "2026.1",
   "doc_basis": "knowledgebase.jedox.com pages marked 'optimized for Jedox version 2026.1', fetched 2026-10-11",
-  "reviewed_by": "J-dox",
+  "reviewed": true,
   "status": "signed-off",
   "syntax": [
     {

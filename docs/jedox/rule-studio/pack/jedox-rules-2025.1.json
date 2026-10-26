@@ -2,7 +2,7 @@
   "pack": "jedox-rules",
   "jedox_version": "2025.1",
   "doc_basis": "Derived from the 2026.1 pack. The public KB documents only the current version (2026.1); no archived 2025.1 rule pages were found (Wayback CDX returned none).",
-  "reviewed_by": "J-dox",
+  "reviewed": true,
   "status": "draft-for-review; baseline carry-over",
   "syntax": [
     {

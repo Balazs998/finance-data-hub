@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h1>Page not found</h1>
+<div class="fdh-404">
+  <p>That page moved or never existed. These are good places to start:</p>
+  <ul class="fdh-404__links">
+    <li><a class="md-button md-button--primary" href="{{ config.site_url }}">Home</a></li>
+    <li><a class="md-button" href="{{ config.site_url }}snowflake/">Snowflake</a></li>
+    <li><a class="md-button" href="{{ config.site_url }}jedox/">Jedox</a></li>
+    <li><a class="md-button" href="{{ config.site_url }}vba/">VBA</a></li>
+    <li><a class="md-button" href="{{ config.site_url }}downloads/">Downloads</a></li>
+  </ul>
+</div>
+{% endblock %}

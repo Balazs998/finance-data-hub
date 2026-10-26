@@ -1,4 +1,4 @@
-/* Checker wording, page text v0.4 (J-dox signed off).
+/* Checker wording, page text v0.4.
    This is the only file for the nine check titles, explanations, and fixes.
    Square-bracket notes in the source text are filled in by the checker. */
 (function (root, factory) {

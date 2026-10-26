@@ -1,4 +1,6 @@
 ---
+social_image: month-end-actuals.png
+date: 2026-10-09
 title: Month-end actuals in Snowflake SQL
 description: "Build month-end P&L actuals in Snowflake SQL: closed periods only, latest journal load, revenue as a positive amount ready for Excel or Jedox."
 ---

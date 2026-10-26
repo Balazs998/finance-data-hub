@@ -1,5 +1,6 @@
 ---
-title: "Plan vs. actuals in Snowflake SQL, without losing rows"
+date: 2026-10-09
+title: "Plan vs actuals in Snowflake SQL"
 description: "Build a month-end budget vs. actual variance in Snowflake with a FULL OUTER JOIN, so budget-only and unbudgeted rows both show up."
 social_image: plan-vs-actuals.png
 ---
@@ -231,4 +232,5 @@ All files are synthetic sample data.
 [[download:samples/dim_account.csv|Download dim_account.csv]]
 [[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]
 [[download:samples/load_snowflake.sql|Download load_snowflake.sql]]
+[[download:samples/README.md|Download README.md (sample data)]]
 [[download:sql/plan_vs_actual.sql|Download plan_vs_actual.sql]]

@@ -1,6 +1,8 @@
 ---
-title: "A 13-week cash forecast with scenarios, a liquidity floor and an honest runway number"
-description: "Build a direct-method 13-week cash forecast for the fictional FDH Motors on FDH_DEMO.MOTORS: date cash by when it lands, run base/down/up scenarios from one table, flag the first week below the floor, and check week 1 against actuals."
+date: 2026-10-25
+home_tag: Automaker series
+title: "13-week cash forecast and runway in Snowflake"
+description: "A direct-method 13-week cash forecast for fictional FDH Motors: base, down and up scenarios, a liquidity floor and a week-1 check against actuals."
 social_image: automaker-13-week-cash-runway.png
 ---
 
@@ -9,7 +11,7 @@ social_image: automaker-13-week-cash-runway.png
 <p class="post-meta">Snowflake · Intermediate · ~25 min · Automaker series</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary. The SQL was checked against the Snowflake docs and the recomputed numbers.</p>
 </aside>
 

@@ -1,7 +1,7 @@
 site_name: Finance Data Hub
 site_description: Practical notes on Snowflake, Jedox, and Excel VBA for finance and FP&A.
 site_url: https://balazs998.github.io/finance-data-hub/
-copyright: Balazs · Finance Data Hub
+copyright: 'Balazs Tivadar Turcsics · Finance Data Hub · <a href="https://balazs998.github.io/finance-data-hub/about/#privacy">Privacy</a>: cookieless page counts'
 
 # The only analytics setting. Site code for https://financedatahub.goatcounter.com
 # Clear the value to turn analytics off. The site still builds.
@@ -108,12 +108,12 @@ nav:
           - Builder: jedox/email-builder.md
           - Check your email script: jedox/email-checker.md
       - Business Rule Studio: jedox/rule-studio/index.md
-      - Rule Studio worker setup: WORKER-SETUP.md
   - VBA:
       - vba/index.md
       - Email macros after New Outlook: vba/new-outlook-email.md
       - VBScript deprecation: vba/vbscript-deprecation.md
       - Month-close checks: vba/month-close-checks.md
       - Excel as a thin front end: vba/excel-thin-front-end.md
+  - Power BI and Qlik: bi/index.md
   - Downloads: downloads.md
   - About: about.md

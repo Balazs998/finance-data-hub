@@ -1,6 +1,7 @@
 ---
-title: "What number did we report? Permanent month-end snapshots vs Time Travel"
-description: "Freeze a month of FDH_DEMO actuals into a snapshot table, seed a late posting, and compare reported vs current so you can answer audit questions after Time Travel has moved on."
+date: 2026-10-23
+title: "Month-end snapshots vs Time Travel"
+description: "Freeze a month of actuals into a snapshot table, seed a late posting, and compare reported vs current to answer audit questions later."
 social_image: month-end-snapshots.png
 ---
 
@@ -9,8 +10,8 @@ social_image: month-end-snapshots.png
 <p class="post-meta">Snowflake</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
-  <p>Time Travel retention by edition, zero-copy clones, and Backups with retention lock follow the Snowflake docs linked in the steps. We have not run those product features on a live account. Check numbers below were verified from the pristine sample CSV and the warehouse-only late-post seed.</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
+  <p>Time Travel retention by edition, zero-copy clones, and Backups with retention lock follow the Snowflake docs linked in the steps. We have not run those product features on a live account. Check numbers below were verified from the unmodified sample CSV and the warehouse-only late-post seed.</p>
 </aside>
 
 A partner asks what March number you sent last Friday. You open Snowflake, sum March again, and the total has moved: a late posting landed after the pack went out. Time Travel can rewind a table for a while, but it is not a permanent audit freeze, and a `CREATE OR REPLACE` (or other recreate) starts a new object without the old history. This post builds a permanent snapshot of what you reported, then a compare query against what the warehouse holds now.
@@ -38,13 +39,13 @@ This note is not [Month-end actuals](month-end-actuals.md). That page shapes a g
     - Role / access: `SYSADMIN` (or equivalent) for create, freeze, and late-post seed in `FDH_DEMO.SAMPLE`. Leave `JEDOX_ETL_ROLE` unchanged. That role stays views-only. This tutorial needs no grants on `FACT_ACTUALS_SNAPSHOT` or `V_SNAPSHOT_VS_CURRENT`.
     - Product version: any current Snowflake account that can run the SQL below. Time Travel defaults and Backups availability vary by edition. The limits in the steps follow the Snowflake docs linked there.
     - Previous post: [Plan vs actuals](plan-vs-actuals.md) (optional; reuses the same `FACT_ACTUALS`)
-    - Sample data: pristine `fact_actuals.csv` (610 rows) plus the [Downloads](#downloads) SQL pack
+    - Sample data: unmodified `fact_actuals.csv` (610 rows) plus the [Downloads](#downloads) SQL pack
 
 ## The sample scenario
 
 The made-up sample database `FDH_DEMO` holds `FACT_ACTUALS`: 610 rows of version `Actual` from 2025-10 through 2026-08. In Snowflake the column is `COST_CENTER`; in prose we say cost center. Periods are `YYYY-MM` text.
 
-We freeze **2026-03** only. On the pristine CSV that slice is already verified:
+We freeze **2026-03** only. On the unmodified CSV that slice is already verified:
 
 | Slice | Rows | Total |
 |---|---:|---:|
@@ -146,7 +147,7 @@ WHERE NOT EXISTS (
 );
 ```
 
-Expected after the seed (computed from the pristine CSV plus the scripted late amount):
+Expected after the seed (computed from the unmodified CSV plus the scripted late amount):
 
 | Side | Rows | Total |
 |---|---:|---:|
@@ -213,11 +214,11 @@ Keep snapshots boring and small:
       AND period = '2026-03'
       AND version = 'Actual';
     ```
-    Rerun once more: the numbers must not change. The values above are computed from the pristine CSV total plus the scripted 2,500.00 late amount.
+    Rerun once more: the numbers must not change. The values above are computed from the unmodified CSV total plus the scripted 2,500.00 late amount.
 
 ## If it doesn't match
 
-- **Diff is 0 after the seed:** the late row was frozen into the snapshot. Re-load pristine `FACT_ACTUALS` (610 rows), run `03` before `02`.
+- **Diff is 0 after the seed:** the late row was frozen into the snapshot. Re-load unmodified `FACT_ACTUALS` (610 rows), run `03` before `02`.
 - **Snapshot has 0 rows:** the `WHERE period = '2026-03' AND version = 'Actual'` filter missed. Confirm `FACT_ACTUALS` still has the March slice (58 rows, 1,466,143.86).
 - **Many cells_changed, huge diff:** you compared the wrong `run_id`, or `FACT_ACTUALS` was reloaded from a different file. Name the run you sent.
 - **Current-only late cell missing from the view:** recreate `V_SNAPSHOT_VS_CURRENT` from `04_v_snapshot_vs_current.sql` (it attaches current rows by `snapshot_period`, not by an inner join alone).
@@ -231,7 +232,7 @@ Freeze what you sent under a period and a run id. Leave current actuals free to 
 
 ## Downloads
 
-All files use synthetic sample data and placeholder names. The late-posting script is separate on purpose so other tutorials keep the pristine 610-row `fact_actuals.csv`.
+All files use synthetic sample data and placeholder names. The late-posting script is separate on purpose so other tutorials keep the unmodified 610-row `fact_actuals.csv`.
 
 [[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]
 [[download:samples/load_snowflake.sql|Download load_snowflake.sql]]

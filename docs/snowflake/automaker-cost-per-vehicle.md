@@ -1,6 +1,8 @@
 ---
+date: 2026-10-25
+home_tag: Automaker series
 title: "Cost per vehicle in Snowflake, variance in Jedox"
-description: "Allocate cost-center cost to plant and model by units produced, get cost and contribution per vehicle, and split plan-vs-actual revenue into price, volume, mix and new/lost effects that add back to the total, for the fictional FDH Motors on FDH_DEMO.MOTORS."
+description: "Allocate cost to plant and model by units, get cost per vehicle, and split revenue variance into price, volume and mix, for fictional FDH Motors."
 social_image: automaker-cost-per-vehicle.png
 ---
 
@@ -9,7 +11,7 @@ social_image: automaker-cost-per-vehicle.png
 <p class="post-meta">Snowflake + Jedox · Intermediate · ~30 min · Automaker series</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL, and matches the sample data dictionary. The Jedox cubes and rules are based on the Jedox docs, but were not run on a live Jedox install.</p>
 </aside>
 

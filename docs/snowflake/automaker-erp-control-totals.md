@@ -1,6 +1,8 @@
 ---
-title: "Prove every hop: control totals from ERP to Snowflake to Jedox, with a load log and an evidence table"
-description: "Record row counts, control totals and a fingerprint at each hop of an ERP -> Snowflake -> Jedox load, compare the hops automatically, and keep an append-only evidence table you can export, for the fictional FDH Motors on FDH_DEMO.MOTORS."
+date: 2026-10-25
+home_tag: Automaker series
+title: "ERP to Snowflake to Jedox control totals"
+description: "Record row counts, control totals and a fingerprint at each hop from ERP to Snowflake to Jedox, with a load log and an evidence table."
 social_image: automaker-erp-control-totals.png
 ---
 
@@ -9,7 +11,7 @@ social_image: automaker-erp-control-totals.png
 <p class="post-meta">Snowflake + Jedox · Intermediate · ~35 min · Automaker series</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>The Snowflake SQL in this post has not been run on a live account. Every check number was recomputed from the sample CSVs with the same logic as the SQL. The Jedox step follows the Jedox docs and has not been run on a live Jedox install; the Jedox figure (58 cells) comes from a simulated run, not a live Jedox read-back. This is a SOX-style evidence pattern, not an audit certification or a compliance claim.</p>
 </aside>
 

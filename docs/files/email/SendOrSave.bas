@@ -23,6 +23,7 @@ Sub SendOrSave(toAddr As String, subj As String, body As String)
     n = n + 1
     filePath = folder & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & "_" & n & ".txt"
     f = FreeFile
+    On Error GoTo SaveFail
     Open filePath For Output As #f
     Print #f, "To: " & toAddr
     Print #f, "Subject: " & subj
@@ -30,6 +31,10 @@ Sub SendOrSave(toAddr As String, subj As String, body As String)
     Close #f
     mCount = mCount + 1
     mFolder = folder
+    Exit Sub
+
+SaveFail:
+    MsgBox "Could not save unsent mail to " & folder & ": " & Err.Description, vbCritical
 End Sub
 
 Sub ShowUnsentMails()

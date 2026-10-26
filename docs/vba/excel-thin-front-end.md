@@ -1,6 +1,7 @@
 ---
-title: "Excel as a thin front end: Snowflake views feed a refresh-only workbook"
-description: "Move P&L and variance logic into two FDH_DEMO Snowflake views, connect Excel to them with Power Query, and refresh everything with one safe VBA button that waits for each query, logs the result and restores Excel's settings."
+date: 2026-10-25
+title: "Excel as a thin front end for Snowflake"
+description: "Move P&L and variance logic into two FDH_DEMO Snowflake views, connect Excel with Power Query, and refresh with one VBA button."
 social_image: excel-thin-front-end.png
 ---
 
@@ -9,8 +10,8 @@ social_image: excel-thin-front-end.png
 <p class="post-meta">VBA · Intermediate · ~20 min</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
-  <p>The refresh module uses <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbook.connections">Workbook.Connections</a>, <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbookconnection.refresh">WorkbookConnection.Refresh</a> and <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.oledbconnection.backgroundquery">OLEDBConnection.BackgroundQuery</a>, and the connection follows the <a href="https://docs.snowflake.com/en/developer-guide/odbc/odbc">Snowflake ODBC driver docs</a>. We have not run it against a live Snowflake account. View check numbers were derived from the pristine sample CSVs. The demo workbook hasn't been built yet, so the module hasn't been run in Excel. Re-check the views against the sample totals before you share the workbook.</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
+  <p>The refresh module uses <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbook.connections">Workbook.Connections</a>, <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.workbookconnection.refresh">WorkbookConnection.Refresh</a> and <a href="https://learn.microsoft.com/en-us/office/vba/api/excel.oledbconnection.backgroundquery">OLEDBConnection.BackgroundQuery</a>, and the connection follows the <a href="https://docs.snowflake.com/en/developer-guide/odbc/odbc">Snowflake ODBC driver docs</a>. We have not run it against a live Snowflake account. View check numbers were derived from the unmodified sample CSVs. The module hasn't been run in Excel against a demo workbook yet. Re-check the views against the sample totals before you share the workbook.</p>
 </aside>
 
 Most month-end packs are a chain: export from the warehouse, paste into a workbook, fix the formulas that broke, paste into slides. Every link in that chain is manual, and every paste is a chance to send last month's numbers. The fix isn't a cleverer macro. It's moving the logic out of Excel. Let Snowflake do the joins, the variance maths and the sign rules in views; let Excel do what it's great at: showing numbers, pivoting them, and refreshing on demand.
@@ -24,10 +25,10 @@ Most month-end packs are a chain: export from the warehouse, paste into a workbo
 ## Before you start
 
 !!! info "You'll need"
-    - Role / access: `SYSADMIN` to create the views. Excel reads as `EXCEL_READ_ROLE` on `EXCEL_WH`. The two `SELECT ON VIEW` grants are in `02_excel_read_grants_PROPOSED.sql`, commented out. An admin reviews and runs these grants. No table grants, and `JEDOX_ETL_ROLE` is untouched.
+    - Role / access: `SYSADMIN` to create the views. Excel reads as `EXCEL_READ_ROLE` on `EXCEL_WH`. The two `SELECT ON VIEW` grants are in `02_excel_read_grants_for_admin.sql`, commented out. An admin reviews and runs these grants. No table grants, and `JEDOX_ETL_ROLE` is untouched.
     - Product version: Excel for Microsoft 365 on Windows (Power Query and VBA), the Snowflake ODBC driver, and a DSN named `SNOWFLAKE_DEMO`.
-    - Previous posts: [Plan vs actuals in Snowflake](../snowflake/plan-vs-actuals.md) (the join pattern) and Key-pair auth for service users (how `EXCEL_ODBC_SVC` signs in)
-    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), [`dim_account.csv`](../files/samples/dim_account.csv) and [`dim_cost_center.csv`](../files/samples/dim_cost_center.csv). The views join `DIM_ACCOUNT` and `DIM_COST_CENTER`. Load the samples with [`load_snowflake.sql`](../files/samples/load_snowflake.sql), or use [Downloads](#downloads).
+    - Previous posts: [Plan vs actuals in Snowflake](../snowflake/plan-vs-actuals.md) (the join pattern) and [Snowflake to Jedox load, step 1](../jedox/snowflake-to-jedox.md#1-create-a-service-user-for-jedox) (how a key-pair service user is set up; `EXCEL_ODBC_SVC` follows the same pattern, see Snowflake's [key-pair authentication docs](https://docs.snowflake.com/en/user-guide/key-pair-auth))
+    - Sample data: unmodified [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), [`dim_account.csv`](../files/samples/dim_account.csv) and [`dim_cost_center.csv`](../files/samples/dim_cost_center.csv). The views join `DIM_ACCOUNT` and `DIM_COST_CENTER`. Load the samples with [`load_snowflake.sql`](../files/samples/load_snowflake.sql), or use [Downloads](#downloads).
 
 ## The sample scenario
 
@@ -92,7 +93,7 @@ Then follow three rules:
 
 - **No pasted values.** Every number on the Report sheet is a pivot or formula over `tPnlMonthly` or `tVarianceByCC`.
 - **No logic in Power Query.** No merges, no custom columns. If you need a new measure, add it to the view.
-- **No credentials in the file.** The DSN holds the connection; the workbook only knows its name. See the key-pair post for how the service user signs in.
+- **No credentials in the file.** The DSN holds the connection; the workbook only knows its name. See [Snowflake to Jedox load, step 1](../jedox/snowflake-to-jedox.md#1-create-a-service-user-for-jedox) and Snowflake's [key-pair authentication docs](https://docs.snowflake.com/en/user-guide/key-pair-auth) for how a service user signs in.
 
 Keep the private key file outside the workbook's folder and any synced, shared or Git folder, and encrypt it with a passphrase.
 
@@ -101,6 +102,8 @@ A **Checks** sheet makes the workbook self-testing: `=SUM(tPnlMonthly[actual])` 
 ## 4. One-click refresh with VBA
 
 When background refresh is on, "Refresh All" can hand control back before every query has finished, so formulas and pivots may calculate on half-loaded tables. The module refreshes each connection in turn with background refresh switched off, logs it and restores settings even when something fails.
+
+Excerpt only: it leaves out the error handler and the log writer, so it won't compile on its own. Import `FDH_ThinFront.bas` from [Downloads](#downloads) instead of pasting this block.
 
 ```vbnet title="FDH_ThinFront.bas (excerpt)"
 Option Explicit
@@ -217,7 +220,9 @@ All files use synthetic sample data and placeholder names. The views need `DIM_A
 [[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]
 [[download:samples/load_snowflake.sql|Download load_snowflake.sql]]
 [[download:thinfront/01_reporting_views.sql|Download 01_reporting_views.sql]]
-[[download:thinfront/02_excel_read_grants_PROPOSED.sql|Download 02_excel_read_grants_PROPOSED.sql]]
+[[download:thinfront/02_excel_read_grants_for_admin.sql|Download 02_excel_read_grants_for_admin.sql]]
 [[download:thinfront/FDH_ThinFront.bas|Download FDH_ThinFront.bas]]
 [[download:thinfront/BUILD-SPEC.md|Download BUILD-SPEC.md]]
 [[download:thinfront/README.md|Download README.md]]
+
+**Next:** [Month-close checks in Excel VBA](month-close-checks.md) flags blank periods and formula errors before the pack goes out.

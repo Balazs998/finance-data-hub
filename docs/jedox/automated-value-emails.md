@@ -1,6 +1,8 @@
 ---
-title: "Automated value emails from Jedox Integrator with a generic Groovy template"
-description: "Send every cost center owner their own Budget vs. Actual table from a Jedox cube, with one Groovy job, an HTML template file and a test mode that's on by default."
+date: 2026-10-09
+home_tag: Groovy
+title: "Jedox value emails with a Groovy template"
+description: "Send each cost center owner their own budget vs actuals table from a Jedox cube with one Groovy job, an HTML template and test mode on by default."
 social_image: automated-value-emails.png
 ---
 
@@ -40,7 +42,7 @@ mailer.reset() // clear recipients, subject and body before the next email
 
 `addCcRecipient` and `addBccRecipient` work the same way as `addRecipient`. `addAttachment(filename)` attaches a file. The docs don't say which folder a relative path starts from, so check in your Integrator (or use `API.getLocalFilesDir()`).
 
-> **Older examples are out of date.** Since Jedox 24.2, the SMTP server and the From address are set centrally in Cloud Console. Scripts can't set them anymore. You'll still see `setServer()`, `setSMTPServer()` and `setSender()` in older examples, including Jedox's own SendMail sample. On 24.2 and later these calls do nothing apart from logging a deprecation warning. If mail doesn't arrive, check the Cloud Console settings, not the script.
+> **Older examples are out of date.** Since Jedox 24.2, the SMTP server and the From address are set centrally ([Cloud Console](https://knowledgebase.jedox.com/jedox/api/26-1/integrator-scripting/com/jedox/etl/components/scriptapi/MailAPI.html) on Jedox Cloud, [Web Administration > Settings](https://knowledgebase.jedox.com/jedox/maintenance/scheduler-integrator-jobs.htm) on-premises). Scripts can't set them anymore. You'll still see `setServer()`, `setSMTPServer()` and `setSender()` in older examples, including Jedox's own SendMail sample. On 24.2 and later these calls do nothing apart from logging a deprecation warning. If mail doesn't arrive, check the Cloud Console settings, not the script.
 
 ## 2. The `${...}` trap
 
@@ -340,3 +342,5 @@ All files are synthetic sample data. Every address is on `example.com`.
 [[download:email/recipients.csv|Download recipients.csv]]
 [[download:samples/dim_account.csv|Download dim_account.csv]]
 [[download:samples/dim_cost_center.csv|Download dim_cost_center.csv]]
+
+**Next:** [Failure-only alerts](failure-alerts.md) emails you only when an Integrator job fails.

@@ -388,10 +388,10 @@ class DownloadShortcodeTests(unittest.TestCase):
         thin = index.split("## [Excel as a thin front end](vba/excel-thin-front-end.md)", 1)[1]
         self.assertLess(
             thin.index("thinfront/01_reporting_views.sql"),
-            thin.index("thinfront/02_excel_read_grants_PROPOSED.sql"),
+            thin.index("thinfront/02_excel_read_grants_for_admin.sql"),
         )
         self.assertLess(
-            thin.index("thinfront/02_excel_read_grants_PROPOSED.sql"),
+            thin.index("thinfront/02_excel_read_grants_for_admin.sql"),
             thin.index("thinfront/FDH_ThinFront.bas"),
         )
         self.assertLess(
@@ -409,7 +409,7 @@ class DownloadShortcodeTests(unittest.TestCase):
             for path in files_root.rglob("*")
             if path.is_file()
         )
-        self.assertEqual(len(disk), 110)
+        self.assertEqual(len(disk), 111)
         listed = re.findall(r"\[\[download:([^\]|\s]+)", index)
         self.assertEqual(len(listed), len(disk))
         self.assertEqual(sorted(listed), disk)

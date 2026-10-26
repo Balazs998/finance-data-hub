@@ -1,6 +1,6 @@
 ---
 title: Snowflake SQL for FP&A
-description: "Get finance-shaped extracts from Snowflake SQL, and freeze the month you reported: closed-period P&L actuals, plan vs actuals, permanent snapshots versus Time Travel, an FX rate lock, a 13-week cash runway, cost per vehicle, capex project tracking, a BOM cost rollup, ERP control totals, and close tracker anomaly flags for fictional FDH Motors."
+description: "Snowflake SQL for FP&A: closed-period P&L, plan vs actuals, month-end snapshots, an FX rate lock and a six-part fictional automaker series."
 hide:
   - toc
 ---

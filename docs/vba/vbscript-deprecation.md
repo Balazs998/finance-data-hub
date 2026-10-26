@@ -1,5 +1,6 @@
 ---
-title: Is your finance workbook hit by VBScript deprecation?
+date: 2026-10-23
+title: "VBScript deprecation and finance macros"
 description: Find the macros that use VBScript RegExp or call .vbs scripts before Windows turns VBScript off, and what to change.
 social_image: vbscript-deprecation.png
 ---
@@ -9,7 +10,7 @@ social_image: vbscript-deprecation.png
 <p class="post-meta">VBA · Excel</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>Every claim on this page is backed by a Microsoft page linked next to it. We reviewed the scanner code but haven't run it in Windows Excel.</p>
 </aside>
 
@@ -37,7 +38,7 @@ Windows is phasing out VBScript, and that reaches into Excel. Microsoft names tw
 
 Microsoft describes three phases ([source](https://devblogs.microsoft.com/microsoft365dev/how-to-prepare-vba-projects-for-vbscript-deprecation/)):
 
-- **Phase 1, now through 2026 or 2027:** VBScript stays on by default, and existing VBA projects keep running.
+- **Phase 1 (as of Microsoft's September 2025 post), through 2026 or 2027:** VBScript stays on by default, and existing VBA projects keep running.
 - **Phase 2, approximately 2026 or 2027:** VBScript is turned off by default.
 - **Phase 3, date not set:** VBScript is removed from future Windows releases.
 
@@ -82,6 +83,7 @@ Sub ScanVBScript()
 
     Dim folder As String
     folder = ThisWorkbook.Path & "\FDH_Macros\"
+    If Dir(folder, vbDirectory) = "" Then MsgBox "No FDH_Macros folder next to this workbook. Nothing was scanned.", vbExclamation: Exit Sub
 
     Dim ws As Worksheet
     Set ws = ThisWorkbook.Worksheets.Add
@@ -171,7 +173,8 @@ Run `ScanVBScript`. It adds a new sheet with one row per finding: file, line num
 
 ## If it doesn't match
 
-- No findings at all: check that the files are in `FDH_Macros\` next to the workbook and end in `.bas`, `.cls` or `.frm`.
+- "No FDH_Macros folder next to this workbook": create the folder next to the saved workbook and put the exported modules in it. The scan stops before it adds a sheet, so you never get a false "0 findings".
+- No findings at all: check that the files are in `FDH_Macros\` and end in `.bas`, `.cls` or `.frm`.
 - A locked VBA project can't be exported, so the scanner can't see it. Ask the owner to unlock it or export it for you.
 - A line was flagged that only mentions `.vbs` in a string or a file name: the scanner can't tell those apart, so check each finding by hand.
 - 8 findings: `ScanVBScript.bas` is in `FDH_Macros\`. Move it out.
@@ -189,9 +192,11 @@ Export your modules, run the scan, and sort the findings into RegExp ones (updat
 
 ## Downloads
 
-All files use synthetic sample data and placeholder names. These are the exported modules only. There is no workbook yet.
+All files use synthetic sample data and placeholder names. These are the exported modules only. Import them into your own workbook, or save them in `FDH_Macros\` to try the scanner.
 
 [[download:vba/ScanVBScript.bas|Download ScanVBScript.bas]]
 [[download:vba/modChecks.bas|Download modChecks.bas]]
 [[download:vba/modValidate.bas|Download modValidate.bas]]
 [[download:vba/modCleanup.bas|Download modCleanup.bas]]
+
+**Next:** [Excel as a thin front end](excel-thin-front-end.md) moves the pack logic into Snowflake views and refreshes it with one button.

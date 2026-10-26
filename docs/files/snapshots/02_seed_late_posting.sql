@@ -1,6 +1,6 @@
 -- FDH_DEMO fictional sample only.
 -- RUN AFTER 03_take_snapshot.sql for period 2026-03.
--- Do not run this against the shared pristine fact_actuals.csv used by other posts.
+-- Do not run this against the shared unmodified fact_actuals.csv used by other posts.
 -- This script only INSERTS into the warehouse table FACT_ACTUALS so current differs from reported.
 --
 -- Expected totals for 2026-03 version Actual:

@@ -1,6 +1,7 @@
 ---
-title: "Relational extract: table setup or your own SQL?"
-description: "Jedox Integrator can read Snowflake with a point-and-click RelationalTable extract or a hand-written Relational extract. Same job both ways, same 58 rows, and when to pick which."
+date: 2026-10-09
+title: "Jedox relational extract: table or SQL?"
+description: "Read Snowflake from Jedox Integrator with a RelationalTable extract or your own SQL. Same job both ways, same 58 rows, and when to pick which."
 social_image: relational-extracts.png
 ---
 
@@ -180,3 +181,5 @@ All files use synthetic sample data and placeholder names.
 [[download:relational/query_history_lookup.sql|Download query_history_lookup.sql]]
 [[download:samples/fact_actuals.csv|Download fact_actuals.csv (610 rows)]]
 [[download:samples/load_snowflake.sql|Download load_snowflake.sql]]
+
+**Next:** [Automated value emails](automated-value-emails.md) sends each owner their numbers from the same cube.

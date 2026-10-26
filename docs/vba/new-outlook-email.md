@@ -1,4 +1,6 @@
 ---
+date: 2026-10-13
+home_tag: Outlook
 title: Your VBA email macro after New Outlook
 description: Why Excel macros that send mail through Outlook stop working in New Outlook for Windows, and what to switch to.
 social_image: new-outlook-email.png
@@ -9,7 +11,7 @@ social_image: new-outlook-email.png
 <p class="post-meta">VBA · Outlook</p>
 
 <aside class="docs-note" role="note">
-  <p class="docs-note__title">Based on official docs, not tested on a live install</p>
+  <p class="docs-note__title">Checked against the official docs · not yet run on a live system</p>
   <p>Every claim on this page is backed by a Microsoft page linked next to it. We haven't run these steps in a live Microsoft 365 tenant.</p>
 </aside>
 
@@ -76,6 +78,7 @@ Sub SendOrSave(toAddr As String, subj As String, body As String)
     n = n + 1
     filePath = folder & "\unsent_" & Format(Now, "yyyymmdd_hhnnss") & "_" & n & ".txt"
     f = FreeFile
+    On Error GoTo SaveFail
     Open filePath For Output As #f
     Print #f, "To: " & toAddr
     Print #f, "Subject: " & subj
@@ -83,6 +86,10 @@ Sub SendOrSave(toAddr As String, subj As String, body As String)
     Close #f
     mCount = mCount + 1
     mFolder = folder
+    Exit Sub
+
+SaveFail:
+    MsgBox "Could not save unsent mail to " & folder & ": " & Err.Description, vbCritical
 End Sub
 
 Sub ShowUnsentMails()
@@ -142,3 +149,5 @@ All files use synthetic sample data and placeholder names.
 
 [[download:email/SendOrSave.bas|Download SendOrSave.bas]]
 [[download:email/recipients.csv|Download recipients.csv]]
+
+**Next:** [Is your finance workbook hit by VBScript deprecation?](vbscript-deprecation.md) checks your other macros for the next Windows change.

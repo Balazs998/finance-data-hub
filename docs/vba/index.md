@@ -52,7 +52,7 @@ hide:
     <span class="fdh-card__go" aria-hidden="true">Read →</span>
   </article></li>
 </ul>
-<p class="fdh-next"><strong>More VBA modules are on the way.</strong> Until then, the <a href="../jedox/">Jedox</a> and <a href="../snowflake/">Snowflake</a> sections show where the numbers in the pack come from.</p>
+<p class="fdh-next"><strong>Where the numbers come from:</strong> the <a href="../snowflake/">Snowflake</a> and <a href="../jedox/">Jedox</a> sections build the data these modules check.</p>
 
 <section class="fdh-downloads" aria-labelledby="dl-vba">
   <h2 id="dl-vba">VBA and Excel downloads</h2>
@@ -64,7 +64,7 @@ hide:
     <li><a href="../files/vba/modValidate.bas" download="modValidate.bas" data-goatcounter-click="download-modValidate.bas" data-goatcounter-title="Download modValidate.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> modValidate.bas</a></li>
     <li><a href="../files/vba/modCleanup.bas" download="modCleanup.bas" data-goatcounter-click="download-modCleanup.bas" data-goatcounter-title="Download modCleanup.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> modCleanup.bas</a></li>
     <li><a href="../files/thinfront/01_reporting_views.sql" download="01_reporting_views.sql" data-goatcounter-click="download-01_reporting_views.sql" data-goatcounter-title="Download 01_reporting_views.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_reporting_views.sql</a></li>
-    <li><a href="../files/thinfront/02_excel_read_grants_PROPOSED.sql" download="02_excel_read_grants_PROPOSED.sql" data-goatcounter-click="download-02_excel_read_grants_PROPOSED.sql" data-goatcounter-title="Download 02_excel_read_grants_PROPOSED.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_excel_read_grants_PROPOSED.sql</a></li>
+    <li><a href="../files/thinfront/02_excel_read_grants_for_admin.sql" download="02_excel_read_grants_for_admin.sql" data-goatcounter-click="download-02_excel_read_grants_for_admin.sql" data-goatcounter-title="Download 02_excel_read_grants_for_admin.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_excel_read_grants_for_admin.sql</a></li>
     <li><a href="../files/thinfront/FDH_ThinFront.bas" download="FDH_ThinFront.bas" data-goatcounter-click="download-FDH_ThinFront.bas" data-goatcounter-title="Download FDH_ThinFront.bas" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> FDH_ThinFront.bas</a></li>
     <li><a href="../files/thinfront/BUILD-SPEC.md" download="BUILD-SPEC.md" data-goatcounter-click="download-BUILD-SPEC.md" data-goatcounter-title="Download BUILD-SPEC.md" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> BUILD-SPEC.md</a></li>
     <li><a href="../files/thinfront/README.md" download="README.md" data-goatcounter-click="download-README.md" data-goatcounter-title="Download README.md" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> README.md</a></li>

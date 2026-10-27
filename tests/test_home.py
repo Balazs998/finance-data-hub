@@ -8,6 +8,11 @@ MASCOTS = ROOT / "docs" / "assets" / "mascots"
 CSS = ROOT / "docs" / "stylesheets" / "extra.css"
 
 EXPECTED_FILES = (
+    "home-group-1037.webp",
+    "home-group-1468.webp",
+    "home-group-375.webp",
+    "home-group-753.png",
+    "home-group-753.webp",
     "jedox/head-laptop.png",
     "jedox/head-laptop.webp",
     "jedox/head-presenting.png",
@@ -33,15 +38,10 @@ EXPECTED_FILES = (
     "snowflake/head.webp",
     "trio-full.png",
     "trio-full.webp",
-    "trio-group-246.webp",
-    "trio-group-494.png",
-    "trio-group-494.webp",
-    "trio-group-680.webp",
-    "trio-group-988.webp",
 )
 
 HERO_ALTS = (
-    "Three mascots standing together: Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, and VBA in a green cardigan, waving",
+    "Five mascots standing together as a team: Qlik in a teal jacket holding a magnifying glass, Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, VBA in a green cardigan, waving, and Power BI in an amber blazer holding a tablet of charts",
 )
 
 HOME_LINKS = {
@@ -210,18 +210,19 @@ class HomePageTests(unittest.TestCase):
         pictures = re.findall(r"<picture>\s*(.*?)</picture>", self.html, re.S)
         self.assertGreaterEqual(len(pictures), 5)
         hero = self.html.split('class="hero"', 1)[1].split('class="reveal"', 1)[0]
-        self.assertIn("assets/mascots/trio-group-246.webp 246w", hero)
-        self.assertIn("assets/mascots/trio-group-494.webp 494w", hero)
-        self.assertIn("assets/mascots/trio-group-680.webp 680w", hero)
-        self.assertIn("assets/mascots/trio-group-988.webp 988w", hero)
+        self.assertIn("assets/mascots/home-group-375.webp 375w", hero)
+        self.assertIn("assets/mascots/home-group-753.webp 753w", hero)
+        self.assertIn("assets/mascots/home-group-1037.webp 1037w", hero)
+        self.assertIn("assets/mascots/home-group-1468.webp 1468w", hero)
         self.assertIn('fetchpriority="high"', hero)
-        self.assertIn('src="assets/mascots/trio-group-494.png"', hero)
-        self.assertIn('width="494"', hero)
+        self.assertIn('src="assets/mascots/home-group-753.png"', hero)
+        self.assertIn('width="753"', hero)
         self.assertIn('height="573"', hero)
-        self.assertEqual(png_size(MASCOTS / "trio-group-494.png"), (494, 573))
-        self.assertEqual(webp_size(MASCOTS / "trio-group-246.webp"), (246, 285))
-        self.assertEqual(webp_size(MASCOTS / "trio-group-680.webp"), (680, 789))
-        self.assertEqual(webp_size(MASCOTS / "trio-group-988.webp"), (988, 1146))
+        self.assertEqual(png_size(MASCOTS / "home-group-753.png"), (753, 573))
+        self.assertEqual(webp_size(MASCOTS / "home-group-375.webp"), (375, 285))
+        self.assertEqual(webp_size(MASCOTS / "home-group-1037.webp"), (1037, 789))
+        self.assertEqual(webp_size(MASCOTS / "home-group-1468.webp"), (1468, 1117))
+        self.assertNotIn("trio-group", hero)
         self.assertNotIn("trio-full", hero)
         self.assertNotIn("pointing.", hero)
         self.assertNotIn("thumbsup.", hero)
@@ -279,7 +280,7 @@ class HomePageTests(unittest.TestCase):
         self.assertIn("gap: 12px;", self.css)
         self.assertIn("flex-wrap: nowrap;", self.css)
         self.assertIn("max-width: 1200px;", self.css)
-        self.assertIn("grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);", self.css)
+        self.assertIn("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);", self.css)
         self.assertNotIn("max-width: 90rem;", self.css)
         self.assertIn("overflow-x: auto;", block)
         self.assertIn("-webkit-overflow-scrolling: touch;", block)
@@ -291,15 +292,16 @@ class HomePageTests(unittest.TestCase):
         self.assertEqual(len(reduced), 1)
         self.assertIn("transition: none;", reduced[0])
         self.assertNotIn("@keyframes home-wave", self.css)
+        self.assertIn("rgba(45, 212, 191, .28)", self.css)
         self.assertIn("rgba(56, 189, 248, .35)", self.css)
         self.assertIn("rgba(139, 124, 246, .35)", self.css)
         self.assertIn("rgba(163, 230, 53, .28)", self.css)
-        self.assertIn("circle at 22% 55%", self.css)
-        self.assertIn("circle at 52% 50%", self.css)
-        self.assertIn("circle at 82% 55%", self.css)
+        self.assertIn("rgba(251, 191, 36, .28)", self.css)
+        for stop in ("12% 55%", "31% 55%", "50% 50%", "68% 55%", "87% 55%"):
+            self.assertIn(f"circle at {stop}", self.css)
         self.assertNotIn("mix-blend-mode:", self.css)
-        group = (MASCOTS / "trio-group-494.png").read_bytes()
-        self.assertEqual(group[25], 6, "trio-group-494.png needs a real alpha channel")
+        group = (MASCOTS / "home-group-753.png").read_bytes()
+        self.assertEqual(group[25], 6, "home-group-753.png needs a real alpha channel")
         self.assertIn("max-width: 76.234375em", self.css)
         phone_tabs = media_blocks(self.css, "max-width: 76.234375em")
         self.assertTrue(any("display: none;" in item and ".md-tabs" in item for item in phone_tabs))

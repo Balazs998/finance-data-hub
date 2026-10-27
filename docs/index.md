@@ -23,8 +23,8 @@ hide:
 </div>
 <div class="home-art">
 <picture>
-<source srcset="assets/mascots/trio-group-246.webp 246w, assets/mascots/trio-group-494.webp 494w, assets/mascots/trio-group-680.webp 680w, assets/mascots/trio-group-988.webp 988w" type="image/webp" sizes="(max-width: 760px) calc(100vw - 74px), (max-width: 1200px) calc((100vw - 32px) * 0.42), 494px">
-<img src="assets/mascots/trio-group-494.png" width="494" height="573" fetchpriority="high" alt="Three mascots standing together: Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, and VBA in a green cardigan, waving" sizes="(max-width: 760px) calc(100vw - 74px), (max-width: 1200px) calc((100vw - 32px) * 0.42), 494px">
+<source srcset="assets/mascots/home-group-375.webp 375w, assets/mascots/home-group-753.webp 753w, assets/mascots/home-group-1037.webp 1037w, assets/mascots/home-group-1468.webp 1468w" type="image/webp" sizes="(max-width: 760px) calc(100vw - 74px), (max-width: 1200px) calc((100vw - 32px) * 0.5), 560px">
+<img src="assets/mascots/home-group-753.png" width="753" height="573" fetchpriority="high" alt="Five mascots standing together as a team: Qlik in a teal jacket holding a magnifying glass, Snowflake in a blue hoodie, Jedox in a purple blazer with his arms around the others, VBA in a green cardigan, waving, and Power BI in an amber blazer holding a tablet of charts" sizes="(max-width: 760px) calc(100vw - 74px), (max-width: 1200px) calc((100vw - 32px) * 0.5), 560px">
 </picture>
 </div>
 </div>

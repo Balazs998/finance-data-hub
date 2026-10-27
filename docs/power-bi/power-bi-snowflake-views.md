@@ -28,7 +28,7 @@ A Power BI report that doesn't match the warehouse loses the room in one meeting
     - Role / access: `SYSADMIN` (or a lab admin role) in `FDH_DEMO.SAMPLE` to create the views, and a lab Snowflake login Power BI can use. Give that login a read-only role. Enter the login in Power BI's credential prompt, never in the M query. Don't point this at a production account. The pack adds no grants.
     - Product version: Power BI Desktop (current release) with the built-in Snowflake connector, and any current Snowflake account.
     - Previous posts: [Excel as a thin front end](../vba/excel-thin-front-end.md) (same idea: logic in views, the front end only reads) and [Plan vs. actuals in Snowflake SQL](../snowflake/plan-vs-actuals.md).
-    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), `dim_cost_center.csv`, `dim_account.csv`, and the [Downloads](#downloads) pack.
+    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), [`dim_cost_center.csv`](../files/samples/dim_cost_center.csv), [`dim_account.csv`](../files/samples/dim_account.csv), and the [Downloads](#downloads) pack.
 
 ## 1. Design the star in Snowflake
 

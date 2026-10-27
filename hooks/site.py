@@ -296,9 +296,38 @@ def _copy_markdown_downloads(config) -> None:
         dest.write_bytes(path.read_bytes())
 
 
+# Old URLs that moved when the BI section split into Power BI and Qlik Sense.
+# Written as static redirect pages so no extra plugin is needed.
+REDIRECTS = {
+    "bi/index.html": "power-bi/",
+    "bi/power-bi-snowflake-views/index.html": "power-bi/power-bi-snowflake-views/",
+}
+
+
+def _write_redirects(config) -> None:
+    site_dir = Path(config["site_dir"])
+    base = (config.get("site_url") or "/").rstrip("/") + "/"
+    for old, new in REDIRECTS.items():
+        dest = site_dir / old
+        if dest.exists():
+            raise PluginError(f"Redirect would overwrite a real page: {old}")
+        url = html.escape(base + new)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(
+            "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">\n"
+            "<title>Moved</title>\n"
+            f'<link rel="canonical" href="{url}">\n'
+            '<meta name="robots" content="noindex">\n'
+            f'<meta http-equiv="refresh" content="0; url={url}">\n'
+            f'</head><body><p>This page moved to <a href="{url}">{url}</a>.</p></body></html>\n',
+            encoding="utf-8",
+        )
+
+
 def on_post_build(config):
     """Append section.css to the built extra.css so the first paint has it."""
     _copy_markdown_downloads(config)
+    _write_redirects(config)
     site = Path(config["site_dir"]) / "stylesheets" / "extra.css"
     section = Path(config["docs_dir"]) / "stylesheets" / "section.css"
     marker = "/* section index rules, kept with extra.css for the first paint */"

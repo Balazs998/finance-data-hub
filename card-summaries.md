@@ -34,3 +34,11 @@ One sentence on each section card.
 - Your VBA email macro after New Outlook: Classic or New Outlook? What to switch to when VBA can't send, and a fallback so no month-end mail is lost.
 - Is your finance workbook hit by VBScript deprecation?: Find the macros that use VBScript RegExp or call a .vbs script before Windows turns VBScript off.
 - Excel as a thin front end: Move P&L and variance into Snowflake views and refresh the workbook with one button.
+
+## Power BI
+
+- Power BI on Snowflake views: Build a star schema as Snowflake views, choose Import or DirectQuery on purpose, and add a check visual that ties to 0.00.
+
+## Qlik Sense
+
+- No posts yet. The first posts are coming soon.

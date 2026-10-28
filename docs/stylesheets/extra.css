@@ -525,7 +525,9 @@ body:has(.home) .md-grid {
 
 .md-typeset .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  /* The five-mascot group is landscape (753x573), so the art column gets
+     half the card instead of 45%. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   gap: 20px;
   background: #0d1a2b;
@@ -645,9 +647,13 @@ body:has(.home) .md-grid {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 22% 55%, rgba(56, 189, 248, .35), transparent 30%),
-    radial-gradient(circle at 52% 50%, rgba(139, 124, 246, .35), transparent 30%),
-    radial-gradient(circle at 82% 55%, rgba(163, 230, 53, .28), transparent 30%);
+    /* One soft glow behind each mascot, left to right: Qlik, Snowflake,
+       Jedox, VBA, Power BI. */
+    radial-gradient(circle at 12% 55%, rgba(45, 212, 191, .28), transparent 20%),
+    radial-gradient(circle at 31% 55%, rgba(56, 189, 248, .35), transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(139, 124, 246, .35), transparent 20%),
+    radial-gradient(circle at 68% 55%, rgba(163, 230, 53, .28), transparent 20%),
+    radial-gradient(circle at 87% 55%, rgba(251, 191, 36, .28), transparent 20%);
   border-radius: 12px;
   /* The blue glow is still colored at the left edge of this box, so the
      box itself draws a vertical line on the hero card. Fade it out first. */
@@ -982,6 +988,14 @@ html.js .reveal.reveal-wait.is-visible {
     transition: none;
   }
 
+}
+
+/* Tablets: give the headline more room so it does not wrap to four lines
+   next to the wide five-mascot group. */
+@media screen and (min-width: 761px) and (max-width: 960px) {
+  .md-typeset .hero {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  }
 }
 
 @media screen and (max-width: 760px) {

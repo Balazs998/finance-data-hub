@@ -13,6 +13,7 @@ exclude_docs: |
   jedox/rule-studio/
   javascripts/rule-*.js
   stylesheets/rule-studio.css
+  assets/social/rule-studio.png
 
 extra_css:
   - stylesheets/extra.css

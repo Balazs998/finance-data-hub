@@ -152,6 +152,7 @@ class RuleStudioPageTests(unittest.TestCase):
     def test_rule_studio_is_not_published(self):
         site = ROOT / "site"
         self.assertFalse((site / "jedox" / "rule-studio" / "index.html").exists())
+        self.assertFalse((site / "assets" / "social" / "rule-studio.png").exists())
         self.assertNotIn("rule-studio", (site / "sitemap.xml").read_text(encoding="utf-8"))
         self.assertNotIn("jedox/rule-studio/index.md", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
         for page in site.rglob("*.html"):

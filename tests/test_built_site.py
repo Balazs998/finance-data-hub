@@ -460,7 +460,6 @@ SOCIAL_FILES = (
     "month-end-actuals.png",
     "management-report-export.png",
     "month-close-checks.png",
-    "rule-studio.png",
     "asof-join.png",
     "plan-vs-actuals.png",
     "automated-value-emails.png",
@@ -610,6 +609,10 @@ class SocialPreviewTests(unittest.TestCase):
             self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"), name)
             self.assertEqual(int.from_bytes(png[16:20], "big"), 1200, name)
             self.assertEqual(int.from_bytes(png[20:24], "big"), 630, name)
+        self.assertFalse(
+            (SITE / "assets" / "social" / "rule-studio.png").is_file(),
+            "rule-studio.png stays in the repo and is not published",
+        )
 
 
 class DownloadAttributeTests(unittest.TestCase):

@@ -5,6 +5,7 @@ One sentence on each section card.
 ## Snowflake
 
 - Month-end actuals: Turn journal lines into monthly P&L actuals that stay right when a period is reloaded.
+- Key-pair migration: Switch an existing Jedox connection from a password to a key pair before the nightly load stops signing in.
 - Plan vs actuals: Compare budget and actuals so a month missing on either side still shows up.
 - Snapshots vs Time Travel: Freeze the month you reported so a late posting does not change the number you sent.
 - FX rate lock: Lock the FX rate on the pack you sent so a later restatement cannot move the total.

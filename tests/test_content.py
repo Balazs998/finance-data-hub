@@ -1134,3 +1134,85 @@ class CleanupGuardTests(unittest.TestCase):
         self.assertFalse((ROOT / "docs" / "WORKER-SETUP.md").exists())
         self.assertNotIn("WORKER-SETUP", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
         self.assertTrue((ROOT / "worker" / "SETUP.md").is_file())
+
+
+class KeyPairMigrationTests(unittest.TestCase):
+    """Post 06: move JEDOX_SVC from a password to a key pair."""
+
+    def test_key_pair_migration_keeps_reviewed_steps_and_placeholder_key(self):
+        page = (ROOT / "docs/snowflake/key-pair-migration.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "Move your Jedox Snowflake connection from password to key pair"',
+            page,
+        )
+        self.assertIn("social_image: key-pair-migration.png", page)
+        self.assertIn(
+            '<p class="post-meta">Snowflake · Intermediate · ~20 min</p>',
+            page,
+        )
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn('src="../06-keypair-diagram.svg"', page)
+        self.assertIn("](../jedox/snowflake-to-jedox.md)", page)
+        self.assertIn(
+            "](../jedox/snowflake-to-jedox.md#1-create-a-service-user-for-jedox)",
+            page,
+        )
+        self.assertNotIn("snowflake-to-jedox.md#2-a-service-user", page)
+        for figure in ("58", "1,466,143.86", "JEDOX_SVC", "EXCEL_ODBC_SVC", "FDH_DEMO"):
+            self.assertIn(figure, page)
+        self.assertIn("MIIB...REPLACE_ME", page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        self.assertNotIn("-----BEGIN", page)
+        self.assertNotIn("BEGIN PRIVATE", page)
+        labels = (
+            "[[download:keypair/find_affected_users.sql|Download find_affected_users.sql]]",
+            "[[download:keypair/migrate_jedox_svc.sql|Download migrate_jedox_svc.sql]]",
+            "[[download:keypair/verify_keypair_logins.sql|Download verify_keypair_logins.sql]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/keypair"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "find_affected_users.sql",
+                "migrate_jedox_svc.sql",
+                "verify_keypair_logins.sql",
+            ],
+        )
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotIn("/workspace/", text, path.name)
+            self.assertNotIn("-----BEGIN", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotRegex(text, r"-----BEGIN [A-Z ]*PRIVATE KEY-----", path.name)
+        migrate = (pack / "migrate_jedox_svc.sql").read_text(encoding="utf-8")
+        self.assertIn("ALTER USER JEDOX_SVC SET RSA_PUBLIC_KEY = 'MIIB...REPLACE_ME';", migrate)
+        self.assertIn("ALTER USER JEDOX_SVC SET PASSWORD = NULL;", migrate)
+        self.assertIn("ALTER USER JEDOX_SVC SET TYPE = SERVICE;", migrate)
+        verify = (pack / "verify_keypair_logins.sql").read_text(encoding="utf-8")
+        self.assertIn("FDH_DEMO.INFORMATION_SCHEMA.LOGIN_HISTORY_BY_USER", verify)
+        find = (pack / "find_affected_users.sql").read_text(encoding="utf-8")
+        self.assertIn("SHOW USERS;", find)
+        self.assertIn("LEGACY_SERVICE", find)
+        self.assertTrue((ROOT / "docs/snowflake/06-keypair-diagram.svg").is_file())
+        self.assertTrue((ROOT / "docs/snowflake/06-keypair-diagram.png").is_file())
+        social = ROOT / "docs/assets/social/key-pair-migration.png"
+        png = social.read_bytes()
+        self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(int.from_bytes(png[16:20], "big"), 1200)
+        self.assertEqual(int.from_bytes(png[20:24], "big"), 630)
+        gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("*.p8", gitignore)
+        self.assertIn("*.pem", gitignore)
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/automaker-close-tracker-anomaly-flags.md"),
+            nav.index("snowflake/key-pair-migration.md"),
+        )

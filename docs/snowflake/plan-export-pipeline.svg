@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 520" width="1240" height="520" role="img" aria-labelledby="t d">
+<title id="t">Planning-tool load file exported from Snowflake, with reconciliation</title>
+<desc id="d">Fictional FDH_DEMO data. FACT_ACTUALS and FACT_BUDGET are summed to one row per cell in the view V_PLAN_EXPORT_LONG, with an orphan check of 0. COPY INTO writes a CSV data file of 754 rows and a control file to the internal stage SAMPLE_STAGE. The data file goes to the planning-tool import. In parallel, COPY INTO a scratch table reloads the file, and V_PLAN_EXPORT_RECON compares source, export and file: Actual 2026-03 58 rows, 1,466,143.86; Budget 696 cells, 17,253,220.89; every diff 0.00.</desc>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#38BDF8"/></marker>
+<marker id="v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A78BFA"/></marker>
+<marker id="l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A3E635"/></marker>
+<filter id="g" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#38BDF8" flood-opacity="0.18"/></filter>
+</defs>
+<style>
+.h{font:700 22px 'Space Grotesk',system-ui,sans-serif;fill:#E6EDF3}
+.b{font:600 17px Inter,system-ui,sans-serif;fill:#E6EDF3}
+.m{font:400 15px Inter,system-ui,sans-serif;fill:#B7C5D3}
+.c{font:500 15px 'JetBrains Mono',ui-monospace,monospace;fill:#38BDF8}
+.cv{font:500 15px 'JetBrains Mono',ui-monospace,monospace;fill:#A78BFA}
+.cl{font:600 15px 'JetBrains Mono',ui-monospace,monospace;fill:#A3E635}
+.n{font:700 14px 'Space Grotesk',system-ui,sans-serif;fill:#0F1720}
+</style>
+<rect width="1240" height="520" fill="#0F1720"/>
+<text x="24" y="40" class="h">Snowflake · FDH_DEMO.SAMPLE</text>
+<rect x="24" y="56" width="830" height="440" rx="12" fill="#18222E" stroke="#2A3847"/>
+<!-- facts -->
+<rect x="44" y="90" width="170" height="110" rx="10" fill="#1F2B39" stroke="#2A3847"/>
+<text x="58" y="118" class="m">Source facts</text>
+<text x="58" y="146" class="c">FACT_ACTUALS</text>
+<text x="58" y="172" class="c">FACT_BUDGET</text>
+<line x1="214" y1="145" x2="250" y2="145" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+<!-- view -->
+<circle cx="268" cy="80" r="13" fill="#38BDF8"/><text x="268" y="85" text-anchor="middle" class="n">1</text>
+<rect x="256" y="90" width="230" height="110" rx="10" fill="#1F2B39" stroke="#38BDF8" filter="url(#g)"/>
+<text x="270" y="118" class="m">View, one row per cell</text>
+<text x="270" y="146" class="c">V_PLAN_EXPORT_LONG</text>
+<text x="270" y="172" class="m">orphan check: <tspan class="cl">0</tspan></text>
+<line x1="486" y1="145" x2="522" y2="145" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+<!-- stage -->
+<circle cx="540" cy="80" r="13" fill="#38BDF8"/><text x="540" y="85" text-anchor="middle" class="n">2</text>
+<rect x="528" y="90" width="306" height="150" rx="10" fill="#1F2B39" stroke="#2A3847"/>
+<text x="542" y="116" class="b">COPY INTO @SAMPLE_STAGE</text>
+<text x="542" y="142" class="m">Data file, 754 rows</text>
+<text x="542" y="164" class="c">plan_load_2026_03.csv</text>
+<text x="542" y="192" class="m">Control file</text>
+<text x="542" y="214" class="m">rows + sum per version</text>
+<!-- reload branch -->
+<path d="M680 240 L680 300" stroke="#A78BFA" stroke-width="2" fill="none" marker-end="url(#v)"/>
+<circle cx="540" cy="296" r="13" fill="#8B7CF6"/><text x="540" y="301" text-anchor="middle" class="n">3</text>
+<rect x="528" y="306" width="306" height="80" rx="10" fill="#1F2B39" stroke="#8B7CF6"/>
+<text x="542" y="334" class="b">Reload the file</text>
+<text x="542" y="360" class="cv">COPY INTO scratch table</text>
+<line x1="528" y1="346" x2="492" y2="346" stroke="#A78BFA" stroke-width="2" marker-end="url(#v)"/>
+<!-- recon -->
+<rect x="44" y="236" width="442" height="240" rx="10" fill="#1F2B39" stroke="#A3E635"/>
+<text x="58" y="264" class="b">Reconcile: source vs export vs file</text>
+<text x="58" y="288" class="cv">V_PLAN_EXPORT_RECON</text>
+<text x="58" y="324" class="m">Actual 2026-03</text><text x="470" y="324" text-anchor="end" class="c">58 rows · 1,466,143.86</text>
+<text x="58" y="354" class="m">Budget</text><text x="470" y="354" text-anchor="end" class="c">696 cells · 17,253,220.89</text>
+<text x="58" y="384" class="m">Orphans</text><text x="470" y="384" text-anchor="end" class="c">0</text>
+<line x1="58" y1="404" x2="470" y2="404" stroke="#2A3847"/>
+<text x="58" y="440" class="cl">every diff 0.00 → send the file</text>
+<!-- planning tool -->
+<line x1="834" y1="165" x2="900" y2="165" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+<text x="906" y="40" class="h">Planning tool</text>
+<circle cx="918" cy="80" r="13" fill="#38BDF8"/><text x="918" y="85" text-anchor="middle" class="n">4</text>
+<rect x="906" y="90" width="310" height="150" rx="12" fill="#18222E" stroke="#2A3847"/>
+<text x="922" y="118" class="b">Flat-file import</text>
+<text x="922" y="144" class="m">Map 5 columns in the tool:</text>
+<text x="922" y="168" class="c">cost_center, account,</text>
+<text x="922" y="190" class="c">period, version, amount</text>
+<text x="922" y="218" class="m">Check against the control file</text>
+<text x="906" y="290" class="m">Generic: no vendor APIs or</text>
+<text x="906" y="312" class="m">connectors assumed.</text>
+<text x="906" y="476" class="m">Fictional sample data only.</text>
+</svg>

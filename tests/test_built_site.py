@@ -454,6 +454,7 @@ SOCIAL_PAGES = {
     "snowflake/automaker-bom-cost-rollup/index.html": "automaker-bom-cost-rollup.png",
     "snowflake/automaker-erp-control-totals/index.html": "automaker-erp-control-totals.png",
     "snowflake/automaker-close-tracker-anomaly-flags/index.html": "automaker-close-tracker-anomaly-flags.png",
+    "snowflake/planning-tool-load-file/index.html": "planning-tool-load-file.png",
 }
 SOCIAL_FILES = (
     "home.png",
@@ -479,6 +480,7 @@ SOCIAL_FILES = (
     "automaker-bom-cost-rollup.png",
     "automaker-erp-control-totals.png",
     "automaker-close-tracker-anomaly-flags.png",
+    "planning-tool-load-file.png",
 )
 
 
@@ -1235,10 +1237,10 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertTrue(motors_readme.is_file())
         footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
         self.assertIn(
-            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Finance SQL patterns"',
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Planning-tool load file"',
             footer,
         )
-        self.assertIn('href="../finance-sql-snowflake/"', footer)
+        self.assertIn('href="../planning-tool-load-file/"', footer)
         self.assertIn(
             'class="md-footer__link md-footer__link--next" aria-label="Next: Cost per vehicle"',
             footer,
@@ -1559,6 +1561,86 @@ class BuiltSiteTests(unittest.TestCase):
             footer,
         )
         self.assertIn('href="../../jedox/"', footer)
+
+    def test_planning_tool_load_file_page_diagram_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "planning-tool-load-file" / "index.html"
+        self.assertTrue(page.is_file(), "planning-tool load file page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "A planning-tool load file from Snowflake that ties before you send it",
+            html,
+        )
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("TBD", html)
+        self.assertNotIn("Siemens", html)
+        self.assertNotIn("Adaptive Planning", html)
+        self.assertNotIn("/workspace/", html)
+        self.assertIn("FDH_DEMO", html)
+        self.assertIn('class="docs-note"', html)
+        self.assertIn("Swipe to see the full diagram →", html)
+        self.assertIn('aria-label="Planning-tool load file pipeline"', html)
+        self.assertIn('src="../plan-export-pipeline.svg"', html)
+        diagram = local_target(page, "../plan-export-pipeline.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "planning-tool-load-file.png"],
+        )
+        self.assertIn(
+            "https://help.anaplan.com/set-up-a-data-import-into-modules-8d55fc47-e743-4630-b619-2481fa8645ae",
+            html,
+        )
+        self.assertIn("https://kb.pigment.com/docs/import-manually-lists", html)
+        for figure in (
+            "1,466,143.86",
+            "17,253,220.89",
+            "−37,289.23",
+            "1,428,854.63",
+            "754",
+        ):
+            self.assertIn(figure, html)
+        article = html.split('<article class="md-content__inner', 1)[1].split("</article>", 1)[0]
+        self.assertIn('href="../finance-sql-snowflake/"', article)
+        actuals = local_target(page, "../../files/samples/fact_actuals.csv")
+        budget = local_target(page, "../../files/samples/fact_budget.csv")
+        self.assertIsNotNone(actuals)
+        self.assertTrue(actuals.is_file())
+        self.assertIsNotNone(budget)
+        self.assertTrue(budget.is_file())
+        for relative in (
+            "planexport/01_v_plan_export_long.sql",
+            "planexport/02_copy_into_export.sql",
+            "planexport/03_reimport_and_recon.sql",
+            "planexport/04_broken_file_demo.sql",
+            "planexport/05_wide_variant.sql",
+            "planexport/README.md",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 6)
+        readme = SITE / "files" / "planexport" / "README.md"
+        self.assertTrue(readme.is_file())
+        self.assertTrue(readme.read_text(encoding="utf-8").startswith("# planexport:"))
+        self.assertFalse((SITE / "files" / "planexport" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Finance SQL patterns"',
+            footer,
+        )
+        self.assertIn('href="../finance-sql-snowflake/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: 13-week cash runway"',
+            footer,
+        )
+        self.assertIn('href="../automaker-13-week-cash-runway/"', footer)
+        sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+        self.assertIn(
+            "https://balazs998.github.io/finance-data-hub/snowflake/planning-tool-load-file/",
+            sitemap,
+        )
 
     def test_heading_permalinks_are_absent_but_ids_remain(self):
         home = (SITE / "index.html").read_text(encoding="utf-8")

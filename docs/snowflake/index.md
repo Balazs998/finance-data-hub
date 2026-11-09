@@ -96,6 +96,12 @@ hide:
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 25 min read</p>
   </article></li>
   <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake</p>
+    <h3 class="fdh-card__title"><a href="planning-tool-load-file/">Planning-tool load file</a></h3>
+    <p class="fdh-card__summary">Export actuals and budget as one long-format CSV with a control file, then load it back and reconcile it to 0.00.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 25 min read</p>
+  </article></li>
+  <li><article class="fdh-card">
     <p class="fdh-card__tools">Snowflake · Jedox</p>
     <h3 class="fdh-card__title"><a href="../jedox/snowflake-to-jedox/">Snowflake to Jedox load</a></h3>
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
@@ -167,6 +173,11 @@ hide:
     <li><a href="../files/finsql/03_snapshot_vs_current_vs_budget.sql" download="03_snapshot_vs_current_vs_budget.sql" data-goatcounter-click="download-03_snapshot_vs_current_vs_budget.sql" data-goatcounter-title="Download 03_snapshot_vs_current_vs_budget.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_snapshot_vs_current_vs_budget.sql</a></li>
     <li><a href="../files/finsql/04_forecast_pattern.sql" download="04_forecast_pattern.sql" data-goatcounter-click="download-04_forecast_pattern.sql" data-goatcounter-title="Download 04_forecast_pattern.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_forecast_pattern.sql</a></li>
     <li><a href="../files/finsql/05_checks.sql" download="05_checks.sql" data-goatcounter-click="download-05_checks.sql" data-goatcounter-title="Download 05_checks.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_checks.sql</a></li>
+    <li><a href="../files/planexport/01_v_plan_export_long.sql" download="01_v_plan_export_long.sql" data-goatcounter-click="download-01_v_plan_export_long.sql" data-goatcounter-title="Download 01_v_plan_export_long.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 01_v_plan_export_long.sql</a></li>
+    <li><a href="../files/planexport/02_copy_into_export.sql" download="02_copy_into_export.sql" data-goatcounter-click="download-02_copy_into_export.sql" data-goatcounter-title="Download 02_copy_into_export.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 02_copy_into_export.sql</a></li>
+    <li><a href="../files/planexport/03_reimport_and_recon.sql" download="03_reimport_and_recon.sql" data-goatcounter-click="download-03_reimport_and_recon.sql" data-goatcounter-title="Download 03_reimport_and_recon.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_reimport_and_recon.sql</a></li>
+    <li><a href="../files/planexport/04_broken_file_demo.sql" download="04_broken_file_demo.sql" data-goatcounter-click="download-04_broken_file_demo.sql" data-goatcounter-title="Download 04_broken_file_demo.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_broken_file_demo.sql</a></li>
+    <li><a href="../files/planexport/05_wide_variant.sql" download="05_wide_variant.sql" data-goatcounter-click="download-05_wide_variant.sql" data-goatcounter-title="Download 05_wide_variant.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_wide_variant.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

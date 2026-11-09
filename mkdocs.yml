@@ -93,6 +93,7 @@ nav:
       - FX rate lock: snowflake/fx-rate-lock.md
       - ASOF JOIN: snowflake/asof-join.md
       - Finance SQL patterns: snowflake/finance-sql-snowflake.md
+      - Planning-tool load file: snowflake/planning-tool-load-file.md
       - 13-week cash runway: snowflake/automaker-13-week-cash-runway.md
       - Cost per vehicle: snowflake/automaker-cost-per-vehicle.md
       - Capex project tracking: snowflake/automaker-capex-project-tracking.md

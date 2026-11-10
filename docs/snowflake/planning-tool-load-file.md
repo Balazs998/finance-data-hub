@@ -37,7 +37,7 @@ Many finance teams send actuals to a planning tool as a flat file, and only find
     - Role / access: `SYSADMIN` (or a lab admin role) in `FDH_DEMO.SAMPLE`. The pack creates two views and one scratch table, and no grants. Leave `ETL_LOADER_ROLE` unchanged.
     - Product version: any current Snowflake account.
     - Previous posts: [Finance SQL patterns on Snowflake](finance-sql-snowflake.md) (same sample, same totals).
-    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), `dim_cost_center.csv`, `dim_account.csv`, and the [Downloads](#downloads) pack.
+    - Sample data: pristine [`fact_actuals.csv`](../files/samples/fact_actuals.csv) (610 rows), [`fact_budget.csv`](../files/samples/fact_budget.csv) (696 rows), [`dim_cost_center.csv`](../files/samples/dim_cost_center.csv), [`dim_account.csv`](../files/samples/dim_account.csv), and the [Downloads](#downloads) pack.
 
 ## 1. One row per cell, long format
 

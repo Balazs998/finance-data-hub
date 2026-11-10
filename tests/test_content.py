@@ -1004,6 +1004,103 @@ class ContentTests(unittest.TestCase):
             nav.index("snowflake/automaker-close-tracker-anomaly-flags.md"),
         )
 
+    def test_planning_tool_load_file_keeps_check_figures_and_verified_vendor_docs(self):
+        page = (ROOT / "docs/snowflake/planning-tool-load-file.md").read_text(encoding="utf-8")
+        self.assertIn(
+            'title: "A planning-tool load file from Snowflake that ties before you send it"',
+            page,
+        )
+        self.assertIn("social_image: planning-tool-load-file.png", page)
+        self.assertIn('<p class="post-meta">Snowflake · Intermediate · ~25 min</p>', page)
+        self.assertIn('class="docs-note"', page)
+        self.assertIn("](finance-sql-snowflake.md)", page)
+        self.assertIn("Swipe to see the full diagram", page)
+        self.assertIn('src="../plan-export-pipeline.svg"', page)
+        self.assertIn(
+            "https://help.anaplan.com/set-up-a-data-import-into-modules-8d55fc47-e743-4630-b619-2481fa8645ae",
+            page,
+        )
+        self.assertIn("https://kb.pigment.com/docs/import-manually-lists", page)
+        self.assertNotIn("Adaptive Planning", page)
+        self.assertNotIn("TBD", page)
+        self.assertNotIn("status:", page.lower())
+        self.assertNotIn("DRAFT", page)
+        self.assertNotIn("Siemens", page)
+        self.assertNotIn("/workspace/", page)
+        for figure in (
+            "58",
+            "696",
+            "754",
+            "1,466,143.86",
+            "17,253,220.89",
+            "−37,289.23",
+            "1,428,854.63",
+            "−1",
+        ):
+            self.assertIn(figure, page)
+        self.assertIn("[`fact_actuals.csv`](../files/samples/fact_actuals.csv)", page)
+        self.assertIn("[`fact_budget.csv`](../files/samples/fact_budget.csv)", page)
+        labels = (
+            "[[download:planexport/01_v_plan_export_long.sql|Download 01_v_plan_export_long.sql]]",
+            "[[download:planexport/02_copy_into_export.sql|Download 02_copy_into_export.sql]]",
+            "[[download:planexport/03_reimport_and_recon.sql|Download 03_reimport_and_recon.sql]]",
+            "[[download:planexport/04_broken_file_demo.sql|Download 04_broken_file_demo.sql]]",
+            "[[download:planexport/05_wide_variant.sql|Download 05_wide_variant.sql]]",
+            "[[download:planexport/README.md|Download README.md]]",
+        )
+        found = re.findall(r"\[\[download:[^\]]+\]\]", page)
+        self.assertEqual(tuple(found), labels)
+        pack = ROOT / "docs/files/planexport"
+        names = sorted(path.name for path in pack.iterdir() if path.is_file())
+        self.assertEqual(
+            names,
+            [
+                "01_v_plan_export_long.sql",
+                "02_copy_into_export.sql",
+                "03_reimport_and_recon.sql",
+                "04_broken_file_demo.sql",
+                "05_wide_variant.sql",
+                "README.md",
+            ],
+        )
+        for path in pack.iterdir():
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("Siemens", text, path.name)
+            self.assertNotRegex(text, r"(?im)^[ \t]*GRANT\b", path.name)
+            self.assertNotIn("/workspace/", text, path.name)
+            self.assertIn("FDH_DEMO", text, path.name)
+            if path.suffix == ".sql":
+                self.assertIn("USE SCHEMA FDH_DEMO.SAMPLE;", text, path.name)
+        long_sql = (pack / "01_v_plan_export_long.sql").read_text(encoding="utf-8")
+        self.assertIn("CREATE OR REPLACE VIEW V_PLAN_EXPORT_LONG", long_sql)
+        copy_sql = (pack / "02_copy_into_export.sql").read_text(encoding="utf-8")
+        self.assertIn("COPY INTO @SAMPLE_STAGE/plan_export/plan_load_2026_03.csv", copy_sql)
+        self.assertIn("Actual 58 / 1466143.86", copy_sql)
+        self.assertIn("Budget 696 / 17253220.89", copy_sql)
+        recon = (pack / "03_reimport_and_recon.sql").read_text(encoding="utf-8")
+        self.assertIn("CREATE OR REPLACE VIEW V_PLAN_EXPORT_RECON", recon)
+        self.assertIn("1466143.86", recon)
+        self.assertIn("17253220.89", recon)
+        broken = (pack / "04_broken_file_demo.sql").read_text(encoding="utf-8")
+        self.assertIn("DELETE FROM PLAN_EXPORT_REIMPORT", broken)
+        self.assertIn("-37289.23", broken)
+        self.assertIn("/ -1", broken)
+        wide = (pack / "05_wide_variant.sql").read_text(encoding="utf-8")
+        self.assertIn("AS m2025_10", wide)
+        self.assertIn("AS m2026_09", wide)
+        self.assertIn("Expect 58 rows", wide)
+        self.assertTrue((ROOT / "docs/snowflake/plan-export-pipeline.svg").is_file())
+        self.assertTrue((ROOT / "docs/assets/social/planning-tool-load-file.png").is_file())
+        nav = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        self.assertLess(
+            nav.index("snowflake/finance-sql-snowflake.md"),
+            nav.index("snowflake/planning-tool-load-file.md"),
+        )
+        self.assertLess(
+            nav.index("snowflake/planning-tool-load-file.md"),
+            nav.index("snowflake/automaker-13-week-cash-runway.md"),
+        )
+
 
 
 

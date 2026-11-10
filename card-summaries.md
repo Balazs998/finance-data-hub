@@ -16,6 +16,7 @@ One sentence on each section card.
 - ERP control totals: Record FDH Motors control totals at each hop from the ERP file to Snowflake to Jedox, and keep an append-only evidence row per run.
 - Close tracker anomaly flags: Track FDH Motors month-end close tasks by day, then flag unusual journal lines with a z-score, the interquartile range and three plain rules.
 - Finance SQL patterns: Actual vs budget per cell with a FULL OUTER JOIN, fiscal quarter-to-date and year-to-date with window functions, and reported vs current numbers.
+- Planning-tool load file: Export actuals and budget as one long-format CSV with a control file, then load it back and reconcile it to 0.00.
 - Snowflake to Jedox load: Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.
 
 ## Jedox

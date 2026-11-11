@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 330" width="840" height="330" role="img" aria-labelledby="t d">
+  <title id="t">Moving JEDOX_SVC from password to key pair</title>
+  <desc id="d">Before: JEDOX_SVC signs in with a password. Step 1, create the key. Step 2, add it to the user. Step 3, switch the connection. Check: the rerun returns 58 rows totaling 1,466,143.86. Only then step 4, the last step: remove the password and set TYPE = SERVICE. After: JEDOX_SVC signs in with a key pair.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#38BDF8"/></marker>
+    <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9AA7B4"/></marker>
+    <filter id="g" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#38BDF8" flood-opacity="0.18"/></filter>
+  </defs>
+  <style>
+    .h{font:700 22px 'Space Grotesk',system-ui,sans-serif;fill:#E6EDF3}
+    .b{font:600 16px Inter,system-ui,sans-serif;fill:#E6EDF3}
+    .m{font:400 15px Inter,system-ui,sans-serif;fill:#B7C5D3}
+    .q{font:400 15px Inter,system-ui,sans-serif;fill:#9AA7B4}
+    .c{font:500 15px 'JetBrains Mono',ui-monospace,monospace;fill:#38BDF8}
+    .n{font:700 14px 'Space Grotesk',system-ui,sans-serif;fill:#0F1720}
+    .l{font:600 15px Inter,system-ui,sans-serif;fill:#A3E635}
+  </style>
+  <rect width="840" height="330" fill="#0F1720"/>
+  <text x="16" y="38" class="h">Password to key pair, in order</text>
+
+  <!-- Before -->
+  <rect x="16" y="70" width="112" height="170" rx="12" fill="#18222E" stroke="#2A3847"/>
+  <text x="30" y="96" class="q">Before</text>
+  <g transform="translate(56,110)" fill="none" stroke="#9AA7B4" stroke-width="2.5">
+    <path d="M8 16 V10 a8 8 0 0 1 16 0 V16"/><rect x="3" y="16" width="26" height="20" rx="4" fill="#2A3847"/>
+  </g>
+  <text x="30" y="180" class="c" style="fill:#E6EDF3">JEDOX_SVC</text>
+  <text x="30" y="204" class="m">password</text>
+
+  <line x1="130" y1="155" x2="148" y2="155" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- Steps 1-3 -->
+  <rect x="152" y="70" width="118" height="170" rx="10" fill="#1F2B39" stroke="#38BDF8"/>
+  <circle cx="176" cy="96" r="13" fill="#38BDF8"/><text x="172" y="101" class="n">1</text>
+  <text x="166" y="140" class="b">Create</text><text x="166" y="162" class="b">the key</text>
+
+  <line x1="272" y1="155" x2="290" y2="155" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="294" y="70" width="118" height="170" rx="10" fill="#1F2B39" stroke="#38BDF8"/>
+  <circle cx="318" cy="96" r="13" fill="#38BDF8"/><text x="314" y="101" class="n">2</text>
+  <text x="308" y="140" class="b">Add it to</text><text x="308" y="162" class="b">the user</text>
+
+  <line x1="414" y1="155" x2="432" y2="155" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="436" y="70" width="118" height="170" rx="10" fill="#1F2B39" stroke="#38BDF8"/>
+  <circle cx="460" cy="96" r="13" fill="#38BDF8"/><text x="456" y="101" class="n">3</text>
+  <text x="450" y="140" class="b">Switch the</text><text x="450" y="162" class="b">connection</text>
+
+  <!-- Gate check -->
+  <line x1="556" y1="155" x2="574" y2="155" stroke="#A3E635" stroke-width="2"/>
+  <circle cx="584" cy="155" r="11" fill="#A3E635"/>
+  <path d="M579 155 l4 4 l7 -8" fill="none" stroke="#0F1720" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="595" y1="155" x2="606" y2="155" stroke="#9AA7B4" stroke-width="2" marker-end="url(#m)"/>
+
+  <!-- Step 4, lighter -->
+  <rect x="610" y="70" width="104" height="170" rx="10" fill="#18222E" stroke="#9AA7B4" stroke-dasharray="6 5"/>
+  <circle cx="634" cy="96" r="13" fill="none" stroke="#9AA7B4" stroke-width="2"/><text x="630" y="101" class="n" style="fill:#9AA7B4">4</text>
+  <text x="622" y="134" class="q">Remove the</text><text x="622" y="154" class="q">password,</text>
+  <text x="622" y="182" class="q" style="font-family:'JetBrains Mono',monospace;font-size:15px">TYPE =</text>
+  <text x="622" y="202" class="q" style="font-family:'JetBrains Mono',monospace;font-size:15px">SERVICE</text>
+
+  <line x1="716" y1="155" x2="726" y2="155" stroke="#38BDF8" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- After -->
+  <rect x="730" y="70" width="94" height="170" rx="12" fill="#18222E" stroke="#38BDF8" filter="url(#g)"/>
+  <text x="742" y="96" class="m">After</text>
+  <g transform="translate(756,112)" fill="none" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round">
+    <circle cx="10" cy="14" r="8"/><path d="M18 14 H38 M32 14 V21 M38 14 V20"/>
+  </g>
+  <text x="742" y="180" class="c" style="font-size:15px">JEDOX_</text>
+  <text x="742" y="198" class="c" style="font-size:15px">SVC</text>
+  <text x="742" y="222" class="m">key pair</text>
+
+  <!-- Check label -->
+  <path d="M584 168 V262" stroke="#A3E635" stroke-width="1.5" stroke-dasharray="3 4"/>
+  <rect x="436" y="262" width="296" height="34" rx="17" fill="#1F2B39" stroke="#A3E635"/>
+  <text x="452" y="285" class="l">58 rows, 1,466,143.86 ✓</text>
+  <text x="16" y="285" class="m">Step 4 comes last, only once</text>
+  <text x="16" y="306" class="m">the rerun matches.</text>
+</svg>

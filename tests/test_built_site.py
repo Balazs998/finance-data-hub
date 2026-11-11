@@ -431,6 +431,7 @@ class ValueEmailsPageTests(unittest.TestCase):
 SOCIAL_BASE = "https://balazs998.github.io/finance-data-hub/assets/social/"
 SOCIAL_PAGES = {
     "index.html": "home.png",
+    "snowflake/key-pair-migration/index.html": "key-pair-migration.png",
     "snowflake/plan-vs-actuals/index.html": "plan-vs-actuals.png",
     "jedox/snowflake-to-jedox/index.html": "snowflake-to-jedox.png",
     "jedox/automated-value-emails/index.html": "automated-value-emails.png",
@@ -458,6 +459,7 @@ SOCIAL_PAGES = {
 }
 SOCIAL_FILES = (
     "home.png",
+    "key-pair-migration.png",
     "month-end-actuals.png",
     "management-report-export.png",
     "month-close-checks.png",
@@ -1557,10 +1559,10 @@ class BuiltSiteTests(unittest.TestCase):
         )
         self.assertIn('href="../automaker-erp-control-totals/"', footer)
         self.assertIn(
-            'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Key-pair migration"',
             footer,
         )
-        self.assertIn('href="../../jedox/"', footer)
+        self.assertIn('href="../key-pair-migration/"', footer)
 
     def test_planning_tool_load_file_page_diagram_downloads_and_og_image(self):
         page = SITE / "snowflake" / "planning-tool-load-file" / "index.html"
@@ -1656,6 +1658,74 @@ class BuiltSiteTests(unittest.TestCase):
         self.assertNotIn('id="where-to-start"', home)
         self.assertIn('<h1 id="month-end-actuals">', article)
         self.assertIn('href="#what-youll-build"', article)
+
+    def test_key_pair_migration_page_diagram_downloads_and_og_image(self):
+        page = SITE / "snowflake" / "key-pair-migration" / "index.html"
+        self.assertTrue(page.is_file(), "key-pair migration page was not built")
+        html = page.read_text(encoding="utf-8")
+        self.assertIn(
+            "Move your Jedox Snowflake connection from password to key pair",
+            html,
+        )
+        self.assertNotIn("DRAFT", html)
+        self.assertNotIn("Siemens", html)
+        self.assertNotIn("/workspace/", html)
+        self.assertNotIn("BEGIN PRIVATE", html)
+        self.assertNotIn("-----BEGIN", html)
+        self.assertIn("FDH_DEMO", html)
+        self.assertIn("JEDOX_SVC", html)
+        self.assertIn("MIIB...REPLACE_ME", html)
+        self.assertIn('class="docs-note"', html)
+        self.assertIn("Swipe to see the full diagram →", html)
+        self.assertIn('aria-label="Password to key-pair migration in four steps"', html)
+        self.assertIn('src="../06-keypair-diagram.svg"', html)
+        diagram = local_target(page, "../06-keypair-diagram.svg")
+        self.assertIsNotNone(diagram)
+        self.assertTrue(diagram.is_file())
+        raster = local_target(page, "../06-keypair-diagram.png")
+        self.assertIsNotNone(raster)
+        self.assertTrue(raster.is_file())
+        self.assertEqual(
+            meta_contents(html, "property", "og:image"),
+            [SOCIAL_BASE + "key-pair-migration.png"],
+        )
+        self.assertNotIn("home.png", meta_contents(html, "property", "og:image")[0])
+        launch = local_target(page, "../../jedox/snowflake-to-jedox/")
+        self.assertIsNotNone(launch)
+        self.assertTrue(launch.is_file())
+        launch_html = launch.read_text(encoding="utf-8")
+        self.assertIn('id="1-create-a-service-user-for-jedox"', launch_html)
+        self.assertIn(
+            'href="../../jedox/snowflake-to-jedox/#1-create-a-service-user-for-jedox"',
+            html,
+        )
+        for relative in (
+            "keypair/find_affected_users.sql",
+            "keypair/migrate_jedox_svc.sql",
+            "keypair/verify_keypair_logins.sql",
+        ):
+            self.assertIn(f"files/{relative}", html)
+            target = local_target(page, f"../../files/{relative}")
+            self.assertIsNotNone(target, relative)
+            self.assertTrue(target.is_file(), relative)
+        self.assertEqual(html.count("md-button download"), 3)
+        self.assertFalse((SITE / "files" / "keypair" / "index.html").exists())
+        footer = html.split('<nav class="md-footer__inner', 1)[1].split("</nav>", 1)[0]
+        self.assertIn(
+            'class="md-footer__link md-footer__link--prev" aria-label="Previous: Close tracker anomaly flags"',
+            footer,
+        )
+        self.assertIn('href="../automaker-close-tracker-anomaly-flags/"', footer)
+        self.assertIn(
+            'class="md-footer__link md-footer__link--next" aria-label="Next: Jedox notes for FP&amp;A packs"',
+            footer,
+        )
+        self.assertIn('href="../../jedox/"', footer)
+        sitemap = (SITE / "sitemap.xml").read_text(encoding="utf-8")
+        self.assertIn(
+            "https://balazs998.github.io/finance-data-hub/snowflake/key-pair-migration/",
+            sitemap,
+        )
 
 
 if __name__ == "__main__":

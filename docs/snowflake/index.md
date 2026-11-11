@@ -107,6 +107,12 @@ hide:
     <p class="fdh-card__summary">Pull monthly actuals into a planning cube so a rerun leaves no stale numbers.</p>
     <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 10 min read</p>
   </article></li>
+  <li><article class="fdh-card">
+    <p class="fdh-card__tools">Snowflake · Jedox</p>
+    <h3 class="fdh-card__title"><a href="key-pair-migration/">Key-pair migration</a></h3>
+    <p class="fdh-card__summary">Switch an existing Jedox connection from a password to a key pair before the nightly load stops signing in.</p>
+    <p class="fdh-card__meta"><span aria-hidden="true">◷</span> 20 min read</p>
+  </article></li>
 </ul>
 
 <section class="fdh-downloads" aria-labelledby="dl-snowflake">
@@ -178,6 +184,9 @@ hide:
     <li><a href="../files/planexport/03_reimport_and_recon.sql" download="03_reimport_and_recon.sql" data-goatcounter-click="download-03_reimport_and_recon.sql" data-goatcounter-title="Download 03_reimport_and_recon.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 03_reimport_and_recon.sql</a></li>
     <li><a href="../files/planexport/04_broken_file_demo.sql" download="04_broken_file_demo.sql" data-goatcounter-click="download-04_broken_file_demo.sql" data-goatcounter-title="Download 04_broken_file_demo.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 04_broken_file_demo.sql</a></li>
     <li><a href="../files/planexport/05_wide_variant.sql" download="05_wide_variant.sql" data-goatcounter-click="download-05_wide_variant.sql" data-goatcounter-title="Download 05_wide_variant.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> 05_wide_variant.sql</a></li>
+    <li><a href="../files/keypair/find_affected_users.sql" download="find_affected_users.sql" data-goatcounter-click="download-find_affected_users.sql" data-goatcounter-title="Download find_affected_users.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> find_affected_users.sql</a></li>
+    <li><a href="../files/keypair/migrate_jedox_svc.sql" download="migrate_jedox_svc.sql" data-goatcounter-click="download-migrate_jedox_svc.sql" data-goatcounter-title="Download migrate_jedox_svc.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> migrate_jedox_svc.sql</a></li>
+    <li><a href="../files/keypair/verify_keypair_logins.sql" download="verify_keypair_logins.sql" data-goatcounter-click="download-verify_keypair_logins.sql" data-goatcounter-title="Download verify_keypair_logins.sql" data-goatcounter-no-session="1"><span aria-hidden="true">↓</span> verify_keypair_logins.sql</a></li>
   </ul>
   <p class="fdh-downloads__all"><a href="../downloads/">All downloads →</a></p>
 </section>

@@ -13,7 +13,7 @@ Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
 @codemirror/legacy-modes 6.5.5
 Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
 
-@codemirror/lint 6.9.7
+@codemirror/lint 6.9.8
 Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
 
 @codemirror/state 6.7.6
